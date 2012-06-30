@@ -22,6 +22,9 @@ public:
 
     typedef vector< vector<cv::Point> > ContourVector;
     ContourVector mContours;
+	vector<float> mContourAreas;
+	vector<cv::Point> mLargest;
+	
     int mStepSize;
     int mBlurAmount;
 	cv::Mat mInitial;
@@ -29,9 +32,10 @@ public:
 	
 	gl::Texture	mContourTexture;
 	cv::Mat mContourMat;
-	
+		
 	void setup(params::InterfaceGl& params);
 	void update();
+	void keyDown( KeyEvent event );
 	void draw();
 };
 
@@ -39,6 +43,7 @@ class bobbevyApp : public AppBasic {
 public:
 	void prepareSettings( Settings* settings );
 	void setup();
+	void keyDown( KeyEvent event );
 	void mouseDown( MouseEvent event );	
 	void update();
 	void draw();	
@@ -56,6 +61,11 @@ void bobbevyApp::setup()
 {
 	mParams = params::InterfaceGl("bobbevy", Vec2i(225, 200));	
 	mKinect.setup(mParams);
+}
+
+void bobbevyApp::keyDown( KeyEvent event )
+{
+	mKinect.keyDown(event);
 }
 
 void bobbevyApp::mouseDown( MouseEvent event )
@@ -81,13 +91,25 @@ void bobbevyApp::draw()
 void KinectWrapper::setup(params::InterfaceGl& params)
 {
 	console() << "There are " << Kinect::getNumDevices() << " Kinects connected." << std::endl;	
-    mStepSize = 10;
-    mBlurAmount = 5;
+    mStepSize = 50;
+    mBlurAmount = 10;
 	mInitInitial = true;	
 	mKinect = Kinect( Kinect::Device() ); // the default Device implies the first Kinect connected	
     
+	params.addSeparator("CV Params");
 	params.addParam( "Threshold Step Size", &mStepSize, "min=1 max=255" );
     params.addParam( "CV Blur amount", &mBlurAmount, "min=3 max=55" );	
+}
+
+void KinectWrapper::keyDown( KeyEvent event )
+{
+	switch( event.getChar() ){
+		case 'm':
+			mInitInitial = true;
+			break;
+		default:
+			break;
+	}	
 }
 
 void KinectWrapper::update()
@@ -121,13 +143,28 @@ void KinectWrapper::update()
 	mContourMat = gray.clone();
 	mContourTexture = fromOcv(mContourMat);
 	mContours.clear();
-	for( int t = mStepSize; t <= 255 - mStepSize; t += mStepSize )
+	mContourAreas.clear();
+	float largest = -1.0f;
+	for( int t = 2; t < 255; t += mStepSize )
 	{
 		ContourVector vec;
-		cv::threshold( gray, thresh, t, 256, CV_THRESH_BINARY );
+		cv::threshold( gray, thresh, t, 255, CV_THRESH_BINARY );
+//		cv::adaptiveThreshold(gray, thresh, 255, cv::ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY, 3, t);
 		cv::findContours( thresh, vec, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE );
 		// put into mContours
-		mContours.insert( mContours.end(), vec.begin(), vec.end() );
+//		mContours.insert( mContours.end(), vec.begin(), vec.end() );
+
+		for( ContourVector::iterator iter = vec.begin(); iter != vec.end(); ++iter )
+		{		
+			float a = cv::contourArea(*iter);
+			if (a > largest)
+			{
+				mLargest.clear();
+				mLargest.resize(iter->size());
+				copy(iter->begin(), iter->end(), mLargest.begin());
+				largest = a;
+			}
+		}
 	}
 }
 
@@ -137,25 +174,39 @@ void KinectWrapper::draw()
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
 	if( mContourTexture )
 		gl::draw( mContourTexture );
-//	if( mDepthTexture )
-//		gl::draw( mDepthTexture, Vec2i( 640, 0 ) );
-    gl::pushMatrices();
-    gl::translate( Vec2f( getWindowWidth() - 640, getWindowHeight() - 480 ) * 0.5f );
-    // draw the contours
-    for( ContourVector::iterator iter = mContours.begin(); iter != mContours.end(); ++iter )
-    {
-        glBegin( GL_LINE_LOOP );
-        
-        for( vector<cv::Point>::iterator pt = iter->begin(); pt != iter->end(); ++pt )
-        {
-            gl::color( Color( 1.0f, 0.0f, 0.0f ) );
-            gl::vertex( fromOcv( *pt ) );
-        }
-        
-        glEnd();
-    }
-    
-    gl::popMatrices();	
+	if( mDepthTexture )
+		gl::draw( mDepthTexture, Vec2i( 640, 0 ) );
+
+	if (true)
+	{
+		gl::pushMatrices();
+		gl::translate( Vec2f( getWindowWidth() - 640, getWindowHeight() - 480 ) * 0.5f );
+		// draw the contours
+#if 0
+		for( ContourVector::iterator iter = mContours.begin(); iter != mContours.end(); ++iter )
+		{
+			glBegin( GL_LINE_LOOP );
+			
+			for( vector<cv::Point>::iterator pt = iter->begin(); pt != iter->end(); ++pt )
+			{
+				gl::color( Color( 1.0f, 1.0f, 1.0f ) );
+				gl::vertex( fromOcv( *pt ) );
+			}
+			
+			glEnd();
+		}
+#endif		
+		glBegin(GL_LINE_LOOP);
+		for( vector<cv::Point>::iterator pt = mLargest.begin(); pt != mLargest.end(); ++pt )
+		{
+			gl::color( Color( 1.0f, 0.0f, 0.0f ) );
+			gl::vertex( fromOcv( *pt ) );
+		}	
+		glEnd();
+		
+		
+		gl::popMatrices();	
+	}
 }
 
 
