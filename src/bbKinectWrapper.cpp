@@ -27,7 +27,7 @@ void KinectWrapper::setup(params::InterfaceGl& params)
 	mInitInitial = true;	
     
 	params.addSeparator("CV Params");
-	params.addParam( "Step from", &mStepSize, "min=1 max=255" );
+	params.addParam( "Step from", &mStepFrom, "min=1 max=255" );
 	params.addParam( "Threshold Step Size", &mStepSize, "min=1 max=255" );
     params.addParam( "CV Blur amount", &mBlurAmount, "min=3 max=55" );	
 	params.addParam( "CV area threshold", &mAreaThreshold, "min=1");
@@ -127,6 +127,7 @@ void KinectWrapper::processBlobs()
 			i->mCentroid.x /= sz;
 			i->mCentroid.y /= sz;		
 		}
+		
 	}
 }
 
@@ -154,9 +155,7 @@ void KinectWrapper::draw()
 			}	
 			glEnd();
 			gl::drawSolidCircle(fromOcv(i->mCentroid), 10);
-		}
-		
-		
+		}				
 		gl::popMatrices();	
 	}
 }
