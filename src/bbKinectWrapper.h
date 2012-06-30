@@ -19,26 +19,47 @@
 class KinectWrapper
 {
 public:
-	cinder::Kinect	mKinect;
-	cinder::gl::Texture		mColorTexture, mDepthTexture;
-	
-    typedef std::vector< std::vector<cv::Point> > ContourVector;
-    ContourVector mContours;
-	std::vector<float> mContourAreas;
-	std::vector<cv::Point> mLargest;
-	
-    int mStepSize;
-    int mBlurAmount;
-	cv::Mat mInitial;
-	bool mInitInitial;
-	
-	cinder::gl::Texture	mContourTexture;
-	cv::Mat mContourMat;
-	
 	void setup(cinder::params::InterfaceGl& params);
 	void update();
 	void keyDown( cinder::app::KeyEvent event );
 	void draw();
+public:
+	// Kinect interface
+	cinder::Kinect	mKinect;
+	cinder::gl::Texture		mColorTexture, mDepthTexture;
+
+	// Image processing
+	int mStepFrom;
+    int mStepSize;
+    int mBlurAmount;
+	cv::Mat mInitial;
+	bool mInitInitial;	
+
+	// Debug
+	cinder::gl::Texture	mContourTexture;
+	cv::Mat mContourMat;
+	
+	// Blob detection and "user tracking"
+	static int smMAX_BLOBS;	
+	struct Blob {
+		float mContourArea;
+		std::vector<cv::Point> mContourPoints;
+		cv::Point mCentroid;
+	};
+	struct SortDescendingArea
+	{
+		bool operator()(const Blob& t1, const Blob& t2) const
+		{ 
+			return t1.mContourArea < t2.mContourArea;
+		}
+	};
+	typedef std::vector<Blob> BlobVector;
+	BlobVector mBlobs;
+	float mAreaThreshold;
+	typedef std::vector< std::vector<cv::Point> > ContourVector;
+	
+	void findBlobs();
+	void processBlobs();
 };
 
 #endif

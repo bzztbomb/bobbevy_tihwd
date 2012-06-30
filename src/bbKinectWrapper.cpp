@@ -13,17 +13,24 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+int KinectWrapper::smMAX_BLOBS = 3;
+
 void KinectWrapper::setup(params::InterfaceGl& params)
 {
 	console() << "There are " << Kinect::getNumDevices() << " Kinects connected." << std::endl;	
-    mStepSize = 50;
-    mBlurAmount = 10;
-	mInitInitial = true;	
 	mKinect = Kinect( Kinect::Device() ); // the default Device implies the first Kinect connected	
+
+    mStepSize = 255; // Just threshold from step from!
+    mBlurAmount = 10;
+	mStepFrom = 2;
+	mAreaThreshold = 10;
+	mInitInitial = true;	
     
 	params.addSeparator("CV Params");
+	params.addParam( "Step from", &mStepSize, "min=1 max=255" );
 	params.addParam( "Threshold Step Size", &mStepSize, "min=1 max=255" );
     params.addParam( "CV Blur amount", &mBlurAmount, "min=3 max=55" );	
+	params.addParam( "CV area threshold", &mAreaThreshold, "min=1");
 }
 
 void KinectWrapper::keyDown( KeyEvent event )
@@ -38,6 +45,12 @@ void KinectWrapper::keyDown( KeyEvent event )
 }
 
 void KinectWrapper::update()
+{
+	findBlobs();
+	processBlobs();
+}
+
+void KinectWrapper::findBlobs()
 {
 	if( mKinect.checkNewDepthFrame() )
 		mDepthTexture = mKinect.getDepthImage();
@@ -65,30 +78,54 @@ void KinectWrapper::update()
 	}		
 	gray -= mInitial;
 	
+	// Debug texture
 	mContourMat = gray.clone();
 	mContourTexture = fromOcv(mContourMat);
-	mContours.clear();
-	mContourAreas.clear();
-	float largest = -1.0f;
-	for( int t = 2; t < 255; t += mStepSize )
+	
+	mBlobs.clear();
+	float largest = mAreaThreshold;
+	for( int t = mStepFrom; t < 255; t += mStepSize )
 	{
 		ContourVector vec;
 		cv::threshold( gray, thresh, t, 255, CV_THRESH_BINARY );
-		//		cv::adaptiveThreshold(gray, thresh, 255, cv::ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY, 3, t);
 		cv::findContours( thresh, vec, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE );
-		// put into mContours
-		//		mContours.insert( mContours.end(), vec.begin(), vec.end() );
 		
 		for( ContourVector::iterator iter = vec.begin(); iter != vec.end(); ++iter )
 		{		
 			float a = cv::contourArea(*iter);
 			if (a > largest)
 			{
-				mLargest.clear();
-				mLargest.resize(iter->size());
-				copy(iter->begin(), iter->end(), mLargest.begin());
-				largest = a;
+				Blob b;
+				b.mContourArea = a;
+				b.mContourPoints.resize(iter->size());
+				copy(iter->begin(), iter->end(), b.mContourPoints.begin());
+				mBlobs.push_back(b);
+				push_heap(mBlobs.begin(), mBlobs.end(), SortDescendingArea());
+				if (mBlobs.size() > KinectWrapper::smMAX_BLOBS)
+				{			
+					mBlobs.erase(mBlobs.end());
+					largest = mBlobs.rbegin()->mContourArea;
+				}
 			}
+		}
+	}
+}
+
+void KinectWrapper::processBlobs()
+{
+	for (BlobVector::iterator i = mBlobs.begin(); i != mBlobs.end(); i++)
+	{
+		i->mCentroid.x = i->mCentroid.y = 0.0f;
+		for (vector<cv::Point>::iterator pt = i->mContourPoints.begin(); pt != i->mContourPoints.end(); ++pt)
+		{
+			i->mCentroid.x += pt->x;
+			i->mCentroid.y += pt->y;			
+		}
+		float sz = i->mContourPoints.size();
+		if (sz > 0.0f)
+		{
+			i->mCentroid.x /= sz;
+			i->mCentroid.y /= sz;		
 		}
 	}
 }
@@ -107,27 +144,17 @@ void KinectWrapper::draw()
 		gl::pushMatrices();
 		gl::translate( Vec2f( getWindowWidth() - 640, getWindowHeight() - 480 ) * 0.5f );
 		// draw the contours
-#if 0
-		for( ContourVector::iterator iter = mContours.begin(); iter != mContours.end(); ++iter )
+		for (BlobVector::iterator i = mBlobs.begin(); i != mBlobs.end(); i++)
 		{
-			glBegin( GL_LINE_LOOP );
-			
-			for( vector<cv::Point>::iterator pt = iter->begin(); pt != iter->end(); ++pt )
+			glBegin(GL_LINE_LOOP);
+			for( vector<cv::Point>::iterator pt = i->mContourPoints.begin(); pt != i->mContourPoints.end(); ++pt )
 			{
-				gl::color( Color( 1.0f, 1.0f, 1.0f ) );
+				gl::color( Color( 1.0f, 0.0f, 0.0f ) );
 				gl::vertex( fromOcv( *pt ) );
-			}
-			
+			}	
 			glEnd();
+			gl::drawSolidCircle(fromOcv(i->mCentroid), 10);
 		}
-#endif		
-		glBegin(GL_LINE_LOOP);
-		for( vector<cv::Point>::iterator pt = mLargest.begin(); pt != mLargest.end(); ++pt )
-		{
-			gl::color( Color( 1.0f, 0.0f, 0.0f ) );
-			gl::vertex( fromOcv( *pt ) );
-		}	
-		glEnd();
 		
 		
 		gl::popMatrices();	
