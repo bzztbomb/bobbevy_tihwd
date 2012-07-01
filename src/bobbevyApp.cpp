@@ -30,7 +30,13 @@ public:
 	void draw();	
 private:
 	KinectWrapper mKinect;
-	
+
+	// Debugging
+	bool mDebugDraw;
+	bool mShowFPS;
+	bool mShowParams;
+
+	// Layers
 	SceneState mSceneState;
 	TreeLayer mTreeLayer;
 
@@ -45,9 +51,16 @@ void bobbevyApp::prepareSettings( Settings* settings )
 void bobbevyApp::setup()
 {
 	mSceneState.mParams = params::InterfaceGl("bobbevy", Vec2i(225, 200));	
-
+	mSceneState.mParams.addParam("DebugDraw", &mDebugDraw, "keyIncr=d");
+	mSceneState.mParams.addParam("ShowParams", &mShowParams, "keyIncr=p");
+	mSceneState.mParams.addParam("ShowFPS", &mShowFPS, "keyIncr=m");
+	
 	mSceneState.mTimeline = Timeline::create();
 	mSceneState.mTimeline->setDefaultAutoRemove(true);
+
+	mDebugDraw = false;
+	mShowFPS = false;
+	mShowParams = false;
 
 	mKinect.setup(mSceneState.mParams);
 	
@@ -113,10 +126,27 @@ void bobbevyApp::draw()
 		gl::color( cinder::ColorA(1, 1, 1, 1) );
 	}
 	
-	mKinect.draw();
+	// Params
+	if (mShowParams)
+	{
+		gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
+		gl::disableDepthWrite();
+		gl::disableDepthRead();
+		params::InterfaceGl::draw();
+		//		showCursor();
+	} else {
+		//		hideCursor();
+	}
 	
-	// draw interface
-	params::InterfaceGl::draw();	
+	if (mShowFPS)
+	{
+		gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
+		std::string s = boost::lexical_cast<std::string>(getAverageFps());
+		gl::drawString(s, Vec2f(100,100));
+	}
+
+	if (mDebugDraw)
+		mKinect.draw();
 }
 
 CINDER_APP_BASIC( bobbevyApp, RendererGl )
