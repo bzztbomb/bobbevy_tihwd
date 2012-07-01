@@ -13,6 +13,7 @@
 #include "sceneLayer.h"
 #include "bbTreeLayer.h"
 #include "bbIntroLight.h"
+#include "bbParticles.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -41,6 +42,7 @@ private:
 	SceneState mSceneState;
 	TreeLayer mTreeLayer;
 	IntroLight mIntroLight;
+	SkeletonParticles mSkeletonParticles;
 
 	gl::Texture texBlackout;
 };
@@ -85,6 +87,9 @@ void bobbevyApp::setup()
 	
 	mIntroLight.setup(&mSceneState);
 	mIntroLight.setEnabled(true);	
+
+	mSkeletonParticles.setup(&mSceneState);
+	mSkeletonParticles.setEnabled(true);	
 }
 
 void bobbevyApp::keyDown( KeyEvent event )
@@ -109,10 +114,14 @@ void bobbevyApp::keyDown( KeyEvent event )
 		case KeyEvent::KEY_l:
 			mIntroLight.setEnabled(!mIntroLight.getEnabled());
 			break;			
+		case KeyEvent::KEY_b:
+			mSkeletonParticles.setEnabled(!mSkeletonParticles.getEnabled());
+			break;			
 	}			
 	mTreeLayer.keyDown(event);
 	mIntroLight.keyDown(event);
 	mKinect.keyDown(event);
+	mSkeletonParticles.keyDown(event);
 }
 
 void bobbevyApp::mouseDown( MouseEvent event )
@@ -125,6 +134,7 @@ void bobbevyApp::update()
 	mKinect.update();
 	mTreeLayer.update();
 	mIntroLight.update();
+	mSkeletonParticles.update();
 }
 
 void bobbevyApp::draw()
@@ -134,6 +144,7 @@ void bobbevyApp::draw()
 	
 	mTreeLayer.draw();
 	mIntroLight.draw();
+	mSkeletonParticles.draw();
 
 	if (mSceneState.mBlackoutAmount > 0.0)
 	{
