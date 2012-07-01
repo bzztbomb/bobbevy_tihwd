@@ -44,7 +44,7 @@ void KinectWrapper::keyDown( KeyEvent event )
 		return;
 
 	switch( event.getChar() ){
-		case 'm':
+		case ' ':
 			mInitInitial = true;
 			break;
 		default:
@@ -134,9 +134,9 @@ void KinectWrapper::findBlobs()
 			i->mCentroid.x /= sz;
 			i->mCentroid.y /= sz;		
 		}
+		i->mZDist = *to8.getDataRed(i->mCentroid);
 		i->mCentroid.x *= (float) getWindowWidth() / 640.0f;
-		i->mCentroid.y *= (float) getWindowHeight() / 480.0f;				
-		i->mZDist = *to8.getDataRed(fromOcv(i->mCentroid));
+		i->mCentroid.y *= (float) getWindowHeight() / 480.0f;						
 	}
 	sort(mBlobs.begin(), mBlobs.end(), SortDescendingZ());
 }
@@ -146,21 +146,18 @@ void KinectWrapper::draw()
 	if (!mEnabled)
 		return;
 
-	gl::clear( Color( 0, 0, 0 ) ); 
 	gl::color(Color(1.0f, 1.0f, 1.0f));
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
-	if( mContourTexture )
-		gl::draw( mContourTexture );
-	if( mDepthTexture )
-		gl::draw( mDepthTexture, Vec2i( 640, 0 ) );
+//	if( mContourTexture )
+//		gl::draw( mContourTexture );
+//	if( mDepthTexture )
+//		gl::draw( mDepthTexture, getWindowBounds() );
 	
 	if (true)
 	{
 		float xs = (float) getWindowWidth() / 640.0f;
 		float ys = (float) getWindowHeight() / 480.0f;				
 
-		gl::pushMatrices();
-		gl::translate( Vec2f( getWindowWidth() - 640, getWindowHeight() - 480 ) * 0.5f );
 		// draw the contours
 		int c = 0;
 		for (BlobVector::iterator i = mBlobs.begin(); i != mBlobs.end(); i++)
@@ -184,10 +181,9 @@ void KinectWrapper::draw()
 				gl::vertex( Vec2f(pt->x * xs, pt->y * ys) );
 			}	
 			glEnd();
-			gl::drawSolidCircle(fromOcv(i->mCentroid), 10);
+			gl::drawSolidCircle(i->mCentroid, 10);
 			c++;			
 		}				
-		gl::popMatrices();	
 	}
 }
 

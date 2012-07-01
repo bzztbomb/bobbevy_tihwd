@@ -19,7 +19,7 @@
 struct Blob {
 	float mContourArea;
 	std::vector<cv::Point> mContourPoints;
-	cv::Point mCentroid;
+	cinder::Vec2f mCentroid;
 	float mZDist;
 };
 

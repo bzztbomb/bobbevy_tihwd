@@ -12,6 +12,7 @@
 #include "bbKinectWrapper.h"
 #include "sceneLayer.h"
 #include "bbTreeLayer.h"
+#include "bbIntroLight.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -39,6 +40,7 @@ private:
 	// Layers
 	SceneState mSceneState;
 	TreeLayer mTreeLayer;
+	IntroLight mIntroLight;
 
 	gl::Texture texBlackout;
 };
@@ -67,6 +69,8 @@ void bobbevyApp::setup()
 
 	mKinect.setup(mSceneState.mParams);
 	
+	mSceneState.mKinect = &mKinect;
+	
 	mSceneState.mBlackoutAmount = 0.0f;
 	gl::Texture::Format hiQFormat;
 	hiQFormat.enableMipmapping();
@@ -78,6 +82,9 @@ void bobbevyApp::setup()
 	
 	mTreeLayer.setup(&mSceneState);
 	mTreeLayer.setEnabled(true);
+	
+	mIntroLight.setup(&mSceneState);
+	mIntroLight.setEnabled(true);	
 }
 
 void bobbevyApp::keyDown( KeyEvent event )
@@ -99,8 +106,12 @@ void bobbevyApp::keyDown( KeyEvent event )
 				mTreeLayer.resetParams();
 			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 0.0f, 5.0f);
 			break;			
+		case KeyEvent::KEY_l:
+			mIntroLight.setEnabled(!mIntroLight.getEnabled());
+			break;			
 	}			
-	mTreeLayer.keyDown(event);	
+	mTreeLayer.keyDown(event);
+	mIntroLight.keyDown(event);
 	mKinect.keyDown(event);
 }
 
@@ -113,6 +124,7 @@ void bobbevyApp::update()
 	mSceneState.mTimeline->step(0.05);
 	mKinect.update();
 	mTreeLayer.update();
+	mIntroLight.update();
 }
 
 void bobbevyApp::draw()
@@ -121,6 +133,7 @@ void bobbevyApp::draw()
 	gl::clear( Color( 0, 0, 0 ) ); 
 	
 	mTreeLayer.draw();
+	mIntroLight.draw();
 
 	if (mSceneState.mBlackoutAmount > 0.0)
 	{

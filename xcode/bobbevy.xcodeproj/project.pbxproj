@@ -23,6 +23,7 @@
 		C82C9436159F888100AAEDE0 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C82C9435159F888100AAEDE0 /* IOKit.framework */; };
 		C82C97A4159FB3A900AAEDE0 /* bbKinectWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C82C97A3159FB3A900AAEDE0 /* bbKinectWrapper.cpp */; };
 		C82C98C6159FD14400AAEDE0 /* bbTreeLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C82C98C5159FD14400AAEDE0 /* bbTreeLayer.cpp */; };
+		C82C998A159FD88800AAEDE0 /* bbIntroLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C82C9989159FD88800AAEDE0 /* bbIntroLight.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +52,8 @@
 		C82C98B6159FD00700AAEDE0 /* sceneLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sceneLayer.h; path = ../src/sceneLayer.h; sourceTree = SOURCE_ROOT; };
 		C82C98C4159FD14400AAEDE0 /* bbTreeLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bbTreeLayer.h; path = ../src/bbTreeLayer.h; sourceTree = SOURCE_ROOT; };
 		C82C98C5159FD14400AAEDE0 /* bbTreeLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bbTreeLayer.cpp; path = ../src/bbTreeLayer.cpp; sourceTree = SOURCE_ROOT; };
+		C82C9988159FD88800AAEDE0 /* bbIntroLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bbIntroLight.h; sourceTree = "<group>"; };
+		C82C9989159FD88800AAEDE0 /* bbIntroLight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bbIntroLight.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,8 +83,9 @@
 			children = (
 				00BAE6590E7ED9C10018A608 /* bobbevyApp.cpp */,
 				C82C97A3159FB3A900AAEDE0 /* bbKinectWrapper.cpp */,
-				C82C98C4159FD14400AAEDE0 /* bbTreeLayer.h */,
 				C82C98C5159FD14400AAEDE0 /* bbTreeLayer.cpp */,
+				C82C9988159FD88800AAEDE0 /* bbIntroLight.h */,
+				C82C9989159FD88800AAEDE0 /* bbIntroLight.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -138,6 +142,7 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				C82C98C4159FD14400AAEDE0 /* bbTreeLayer.h */,
 				C82C97A2159FB3A900AAEDE0 /* bbKinectWrapper.h */,
 				32CA4F630368D1EE00C91783 /* bobbevy_Prefix.pch */,
 				C82C98B6159FD00700AAEDE0 /* sceneLayer.h */,
@@ -244,6 +249,7 @@
 				C82C9424159F882500AAEDE0 /* Kinect.cpp in Sources */,
 				C82C97A4159FB3A900AAEDE0 /* bbKinectWrapper.cpp in Sources */,
 				C82C98C6159FD14400AAEDE0 /* bbTreeLayer.cpp in Sources */,
+				C82C998A159FD88800AAEDE0 /* bbIntroLight.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

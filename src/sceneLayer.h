@@ -13,12 +13,14 @@
 #include "cinder/params/Params.h"
 #include "cinder/Timeline.h"
 #include "cinder/app/AppBasic.h"
+#include "bbKinectWrapper.h"
 
 struct SceneState
 {
 	cinder::params::InterfaceGl mParams;
 	cinder::TimelineRef	mTimeline;
 	cinder::Anim<float> mBlackoutAmount;
+	KinectWrapper* mKinect;
 };
 
 class SceneLayer
