@@ -33,6 +33,8 @@ private:
 	
 	SceneState mSceneState;
 	TreeLayer mTreeLayer;
+
+	gl::Texture texBlackout;
 };
 
 void bobbevyApp::prepareSettings( Settings* settings )
@@ -43,7 +45,20 @@ void bobbevyApp::prepareSettings( Settings* settings )
 void bobbevyApp::setup()
 {
 	mSceneState.mParams = params::InterfaceGl("bobbevy", Vec2i(225, 200));	
+
+	mSceneState.mTimeline = Timeline::create();
+	mSceneState.mTimeline->setDefaultAutoRemove(true);
+
 	mKinect.setup(mSceneState.mParams);
+	
+	mSceneState.mBlackoutAmount = 0.0f;
+	gl::Texture::Format hiQFormat;
+	hiQFormat.enableMipmapping();
+	hiQFormat.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
+	hiQFormat.setMagFilter(GL_LINEAR_MIPMAP_LINEAR);
+	
+	// Blackout overlay
+	texBlackout = gl::Texture(loadImage(loadAsset("blackout.png")), hiQFormat);
 	
 	mTreeLayer.setup(&mSceneState);
 	mTreeLayer.setEnabled(true);
@@ -51,10 +66,18 @@ void bobbevyApp::setup()
 
 void bobbevyApp::keyDown( KeyEvent event )
 {
-	switch( event.getChar() ){
-		case 'f':
+	switch( event.getChar() )
+	{
+		case KeyEvent::KEY_ESCAPE:
+			this->quit();
+			this->shutdown();
+			break;			
+		case KeyEvent::KEY_f:
 			setFullScreen( !isFullScreen() );
 			break;
+		case KeyEvent::KEY_o:
+			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 1.0f, 5.0f);
+			break;			
 		case KeyEvent::KEY_i:
 			if (mSceneState.mBlackoutAmount >= 1.0)
 				mTreeLayer.resetParams();
@@ -71,6 +94,7 @@ void bobbevyApp::mouseDown( MouseEvent event )
 
 void bobbevyApp::update()
 {
+	mSceneState.mTimeline->step(0.05);
 	mKinect.update();
 	mTreeLayer.update();
 }
@@ -82,6 +106,13 @@ void bobbevyApp::draw()
 	
 	mTreeLayer.draw();
 
+	if (mSceneState.mBlackoutAmount > 0.0)
+	{
+		gl::color( cinder::ColorA(1, 1, 1, mSceneState.mBlackoutAmount) );
+		gl::draw(texBlackout, getWindowBounds());
+		gl::color( cinder::ColorA(1, 1, 1, 1) );
+	}
+	
 	mKinect.draw();
 	
 	// draw interface
