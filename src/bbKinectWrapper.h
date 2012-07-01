@@ -45,6 +45,7 @@ public:
 		float mContourArea;
 		std::vector<cv::Point> mContourPoints;
 		cv::Point mCentroid;
+		float mZDist;
 	};
 	struct SortDescendingArea
 	{
@@ -53,13 +54,19 @@ public:
 			return t1.mContourArea < t2.mContourArea;
 		}
 	};
+	struct SortDescendingZ
+	{
+		bool operator()(const Blob& t1, const Blob& t2) const
+		{ 
+			return t1.mZDist < t2.mZDist;
+		}
+	};	
 	typedef std::vector<Blob> BlobVector;
 	BlobVector mBlobs;
 	float mAreaThreshold;
 	typedef std::vector< std::vector<cv::Point> > ContourVector;
 	
 	void findBlobs();
-	void processBlobs();
 };
 
 #endif

@@ -21,9 +21,9 @@ void KinectWrapper::setup(params::InterfaceGl& params)
 	mKinect = Kinect( Kinect::Device() ); // the default Device implies the first Kinect connected	
 
     mStepSize = 255; // Just threshold from step from!
-    mBlurAmount = 10;
+    mBlurAmount = 20;
 	mStepFrom = 2;
-	mAreaThreshold = 10;
+	mAreaThreshold = 1000.0f;
 	mInitInitial = true;	
     
 	params.addSeparator("CV Params");
@@ -47,7 +47,6 @@ void KinectWrapper::keyDown( KeyEvent event )
 void KinectWrapper::update()
 {
 	findBlobs();
-	processBlobs();
 }
 
 void KinectWrapper::findBlobs()
@@ -109,10 +108,7 @@ void KinectWrapper::findBlobs()
 			}
 		}
 	}
-}
-
-void KinectWrapper::processBlobs()
-{
+	
 	for (BlobVector::iterator i = mBlobs.begin(); i != mBlobs.end(); i++)
 	{
 		i->mCentroid.x = i->mCentroid.y = 0.0f;
@@ -127,13 +123,15 @@ void KinectWrapper::processBlobs()
 			i->mCentroid.x /= sz;
 			i->mCentroid.y /= sz;		
 		}
-		
+		i->mZDist = *to8.getDataRed(fromOcv(i->mCentroid));
 	}
+	sort(mBlobs.begin(), mBlobs.end(), SortDescendingZ());
 }
 
 void KinectWrapper::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) ); 
+	gl::color(Color(1.0f, 1.0f, 1.0f));
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
 	if( mContourTexture )
 		gl::draw( mContourTexture );
@@ -145,16 +143,29 @@ void KinectWrapper::draw()
 		gl::pushMatrices();
 		gl::translate( Vec2f( getWindowWidth() - 640, getWindowHeight() - 480 ) * 0.5f );
 		// draw the contours
+		int c = 0;
 		for (BlobVector::iterator i = mBlobs.begin(); i != mBlobs.end(); i++)
 		{
 			glBegin(GL_LINE_LOOP);
 			for( vector<cv::Point>::iterator pt = i->mContourPoints.begin(); pt != i->mContourPoints.end(); ++pt )
 			{
-				gl::color( Color( 1.0f, 0.0f, 0.0f ) );
+				switch (c)
+				{
+					case 0:
+						gl::color( Color( 1.0f, 0.0f, 0.0f ) );
+						break;
+					case 1:
+						gl::color( Color( 0.0f, 1.0f, 0.0f ) );
+						break;
+					case 2:
+						gl::color( Color( 0.0f, 0.0f, 1.0f ) );
+						break;
+				}
 				gl::vertex( fromOcv( *pt ) );
 			}	
 			glEnd();
 			gl::drawSolidCircle(fromOcv(i->mCentroid), 10);
+			c++;			
 		}				
 		gl::popMatrices();	
 	}
