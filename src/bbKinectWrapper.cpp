@@ -17,9 +17,14 @@ int KinectWrapper::smMAX_BLOBS = 3;
 
 void KinectWrapper::setup(params::InterfaceGl& params)
 {
+	mEnabled = false;
 	console() << "There are " << Kinect::getNumDevices() << " Kinects connected." << std::endl;	
+	if (Kinect::getNumDevices() == 0)
+		return;
+	mEnabled = true;
 	mKinect = Kinect( Kinect::Device() ); // the default Device implies the first Kinect connected	
-
+	
+	
     mStepSize = 255; // Just threshold from step from!
     mBlurAmount = 20;
 	mStepFrom = 2;
@@ -35,6 +40,9 @@ void KinectWrapper::setup(params::InterfaceGl& params)
 
 void KinectWrapper::keyDown( KeyEvent event )
 {
+	if (!mEnabled)
+		return;
+
 	switch( event.getChar() ){
 		case 'm':
 			mInitInitial = true;
@@ -46,6 +54,9 @@ void KinectWrapper::keyDown( KeyEvent event )
 
 void KinectWrapper::update()
 {
+	if (!mEnabled)
+		return;
+
 	findBlobs();
 }
 
@@ -130,6 +141,9 @@ void KinectWrapper::findBlobs()
 
 void KinectWrapper::draw()
 {
+	if (!mEnabled)
+		return;
+
 	gl::clear( Color( 0, 0, 0 ) ); 
 	gl::color(Color(1.0f, 1.0f, 1.0f));
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
@@ -175,10 +189,12 @@ Blob* KinectWrapper::getClosestUser()
 {
 	if (mBlobs.size() > 0)
 		return &(*mBlobs.begin());
+	return NULL;
 }
 
 Blob* KinectWrapper::getFurtherUser()
 {
 	if (mBlobs.size() > 0)
 		return &(*mBlobs.rbegin());
+	return NULL;	
 }

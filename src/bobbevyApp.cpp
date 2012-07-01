@@ -10,10 +10,15 @@
 #include "Kinect.h"
 
 #include "bbKinectWrapper.h"
+#include "sceneLayer.h"
+#include "bbTreeLayer.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
+static const int WIDTH = 800;
+static const int HEIGHT = 600;
 
 class bobbevyApp : public AppBasic {
 public:
@@ -25,7 +30,9 @@ public:
 	void draw();	
 private:
 	KinectWrapper mKinect;
-	params::InterfaceGl mParams;
+	
+	SceneState mSceneState;
+	TreeLayer mTreeLayer;
 };
 
 void bobbevyApp::prepareSettings( Settings* settings )
@@ -35,8 +42,11 @@ void bobbevyApp::prepareSettings( Settings* settings )
 
 void bobbevyApp::setup()
 {
-	mParams = params::InterfaceGl("bobbevy", Vec2i(225, 200));	
-	mKinect.setup(mParams);
+	mSceneState.mParams = params::InterfaceGl("bobbevy", Vec2i(225, 200));	
+	mKinect.setup(mSceneState.mParams);
+	
+	mTreeLayer.setup(&mSceneState);
+	mTreeLayer.setEnabled(true);
 }
 
 void bobbevyApp::keyDown( KeyEvent event )
@@ -45,7 +55,13 @@ void bobbevyApp::keyDown( KeyEvent event )
 		case 'f':
 			setFullScreen( !isFullScreen() );
 			break;
+		case KeyEvent::KEY_i:
+			if (mSceneState.mBlackoutAmount >= 1.0)
+				mTreeLayer.resetParams();
+			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 0.0f, 5.0f);
+			break;			
 	}			
+	mTreeLayer.keyDown(event);	
 	mKinect.keyDown(event);
 }
 
@@ -56,12 +72,16 @@ void bobbevyApp::mouseDown( MouseEvent event )
 void bobbevyApp::update()
 {
 	mKinect.update();
+	mTreeLayer.update();
 }
 
 void bobbevyApp::draw()
 {
 	// clear out the window with black
 	gl::clear( Color( 0, 0, 0 ) ); 
+	
+	mTreeLayer.draw();
+
 	mKinect.draw();
 	
 	// draw interface

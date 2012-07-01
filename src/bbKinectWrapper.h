@@ -35,6 +35,7 @@ public:
 	Blob* getFurtherUser();
 public:
 	// Kinect interface
+	bool mEnabled;
 	cinder::Kinect	mKinect;
 	cinder::gl::Texture		mColorTexture, mDepthTexture;
 
