@@ -16,6 +16,13 @@
 #include "cinder/params/Params.h"
 #include "cinder/app/AppBasic.h"
 
+struct Blob {
+	float mContourArea;
+	std::vector<cv::Point> mContourPoints;
+	cv::Point mCentroid;
+	float mZDist;
+};
+
 class KinectWrapper
 {
 public:
@@ -23,6 +30,9 @@ public:
 	void update();
 	void keyDown( cinder::app::KeyEvent event );
 	void draw();
+
+	Blob* getClosestUser();
+	Blob* getFurtherUser();
 public:
 	// Kinect interface
 	cinder::Kinect	mKinect;
@@ -41,12 +51,6 @@ public:
 	
 	// Blob detection and "user tracking"
 	static int smMAX_BLOBS;	
-	struct Blob {
-		float mContourArea;
-		std::vector<cv::Point> mContourPoints;
-		cv::Point mCentroid;
-		float mZDist;
-	};
 	struct SortDescendingArea
 	{
 		bool operator()(const Blob& t1, const Blob& t2) const

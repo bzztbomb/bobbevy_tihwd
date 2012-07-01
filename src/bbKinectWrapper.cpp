@@ -170,3 +170,15 @@ void KinectWrapper::draw()
 		gl::popMatrices();	
 	}
 }
+
+Blob* KinectWrapper::getClosestUser()
+{
+	if (mBlobs.size() > 0)
+		return &(*mBlobs.begin());
+}
+
+Blob* KinectWrapper::getFurtherUser()
+{
+	if (mBlobs.size() > 0)
+		return &(*mBlobs.rbegin());
+}
