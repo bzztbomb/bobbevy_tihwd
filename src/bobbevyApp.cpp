@@ -45,7 +45,10 @@ private:
 
 void bobbevyApp::prepareSettings( Settings* settings )
 {
-	settings->setWindowSize( 640, 480 );
+	settings->setFrameRate( 30 );
+	settings->setWindowSize( WIDTH, HEIGHT );
+	settings->setTitle( "bobbevy" );
+	settings->enableSecondaryDisplayBlanking(false);
 }
 
 void bobbevyApp::setup()

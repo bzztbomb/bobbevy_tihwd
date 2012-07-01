@@ -134,6 +134,8 @@ void KinectWrapper::findBlobs()
 			i->mCentroid.x /= sz;
 			i->mCentroid.y /= sz;		
 		}
+		i->mCentroid.x *= (float) getWindowWidth() / 640.0f;
+		i->mCentroid.y *= (float) getWindowHeight() / 480.0f;				
 		i->mZDist = *to8.getDataRed(fromOcv(i->mCentroid));
 	}
 	sort(mBlobs.begin(), mBlobs.end(), SortDescendingZ());
@@ -154,6 +156,9 @@ void KinectWrapper::draw()
 	
 	if (true)
 	{
+		float xs = (float) getWindowWidth() / 640.0f;
+		float ys = (float) getWindowHeight() / 480.0f;				
+
 		gl::pushMatrices();
 		gl::translate( Vec2f( getWindowWidth() - 640, getWindowHeight() - 480 ) * 0.5f );
 		// draw the contours
@@ -175,7 +180,8 @@ void KinectWrapper::draw()
 						gl::color( Color( 0.0f, 0.0f, 1.0f ) );
 						break;
 				}
-				gl::vertex( fromOcv( *pt ) );
+				
+				gl::vertex( Vec2f(pt->x * xs, pt->y * ys) );
 			}	
 			glEnd();
 			gl::drawSolidCircle(fromOcv(i->mCentroid), 10);
