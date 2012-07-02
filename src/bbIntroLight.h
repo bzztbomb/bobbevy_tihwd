@@ -37,6 +37,7 @@ private:
 	cinder::gl::GlslProg	mShader;
 	cinder::ColorA mLightColor;
 	cinder::Anim<float> mLightSize;
+	float mTargetLightSize;
 	cinder::Anim<float> mLightSizeOffset;
 	cinder::Vec3f mSourcePoint;
 	cinder::Anim<float> mRevealOffset;

@@ -91,8 +91,8 @@ void SkeletonParticles::updateSwarm()
 			mWhichNode[i] = (mWhichNode[i]+1)%6;
 		}
 		// Check for off screen and respawn
-		float x = mParticlePos[i].x;
-		float y = mParticlePos[i].y;
+//		float x = mParticlePos[i].x;
+//		float y = mParticlePos[i].y;
 		//		if (x < 0 || x > getWindowWidth() || y < 0 || y > getWindowHeight())
 		//			resetParticle(i);		
 	}
@@ -169,6 +169,7 @@ void SkeletonParticles::draw()
 		return;
 	gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
 	gl::disableAlphaBlending();
+	glDisable(GL_TEXTURE_2D);
 	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
 	{
 		if (mReachedTarget[i])

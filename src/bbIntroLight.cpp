@@ -23,6 +23,7 @@ IntroLight::IntroLight() :
 	mLightSizeOffset(0.0),
 	mSourcePoint(400, 0, 0),
 	mRevealOffset(0.0f),
+	mTargetLightSize(100.0f),
 	mState(lsStart)
 {
 }
@@ -57,7 +58,12 @@ void IntroLight::keyDown( KeyEvent event )
 			reveal();
 			break;
 		case KeyEvent::KEY_k:
-			mManager->mTimeline->apply(&mLightSize, 100.0f, 3.0f);
+			if (mLightSize == 0.0f)
+			{
+				mManager->mTimeline->apply(&mLightSize, mTargetLightSize, 3.0f);
+			} else {
+				mLightSize = 0.0f;
+			}
 			break;
 	}
 }
