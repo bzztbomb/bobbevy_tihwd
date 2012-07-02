@@ -20,7 +20,7 @@ using namespace std;
 SkeletonParticles::SkeletonParticles() :
 	mManager(NULL),
 	mTargetPoint(300.0f, 300.0f, 0.0f),
-	mMaxVel(15.0f),
+	mMaxVel(20.0f),
 	mAfterTargetAccel(2.0f),
 	mSwarm(true)
 {
@@ -38,12 +38,13 @@ SkeletonParticles::SkeletonParticles() :
 		mRandOffset[i].normalize();
 	}
 	for (int i = 0; i < 6; i++)
-		mRandTarg[i] = randVec3f();
+		mRandTarg[i] = randVec3f() * randFloat(0.1, 0.9);
 }
 
 void SkeletonParticles::setup(SceneState* manager)
 {
 	mManager = manager;
+	mManager->mParams.addSeparator();
 	mManager->mParams.addParam("Max Particle Vel", &mMaxVel);
 	mManager->mParams.addParam("Swarm", &mSwarm);
 	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
@@ -63,7 +64,13 @@ void SkeletonParticles::resetParticle(int index)
 	Vec3f zero(0.0f, 0.0f, 0.0f);
 	float radius = 200.0f;
 	mParticlePos[index] = randVec3f() * radius;
-	mParticlePos[index] += Vec3f(getWindowWidth() + radius*2, getWindowHeight() + radius*2, 0.0f);
+	if (mSwarm)	
+		mParticlePos[index] += Vec3f(getWindowWidth() + radius*2, getWindowHeight() + radius*2, 0.0f);
+	else
+	{
+		mParticlePos[index].x = mTargetPoint.x;
+		mParticlePos[index].y = getWindowHeight()-1;
+	}
 	mParticleVel[index] = zero;
 	mReachedTarget[index] = false;
 }
@@ -133,7 +140,7 @@ void SkeletonParticles::update()
 	Blob* user = mManager->mKinect->getClosestUser();
 	if (user != NULL)
 	{
-		float r = sqrt(user->mContourArea);
+		float r = sqrt(user->mContourArea) / 2.0f;
 		mTargetPoint.x =  user->mCentroid.x;
 		mTargetPoint.y =  user->mCentroid.y;
 		mTargetPoint.z = 0;
@@ -141,13 +148,13 @@ void SkeletonParticles::update()
 		for (int i = 1; i < 6; i++)
 			mNodePos[i] = mTargetPoint + (mRandTarg[i] * r);
 		
-		mDirVectors[0] = mTargetPoint;
-		mDirVectors[1] = mTargetPoint;
+		mDirVectors[0] = user->mRightMost;
+		mDirVectors[1] = user->mLeftMost;
 		for (int i = 0; i < 2; i++)
 		{
 			mDirVectors[i] -= mTargetPoint;
 			mDirVectors[i].normalize();
-			//mDirVectors[i] *= mAfterTargetAccel;
+			mDirVectors[i] *= mAfterTargetAccel;
 		}
 	}
 	if (mSwarm)

@@ -27,7 +27,7 @@ void KinectWrapper::setup(params::InterfaceGl& params)
 	
     mStepSize = 255; // Just threshold from step from!
     mBlurAmount = 20;
-	mStepFrom = 2;
+	mStepFrom = 5;
 	mAreaThreshold = 1000.0f;
 	mInitInitial = true;	
     
@@ -120,13 +120,38 @@ void KinectWrapper::findBlobs()
 		}
 	}
 	
+	
 	for (BlobVector::iterator i = mBlobs.begin(); i != mBlobs.end(); i++)
 	{
 		i->mCentroid.x = i->mCentroid.y = 0.0f;
+		i->mLeftMost.x = 10000;
+		i->mRightMost.x = -10000;
+		i->mTopMost.y = 10000;
+		i->mBottomMost.y = -10000;
 		for (vector<cv::Point>::iterator pt = i->mContourPoints.begin(); pt != i->mContourPoints.end(); ++pt)
-		{
+		{			
 			i->mCentroid.x += pt->x;
 			i->mCentroid.y += pt->y;			
+			if (i->mLeftMost.x > pt->x)
+			{
+				i->mLeftMost.x = pt->x;
+				i->mLeftMost.y = pt->y;				
+			}
+			if (i->mRightMost.x < pt->x)
+			{
+				i->mRightMost.x = pt->x;
+				i->mRightMost.y = pt->y;				
+			}			
+			if (i->mTopMost.y > pt->y)
+			{
+				i->mTopMost.x = pt->x;
+				i->mTopMost.y = pt->y;
+			}
+			if (i->mBottomMost.y < pt->y)
+			{
+				i->mBottomMost.x = pt->x;
+				i->mBottomMost.y = pt->y;
+			}			
 		}
 		float sz = i->mContourPoints.size();
 		if (sz > 0.0f)
@@ -136,7 +161,23 @@ void KinectWrapper::findBlobs()
 		}
 		i->mZDist = *to8.getDataRed(i->mCentroid);
 		i->mCentroid.x *= (float) getWindowWidth() / 640.0f;
-		i->mCentroid.y *= (float) getWindowHeight() / 480.0f;						
+		i->mCentroid.y *= (float) getWindowHeight() / 480.0f;
+		// Loop through and do z calc
+		float steps = 10.0f;
+		Vec3f step = (i->mBottomMost - i->mTopMost) / steps;
+		Vec3f sample = i->mTopMost;
+		for (int x = 0; x < steps; x++)
+		{
+			i->mZDist = max(i->mZDist, (float) *to8.getDataRed(Vec2f(sample.x, sample.y)));
+			sample += step;
+		}
+		step = (i->mRightMost - i->mLeftMost) / steps;
+		sample = i->mLeftMost;
+		for (int x = 0; x < steps; x++)
+		{
+			i->mZDist = max(i->mZDist, (float) *to8.getDataRed(Vec2f(sample.x, sample.y)));
+			sample += step;
+		}		
 	}
 	sort(mBlobs.begin(), mBlobs.end(), SortDescendingZ());
 }
@@ -149,9 +190,9 @@ void KinectWrapper::draw()
 	gl::color(Color(1.0f, 1.0f, 1.0f));
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
 //	if( mContourTexture )
-//		gl::draw( mContourTexture );
-//	if( mDepthTexture )
-//		gl::draw( mDepthTexture, getWindowBounds() );
+//		gl::draw( mContourTexture, getWindowBounds() );
+	if( mDepthTexture )
+		gl::draw( mDepthTexture, getWindowBounds() );
 	
 	if (true)
 	{
@@ -190,13 +231,13 @@ void KinectWrapper::draw()
 Blob* KinectWrapper::getClosestUser()
 {
 	if (mBlobs.size() > 0)
-		return &(*mBlobs.begin());
+		return &(*mBlobs.rbegin());
 	return NULL;
 }
 
 Blob* KinectWrapper::getFurtherUser()
 {
 	if (mBlobs.size() > 0)
-		return &(*mBlobs.rbegin());
+		return &(*mBlobs.begin());
 	return NULL;	
 }

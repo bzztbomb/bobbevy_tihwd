@@ -152,6 +152,9 @@ void bobbevyApp::draw()
 		gl::draw(texBlackout, getWindowBounds());
 		gl::color( cinder::ColorA(1, 1, 1, 1) );
 	}
+
+	if (mDebugDraw)
+		mKinect.draw();
 	
 	// Params
 	if (mShowParams)
@@ -171,9 +174,6 @@ void bobbevyApp::draw()
 		std::string s = boost::lexical_cast<std::string>(getAverageFps());
 		gl::drawString(s, Vec2f(100,100));
 	}
-
-	if (mDebugDraw)
-		mKinect.draw();
 }
 
 CINDER_APP_BASIC( bobbevyApp, RendererGl )

@@ -21,6 +21,11 @@ struct Blob {
 	std::vector<cv::Point> mContourPoints;
 	cinder::Vec2f mCentroid;
 	float mZDist;
+	// Bounds
+	cinder::Vec3f mLeftMost;
+	cinder::Vec3f mRightMost;
+	cinder::Vec3f mTopMost;
+	cinder::Vec3f mBottomMost;
 };
 
 class KinectWrapper
