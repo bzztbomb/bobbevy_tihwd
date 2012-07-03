@@ -30,7 +30,8 @@ TreeLayer::TreeLayer() :
 	mTreesEnabled(true),
 	mNumTrees(50),
 	mTreeRadius(1.0f),
-	mTreeSizeVariance(2.0f)
+	mTreeSizeVariance(2.0f),
+	mZoomToBlack(false)
 {
 	resetParams();
 }
@@ -39,15 +40,15 @@ void TreeLayer::setup(SceneState* manager)
 {
 	mManager = manager;
 	manager->mParams.addParam("UpdateTrees", &mUpdateTrees);
-	manager->mParams.addParam("Enable trees", &mTreesEnabled, "keyIncr=t");
 	manager->mParams.addParam("Num Trees", &mNumTrees, "min=0.0 max=1000.0 step=5");
-	manager->mParams.addParam("TreePanSpeedX", &mTreePanSpeed.value().x, "min=-10.0 max=10.0 step=0.005 keyIncr=x keyDecr=X");
-	manager->mParams.addParam("TreePanSpeedY", &mTreePanSpeed.value().y, "min=-10.0 max=10.0 step=0.002 keyIncr=y keyDecr=Y");
-	manager->mParams.addParam("TreePanSpeedZ", &mTreePanSpeed.value().z, "min=-10.0 max=10.0 step=0.005 keyIncr=z keyDecr=Z");
+	manager->mParams.addParam("TreePanSpeedX", &mTreePanSpeed.value().x, "min=-10.0 max=10.0 step=0.0005 keyIncr=x keyDecr=X");
+	manager->mParams.addParam("TreePanSpeedY", &mTreePanSpeed.value().y, "min=-10.0 max=10.0 step=0.0002 keyIncr=y keyDecr=Y");
+	manager->mParams.addParam("TreePanSpeedZ", &mTreePanSpeed.value().z, "min=-10.0 max=10.0 step=0.0005 keyIncr=z keyDecr=Z");
 	manager->mParams.addParam("TreeRadius", &mTreeRadius, "min=0.0 max=100 step=0.1");
 	manager->mParams.addParam("TreeSizeVariance", &mTreeSizeVariance, "min=0.0f max=4.0f step=0.1 keyIncr=v keyDecr=V");
 	manager->mParams.addParam("GroundColor", &mGroundColor);
 	manager->mParams.addParam("SunColor", &mSunColor);
+	manager->mParams.addParam("ZoomTarget", &mZoomTarget);
 	
 	mTreeCam.lookAt(Vec3f(0,0,0), mTreeCam.getViewDirection(), -mTreeCam.getWorldUp());
 	
@@ -60,12 +61,23 @@ void TreeLayer::setup(SceneState* manager)
 	texTree = gl::Texture(loadImage(loadAsset ("trees.png")), hiQFormat);
 	texSun = gl::Texture(loadImage(loadAsset("sun.png")), hiQFormat);
 	texOverlay = gl::Texture(loadImage(loadAsset("overlay.png")), hiQFormat);
+	texBlack = gl::Texture(loadImage(loadAsset("zoomToBlack.png")), hiQFormat);
+	
 	initGroundMesh();
 	initTreeMesh();	
 }
 
+void TreeLayer::setEnabled(bool e)
+{
+	SceneLayer::setEnabled(e);
+	resetParams();
+}
+
 void TreeLayer::keyDown( cinder::app::KeyEvent event )
 {
+	if (!mEnabled)
+		return;
+	
 	float fastTween = 1.0f;
 	float slowTween = 10.0f;
 	
@@ -92,12 +104,27 @@ void TreeLayer::keyDown( cinder::app::KeyEvent event )
 			break;
 		case KeyEvent::KEY_0:
 			resetParams();
-			break;	
+			break;
+		case KeyEvent::KEY_8:
+			toggleZoomToBlack();
+			break;
+	}
+}
+
+void TreeLayer::toggleZoomToBlack()
+{
+	mZoomToBlack = !mZoomToBlack;
+	if (mZoomToBlack)
+	{
+		mZoomTarget = Vec3f(0, 0, -10.0f);
+		mTreePanSpeed = mZoomTarget / (9.0f*30.0f);
 	}
 }
 
 void TreeLayer::update()
 {
+	if (!mEnabled)
+		return;
 	mTreePan += mTreePanSpeed;
 	
 	while (mTreePan.z < -travelBounds.z)
@@ -106,6 +133,17 @@ void TreeLayer::update()
 		mTreePan.x += travelBounds.x;
 	while (mTreePan.x > travelBounds.x)
 		mTreePan.x -= travelBounds.x;
+	
+	if (mZoomToBlack)
+	{
+		if (mZoomTarget.z == -1.1f)
+		{
+//			setEnabled(false);
+		}
+		mZoomTarget -= mTreePanSpeed;
+		if (mZoomTarget.z > -1.1f)
+			mZoomTarget.z = -1.1f;			
+	}
 	
 	if (mUpdateTrees)
 	{
@@ -117,7 +155,7 @@ void TreeLayer::update()
 
 void TreeLayer::draw()
 {
-	if (!mTreesEnabled)
+	if (!mEnabled)
 		return;
 	
 	// Set up draw states
@@ -156,6 +194,15 @@ void TreeLayer::draw()
 	glTranslatef(0, 0, travelBounds.z);
 	gl::draw(mTreeMesh);
 	texTree.unbind();
+	
+	if (mZoomToBlack)
+	{
+		texBlack.enableAndBind();
+		Vec3f bbRight, bbUp;
+		mTreeCam.getBillboardVectors(&bbRight, &bbUp);
+		gl::drawBillboard(mTreePan + mZoomTarget, Vec2f(20, 20), 0, bbRight, bbUp); 
+		texBlack.unbind();
+	}
 	
 	// Draw overlay
 	gl::disableDepthRead();
@@ -274,4 +321,5 @@ void TreeLayer::resetParams()
 {
 	mTreePan = Vec3f(0.0f, -1.1f, 0.0f);
 	mTreePanSpeed = Vec3f(-0.001f, 0.0f, 0.0f);
+	mZoomToBlack = false;
 }

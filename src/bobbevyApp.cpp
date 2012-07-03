@@ -111,6 +111,9 @@ void bobbevyApp::keyDown( KeyEvent event )
 				mTreeLayer.resetParams();
 			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 0.0f, 5.0f);
 			break;			
+		case KeyEvent::KEY_t:
+			mTreeLayer.setEnabled(!mTreeLayer.getEnabled());
+			break;
 		case KeyEvent::KEY_l:
 			mIntroLight.setEnabled(!mIntroLight.getEnabled());
 			break;			

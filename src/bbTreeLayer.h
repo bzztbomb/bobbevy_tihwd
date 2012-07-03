@@ -24,6 +24,7 @@ public:
 	virtual void keyDown( cinder::app::KeyEvent event );
 	virtual void update();
 	virtual void draw();	
+	virtual void setEnabled(bool e);
 	
 	void resetParams();
 private:
@@ -45,11 +46,16 @@ private:
 	cinder::Vec3f travelBounds;
 	cinder::Color mGroundColor;
 	cinder::Color mSunColor;
+	// Zoom to black
+	bool mZoomToBlack;
+	cinder::Vec3f mZoomTarget;
+	cinder::gl::Texture texBlack;
 	
 	void drawTrees();
 	void initGroundMesh();
 	void initTreeMesh();
 	void addTree(const cinder::Vec3f& treePos, const cinder::Vec2f& treeScale, const cinder::Vec2f& texOffset, bool flipX);	
+	void toggleZoomToBlack();
 };
 
 
