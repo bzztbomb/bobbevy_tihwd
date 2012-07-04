@@ -42,7 +42,8 @@ private:
 	SceneState mSceneState;
 	TreeLayer mTreeLayer;
 	IntroLight mIntroLight;
-	SkeletonParticles mSkeletonParticles;
+	SkeletonParticles mCloseSwarm;
+	SkeletonParticles mFarSwarm;
 
 	gl::Texture texBlackout;
 };
@@ -88,8 +89,12 @@ void bobbevyApp::setup()
 	mIntroLight.setup(&mSceneState);
 	mIntroLight.setEnabled(true);	
 
-	mSkeletonParticles.setup(&mSceneState);
-	mSkeletonParticles.setEnabled(true);	
+    mCloseSwarm.setName("near");
+    mCloseSwarm.setup(&mSceneState);
+    mCloseSwarm.followUser(KinectWrapper::utClosest);
+    mFarSwarm.setName("far");
+    mFarSwarm.setup(&mSceneState);
+    mFarSwarm.followUser(KinectWrapper::utFurthest);
 }
 
 void bobbevyApp::keyDown( KeyEvent event )
@@ -118,13 +123,17 @@ void bobbevyApp::keyDown( KeyEvent event )
 			mIntroLight.setEnabled(!mIntroLight.getEnabled());
 			break;			
 		case KeyEvent::KEY_b:
-			mSkeletonParticles.setEnabled(!mSkeletonParticles.getEnabled());
+			mCloseSwarm.setEnabled(!mCloseSwarm.getEnabled());
 			break;			
+        case KeyEvent::KEY_n:
+            mFarSwarm.setEnabled(!mFarSwarm.getEnabled());
+            break;
 	}			
 	mTreeLayer.keyDown(event);
 	mIntroLight.keyDown(event);
 	mKinect.keyDown(event);
-	mSkeletonParticles.keyDown(event);
+	mCloseSwarm.keyDown(event);
+    mFarSwarm.keyDown(event);
 }
 
 void bobbevyApp::mouseDown( MouseEvent event )
@@ -137,17 +146,22 @@ void bobbevyApp::update()
 	mKinect.update();
 	mTreeLayer.update();
 	mIntroLight.update();
-	mSkeletonParticles.update();
+	mCloseSwarm.update();
+    mFarSwarm.update();
 }
 
 void bobbevyApp::draw()
 {
 	// clear out the window with black
 	gl::clear( Color( 0, 0, 0 ) ); 
+
+	if (mDebugDraw)
+		mKinect.draw();
 	
 	mTreeLayer.draw();
 	mIntroLight.draw();
-	mSkeletonParticles.draw();
+    mFarSwarm.draw();
+	mCloseSwarm.draw();
 
 	if (mSceneState.mBlackoutAmount > 0.0)
 	{
@@ -155,9 +169,6 @@ void bobbevyApp::draw()
 		gl::draw(texBlackout, getWindowBounds());
 		gl::color( cinder::ColorA(1, 1, 1, 1) );
 	}
-
-	if (mDebugDraw)
-		mKinect.draw();
 	
 	// Params
 	if (mShowParams)

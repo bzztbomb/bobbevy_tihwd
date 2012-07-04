@@ -23,6 +23,7 @@ class SkeletonParticles : public SceneLayer
 public:
 	SkeletonParticles();
 
+    void setName(const std::string& name);
     void followUser(KinectWrapper::UserToken ut);
     
 	// SceneLayer
@@ -31,6 +32,7 @@ public:
 	virtual void update();
 	virtual void draw();
 private:
+    std::string mName;
 	SceneState* mManager;
     // User
     KinectWrapper::UserToken mUserToken;

@@ -47,12 +47,17 @@ void SkeletonParticles::followUser(KinectWrapper::UserToken ut)
     mUserToken = ut;
 }
 
+void SkeletonParticles::setName(const std::string& name)
+{
+    mName = name;
+}
+
 void SkeletonParticles::setup(SceneState* manager)
 {
 	mManager = manager;
 	mManager->mParams.addSeparator();
-	mManager->mParams.addParam("Max Particle Vel", &mMaxVel);
-	mManager->mParams.addParam("Swarm", &mSwarm);
+	mManager->mParams.addParam(mName + ": Max Particle Vel", &mMaxVel);
+	mManager->mParams.addParam(mName + ": Swarm", &mSwarm);
 	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
 	{
 		resetParticle(i);
