@@ -23,7 +23,9 @@ SkeletonParticles::SkeletonParticles() :
 	mMaxVel(20.0f),
 	mAfterTargetAccel(2.0f),
 	mSwarm(true),
-    mUserToken(KinectWrapper::utClosest)
+    mUserToken(KinectWrapper::utClosest),
+    mColor(1,1,1),
+    mAgeMax(60.0f)
 {
 	mDirVectors[0] = Vec3f(-1.0f, 0.0f, 0.0f);
 	mDirVectors[1] = Vec3f(1.0f, 0.0f, 0.0f);
@@ -37,6 +39,7 @@ SkeletonParticles::SkeletonParticles() :
 		mRandOffset.push_back(randVec3f());
 		mRandOffset[i].z = 0;
 		mRandOffset[i].normalize();
+        mAge.push_back(0.0f);
 	}
 	for (int i = 0; i < 6; i++)
 		mRandTarg[i] = randVec3f() * randFloat(0.1, 0.9);
@@ -57,7 +60,7 @@ void SkeletonParticles::setup(SceneState* manager)
 	mManager = manager;
 	mManager->mParams.addSeparator();
 	mManager->mParams.addParam(mName + ": Max Particle Vel", &mMaxVel);
-	mManager->mParams.addParam(mName + ": Swarm", &mSwarm);
+	mManager->mParams.addParam(mName + ": Max Age", &mAgeMax);
 	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
 	{
 		resetParticle(i);
@@ -88,8 +91,10 @@ void SkeletonParticles::resetParticle(int index)
 
 void SkeletonParticles::updateSwarm()
 {
+    Rand r;
 	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
 	{
+        mAge[i] += r.nextFloat(0.5, 1.0f);
 		Vec3f targetPos = mNodePos[mWhichNode[i]] + mRandOffset[i] * mMaxVel*8;
 		Vec3f accel = targetPos - mParticlePos[i];
 		accel.safeNormalize();
@@ -97,49 +102,12 @@ void SkeletonParticles::updateSwarm()
 		mParticleVel[i].limit(mMaxVel);
 		mParticlePos[i] += mParticleVel[i];
 		Vec3f l = mNodePos[mWhichNode[i]] - mParticlePos[i];
-		if (l.lengthSquared() < (mMaxVel*8)*(mMaxVel*8))
+		if (mAge[i] > mAgeMax)
 		{
-			mWhichNode[i] = (mWhichNode[i]+1)%6;
+            mAge[i] = 0;
+			mWhichNode[i] = r.nextInt(6);
 		}
-		// Check for off screen and respawn
-//		float x = mParticlePos[i].x;
-//		float y = mParticlePos[i].y;
-		//		if (x < 0 || x > getWindowWidth() || y < 0 || y > getWindowHeight())
-		//			resetParticle(i);		
 	}
-}
-
-void SkeletonParticles::updateHose()
-{
-	// Calculate new particle velocities and positions
-	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
-	{
-		Vec3f targetPoint = mTargetPoint + mRandOffset[i] * mMaxVel;
-		if (!mReachedTarget[i])
-		{
-			Vec3f len = targetPoint - mParticlePos[i];
-			Vec3f accel = len;
-			accel.safeNormalize();
-			mParticleVel[i] += accel*mMaxVel*0.3f;
-			mParticleVel[i].limit(mMaxVel);
-		} else {
-			int dir = i%2 ? 0 : 1;
-			mParticleVel[i] += mDirVectors[dir]*mAfterTargetAccel;
-			mParticleVel[i].limit(mMaxVel*2);
-		}
-		mParticlePos[i] += mParticleVel[i];
-		if (!mReachedTarget[i])
-		{
-			Vec3f l = targetPoint - mParticlePos[i];
-			mReachedTarget[i] = (l.lengthSquared() < (mMaxVel*8)*(mMaxVel*8));
-		} else {
-			// Check for off screen and respawn
-			float x = mParticlePos[i].x;
-			float y = mParticlePos[i].y;
-			if (x < 0 || x > getWindowWidth() || y < 0 || y > getWindowHeight())
-				resetParticle(i);
-		}
-	}	
 }
 
 void SkeletonParticles::update()
@@ -168,10 +136,7 @@ void SkeletonParticles::update()
 			mDirVectors[i] *= mAfterTargetAccel;
 		}
 	}
-	if (mSwarm)
-		updateSwarm();
-	else
-		updateHose();
+    updateSwarm();
 }
 
 void SkeletonParticles::draw()
@@ -181,12 +146,10 @@ void SkeletonParticles::draw()
 	gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
 	gl::disableAlphaBlending();
 	glDisable(GL_TEXTURE_2D);
+    Rand r;
 	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
 	{
-		if (mReachedTarget[i])
-			gl::color(cinder::ColorA(1, 0, 0, 1));
-		else
-			gl::color(cinder::ColorA(1, 1, 1, 1));
+        gl::color(mColor * r.nextFloat(0.7, 1.0));
 		gl::drawSolidRect(Rectf(mParticlePos[i].x-2, mParticlePos[i].y-2,
 								mParticlePos[i].x+2, mParticlePos[i].y+2));
 	}

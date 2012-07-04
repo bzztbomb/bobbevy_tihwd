@@ -14,6 +14,7 @@
 #include "bbTreeLayer.h"
 #include "bbIntroLight.h"
 #include "bbParticles.h"
+#include "bbParticleField.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -44,6 +45,7 @@ private:
 	IntroLight mIntroLight;
 	SkeletonParticles mCloseSwarm;
 	SkeletonParticles mFarSwarm;
+    ParticleField mField;
 
 	gl::Texture texBlackout;
 };
@@ -95,6 +97,8 @@ void bobbevyApp::setup()
     mFarSwarm.setName("far");
     mFarSwarm.setup(&mSceneState);
     mFarSwarm.followUser(KinectWrapper::utFurthest);
+    mField.setup(&mSceneState);
+    mField.setEnabled(true);
 }
 
 void bobbevyApp::keyDown( KeyEvent event )
@@ -128,12 +132,16 @@ void bobbevyApp::keyDown( KeyEvent event )
         case KeyEvent::KEY_n:
             mFarSwarm.setEnabled(!mFarSwarm.getEnabled());
             break;
+        case KeyEvent::KEY_m:
+            mField.setEnabled(!mField.getEnabled());
+            break;
 	}			
 	mTreeLayer.keyDown(event);
 	mIntroLight.keyDown(event);
 	mKinect.keyDown(event);
 	mCloseSwarm.keyDown(event);
     mFarSwarm.keyDown(event);
+    mField.keyDown(event);
 }
 
 void bobbevyApp::mouseDown( MouseEvent event )
@@ -148,20 +156,19 @@ void bobbevyApp::update()
 	mIntroLight.update();
 	mCloseSwarm.update();
     mFarSwarm.update();
+    mField.update();
 }
 
 void bobbevyApp::draw()
 {
 	// clear out the window with black
 	gl::clear( Color( 0, 0, 0 ) ); 
-
-	if (mDebugDraw)
-		mKinect.draw();
 	
 	mTreeLayer.draw();
 	mIntroLight.draw();
     mFarSwarm.draw();
 	mCloseSwarm.draw();
+    mField.draw();
 
 	if (mSceneState.mBlackoutAmount > 0.0)
 	{
@@ -169,6 +176,9 @@ void bobbevyApp::draw()
 		gl::draw(texBlackout, getWindowBounds());
 		gl::color( cinder::ColorA(1, 1, 1, 1) );
 	}
+
+	if (mDebugDraw)
+		mKinect.draw();
 	
 	// Params
 	if (mShowParams)
