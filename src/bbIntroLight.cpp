@@ -26,7 +26,8 @@ IntroLight::IntroLight() :
 	mSourcePoint(400, 0, 0),
 	mRevealOffset(0.0f),
 	mTargetLightSize(100.0f),
-	mState(lsStart)
+	mState(lsStart),
+    mUserToken(KinectWrapper::utFurthest)
 {
 }
 
@@ -77,7 +78,7 @@ float lerp(float a, float b, float t)
 
 void IntroLight::update()
 {
-	Blob* user = mManager->mKinect->getFurtherUser();
+	Blob* user = mManager->mKinect->getUser(mUserToken);
 	if (user != NULL)
 	{        
         mPointFilter.push_back(user->mCentroid.x);
@@ -125,4 +126,9 @@ void IntroLight::draw()
 		gl::drawSolidRect(Rectf(xRight - lightSize, 0, xRight + lightSize, getWindowHeight()));
 		mShader.unbind();
 	}
+}
+
+void IntroLight::followUser(KinectWrapper::UserToken ut)
+{
+    mUserToken = ut;
 }

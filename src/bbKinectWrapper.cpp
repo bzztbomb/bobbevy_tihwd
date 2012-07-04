@@ -228,16 +228,20 @@ void KinectWrapper::draw()
 	}
 }
 
-Blob* KinectWrapper::getClosestUser()
+Blob* KinectWrapper::getUser(UserToken which)
 {
-	if (mBlobs.size() > 0)
-		return &(*mBlobs.rbegin());
-	return NULL;
-}
-
-Blob* KinectWrapper::getFurtherUser()
-{
-	if (mBlobs.size() > 0)
-		return &(*mBlobs.begin());
-	return NULL;	
+    switch (which)
+    {
+        case utClosest:
+            if (mBlobs.size() > 0)
+                return &(*mBlobs.rbegin());
+            break;
+        case utFurthest :
+            if (mBlobs.size() > 0)
+                return &(*mBlobs.begin());            
+            break;
+        default:
+            return NULL;
+    }
+    return NULL;
 }

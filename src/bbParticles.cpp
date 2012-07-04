@@ -22,7 +22,8 @@ SkeletonParticles::SkeletonParticles() :
 	mTargetPoint(300.0f, 300.0f, 0.0f),
 	mMaxVel(20.0f),
 	mAfterTargetAccel(2.0f),
-	mSwarm(true)
+	mSwarm(true),
+    mUserToken(KinectWrapper::utClosest)
 {
 	mDirVectors[0] = Vec3f(-1.0f, 0.0f, 0.0f);
 	mDirVectors[1] = Vec3f(1.0f, 0.0f, 0.0f);
@@ -39,6 +40,11 @@ SkeletonParticles::SkeletonParticles() :
 	}
 	for (int i = 0; i < 6; i++)
 		mRandTarg[i] = randVec3f() * randFloat(0.1, 0.9);
+}
+
+void SkeletonParticles::followUser(KinectWrapper::UserToken ut)
+{
+    mUserToken = ut;
 }
 
 void SkeletonParticles::setup(SceneState* manager)
@@ -137,7 +143,7 @@ void SkeletonParticles::update()
 		return;
 	
 	// Calc target point, left and right vectors
-	Blob* user = mManager->mKinect->getClosestUser();
+	Blob* user = mManager->mKinect->getUser(mUserToken);
 	if (user != NULL)
 	{
 		float r = sqrt(user->mContourArea) / 2.0f;

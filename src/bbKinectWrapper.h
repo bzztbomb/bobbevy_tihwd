@@ -31,13 +31,18 @@ struct Blob {
 class KinectWrapper
 {
 public:
+    enum UserToken
+    {
+        utClosest,
+        utFurthest
+    };
+
 	void setup(cinder::params::InterfaceGl& params);
 	void update();
 	void keyDown( cinder::app::KeyEvent event );
 	void draw();
 
-	Blob* getClosestUser();
-	Blob* getFurtherUser();
+    Blob* getUser(UserToken which);
 public:
 	// Kinect interface
 	bool mEnabled;

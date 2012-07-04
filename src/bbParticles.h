@@ -15,18 +15,26 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/GlslProg.h"
+#include "bbKinectWrapper.h"
 
-#define NUM_SKELETON_PARTICLES 5000
+#define NUM_SKELETON_PARTICLES 2000
 class SkeletonParticles : public SceneLayer
 {
 public:
 	SkeletonParticles();
-	virtual void setup(SceneState* manager);
+
+    void followUser(KinectWrapper::UserToken ut);
+    
+	// SceneLayer
+    virtual void setup(SceneState* manager);
 	virtual void keyDown( cinder::app::KeyEvent event );
 	virtual void update();
 	virtual void draw();
 private:
 	SceneState* mManager;
+    // User
+    KinectWrapper::UserToken mUserToken;
+    
 	cinder::Vec3f mTargetPoint;
 	cinder::Vec3f mDirVectors[2];
 	std::vector<cinder::Vec3f> mParticlePos;

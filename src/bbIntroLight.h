@@ -16,18 +16,22 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/GlslProg.h"
+#include "bbKinectWrapper.h"
 
 class IntroLight : public SceneLayer
 {
 public:
 	IntroLight();
+
+    void reveal();
+    void followUser(KinectWrapper::UserToken ut);
+    
+    // SceneLayer
 	virtual void setup(SceneState* manager);
 	virtual void keyDown( cinder::app::KeyEvent event );
 	virtual void update();
 	virtual void draw();
 	virtual void setEnabled(bool e) { mEnabled = e; mState = lsStart; mLightSize = 0.0f; }
-	
-	void reveal();
 private:
     static const int smMedianFilterSize;
     
@@ -45,6 +49,7 @@ private:
 	cinder::Vec3f mSourcePoint;
     std::list<float> mPointFilter;
 	cinder::Anim<float> mRevealOffset;
+    KinectWrapper::UserToken mUserToken;
 };
 
 #endif
