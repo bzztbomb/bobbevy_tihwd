@@ -187,8 +187,8 @@ void SkeletonParticles::draw()
 			gl::color(cinder::ColorA(1, 0, 0, 1));
 		else
 			gl::color(cinder::ColorA(1, 1, 1, 1));
-		gl::drawSolidRect(Rectf(mParticlePos[i].x-5, mParticlePos[i].y-5,
-								mParticlePos[i].x+5, mParticlePos[i].y+5));
+		gl::drawSolidRect(Rectf(mParticlePos[i].x-2, mParticlePos[i].y-2,
+								mParticlePos[i].x+2, mParticlePos[i].y+2));
 	}
 	gl::enableAlphaBlending();
 }

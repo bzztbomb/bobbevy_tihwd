@@ -17,7 +17,8 @@
 #include "cinder/gl/GlslProg.h"
 #include "bbKinectWrapper.h"
 
-#define NUM_SKELETON_PARTICLES 2000
+#define NUM_SKELETON_PARTICLES 200
+
 class SkeletonParticles : public SceneLayer
 {
 public:
