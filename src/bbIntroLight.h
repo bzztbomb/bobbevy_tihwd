@@ -10,6 +10,7 @@
 #ifndef BBINTROLIGHT_H_
 #define BBINTROLIGHT_H_
 
+#include <list>
 #include "sceneLayer.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -28,6 +29,8 @@ public:
 	
 	void reveal();
 private:
+    static const int smMedianFilterSize;
+    
 	enum LightState {
 		lsStart,
 		lsReveal,
@@ -40,6 +43,7 @@ private:
 	float mTargetLightSize;
 	cinder::Anim<float> mLightSizeOffset;
 	cinder::Vec3f mSourcePoint;
+    std::list<float> mPointFilter;
 	cinder::Anim<float> mRevealOffset;
 };
 

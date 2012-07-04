@@ -13,6 +13,8 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+const int IntroLight::smMedianFilterSize = 7;
+
 //
 // IntroLight
 //
@@ -77,11 +79,16 @@ void IntroLight::update()
 {
 	Blob* user = mManager->mKinect->getFurtherUser();
 	if (user != NULL)
-	{
-		mSourcePoint.x = lerp(mSourcePoint.x, user->mCentroid.x, 0.1);
-		mSourcePoint.y = lerp(mSourcePoint.y, user->mCentroid.y, 0.1);
-	} else {
-		mSourcePoint.x = getWindowWidth() + 1000;
+	{        
+        mPointFilter.push_back(user->mCentroid.x);
+        while (mPointFilter.size() > smMedianFilterSize)
+            mPointFilter.erase(mPointFilter.begin());
+        std::vector<float> sorted;
+        for (list<float>::iterator i = mPointFilter.begin(); i != mPointFilter.end(); i++)
+            sorted.push_back(*i);
+        std::sort(sorted.begin(), sorted.end());
+		mSourcePoint.x = lerp(mSourcePoint.x, sorted[sorted.size()/2], 0.75);
+		mSourcePoint.y = 0; //lerp(mSourcePoint.y, user->mCentroid.y, 0.1);        
 	}
 	if (mState == lsReveal)
 	{
