@@ -101,18 +101,21 @@ void ParticleField::update()
         }
         // Away from blobs!
         {
-            int x = constrain(mParticlePos[i].x / xs, 0.0f, 639.0f);
-            int y = constrain(mParticlePos[i].y / ys, 0.0f, 479.0f);
-            if (contour->at<uint8_t>(cv::Point(x, y)) > 0) 
+            if (contour->data != NULL)
             {
-                for (int j = 0; j < blobs.size(); j++)
+                int x = constrain(mParticlePos[i].x / xs, 0.0f, 639.0f);
+                int y = constrain(mParticlePos[i].y / ys, 0.0f, 479.0f);
+                if (contour->at<uint8_t>(cv::Point(x, y)) > 0) 
                 {
-                    if (blobs[j].mBounds.contains(Vec2f(mParticlePos[i].x, mParticlePos[i].y)))
+                    for (int j = 0; j < blobs.size(); j++)
                     {
-                        Vec3f diff = Vec3f(blobs[j].mCentroid.x,blobs[j].mCentroid.y, 0)  - mParticlePos[i];
-                        diff.normalize();
-                        diff *= -mAvoidVel;
-                        mParticleVel[i] += diff;
+                        if (blobs[j].mBounds.contains(Vec2f(mParticlePos[i].x, mParticlePos[i].y)))
+                        {
+                            Vec3f diff = Vec3f(blobs[j].mCentroid.x,blobs[j].mCentroid.y, 0)  - mParticlePos[i];
+                            diff.normalize();
+                            diff *= -mAvoidVel;
+                            mParticleVel[i] += diff;
+                        }
                     }
                 }
             }

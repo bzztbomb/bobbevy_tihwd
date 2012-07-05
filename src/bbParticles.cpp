@@ -14,18 +14,29 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+
+Vec3f dumbRand()
+{
+    Vec3f r = randVec3f();
+    r.z = 0;
+    r.normalize();
+    return r;
+}
+
 //
 // SkeletonParticles
 //
 SkeletonParticles::SkeletonParticles() :
 	mManager(NULL),
 	mTargetPoint(300.0f, 300.0f, 0.0f),
-	mMaxVel(20.0f),
+	mMaxVel(4.0f),
 	mAfterTargetAccel(2.0f),
 	mSwarm(true),
     mUserToken(KinectWrapper::utClosest),
     mColor(1,1,1),
-    mAgeMax(60.0f)
+    mDrag(0.9f),
+    mTargetDrag(1.0f),
+    mDistanceThresh(40.0f)
 {
 	mDirVectors[0] = Vec3f(-1.0f, 0.0f, 0.0f);
 	mDirVectors[1] = Vec3f(1.0f, 0.0f, 0.0f);
@@ -36,13 +47,14 @@ SkeletonParticles::SkeletonParticles() :
 		mParticleVel.push_back(zero);
 		mReachedTarget.push_back(false);
 		mWhichNode.push_back(i%6);
-		mRandOffset.push_back(randVec3f());
+		mRandOffset.push_back(dumbRand());
 		mRandOffset[i].z = 0;
 		mRandOffset[i].normalize();
-        mAge.push_back(0.0f);
 	}
 	for (int i = 0; i < 6; i++)
-		mRandTarg[i] = randVec3f() * randFloat(0.1, 0.9);
+    {
+		mRandTarg[i] = dumbRand() * randFloat(0.1, 0.9);
+    }
 }
 
 void SkeletonParticles::followUser(KinectWrapper::UserToken ut)
@@ -60,7 +72,11 @@ void SkeletonParticles::setup(SceneState* manager)
 	mManager = manager;
 	mManager->mParams.addSeparator();
 	mManager->mParams.addParam(mName + ": Max Particle Vel", &mMaxVel);
-	mManager->mParams.addParam(mName + ": Max Age", &mAgeMax);
+	mManager->mParams.addParam(mName + ": Drag", &mDrag, "step=0.1");
+	mManager->mParams.addParam(mName + ": TargetDrag", &mTargetDrag, "step=0.1");
+	mManager->mParams.addParam(mName + ": DistanceThresh", &mDistanceThresh);
+	mManager->mParams.addParam(mName + ": Color", &mColor);
+
 	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
 	{
 		resetParticle(i);
@@ -94,19 +110,18 @@ void SkeletonParticles::updateSwarm()
     Rand r;
 	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
 	{
-        mAge[i] += r.nextFloat(0.5, 1.0f);
-		Vec3f targetPos = mNodePos[mWhichNode[i]] + mRandOffset[i] * mMaxVel*8;
+		Vec3f targetPos = mNodePos[mWhichNode[i]]; // + mRandOffset[i] * mMaxVel*8;
 		Vec3f accel = targetPos - mParticlePos[i];
 		accel.safeNormalize();
-		mParticleVel[i] += accel*mMaxVel*0.3f;
-		mParticleVel[i].limit(mMaxVel);
+		mParticleVel[i] += accel*mMaxVel;
 		mParticlePos[i] += mParticleVel[i];
 		Vec3f l = mNodePos[mWhichNode[i]] - mParticlePos[i];
-		if (mAge[i] > mAgeMax)
+		if (l.lengthSquared() < (mDistanceThresh*mDistanceThresh))
 		{
-            mAge[i] = 0;
+            mParticleVel[i] *= mTargetDrag;
 			mWhichNode[i] = r.nextInt(6);
 		}
+        mParticleVel[i] *= mDrag;
 	}
 }
 

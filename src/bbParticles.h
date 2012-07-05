@@ -49,10 +49,11 @@ private:
 	// Swarm
 	std::vector<int> mWhichNode;
 	std::vector<cinder::Vec3f> mRandOffset;
-    std::vector<float> mAge;
-    float mAgeMax;
 	cinder::Vec3f mRandTarg[6];
 	cinder::Vec3f mNodePos[6];
+    float mDrag;
+    float mTargetDrag;
+    float mDistanceThresh;
     
     cinder::Color mColor;
 	
