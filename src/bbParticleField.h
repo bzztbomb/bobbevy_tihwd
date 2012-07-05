@@ -37,6 +37,8 @@ private:
     cinder::Rand mRand;
     
     float mGoalVel;
+    float mAvoidVel;
+    float mGlobalDecay;
     float mTargetThreshold;
     float mTargetDecay;
     

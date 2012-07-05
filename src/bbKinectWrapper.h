@@ -22,6 +22,7 @@ struct Blob {
 	cinder::Vec2f mCentroid;
 	float mZDist;
 	// Bounds
+    cinder::Rectf mBounds;
 	cinder::Vec3f mLeftMost;
 	cinder::Vec3f mRightMost;
 	cinder::Vec3f mTopMost;
@@ -43,11 +44,14 @@ public:
 	void draw();
 
     Blob* getUser(UserToken which);
+    std::vector<Blob> getUsers();
+    
+    cv::Mat* getContourMat() { return &mContourMat; }
 public:
 	// Kinect interface
 	bool mEnabled;
 	cinder::Kinect	mKinect;
-	cinder::gl::Texture		mColorTexture, mDepthTexture;
+	cinder::gl::Texture		mColorTexture, mDepthTexture;    
 
 	// Image processing
 	int mStepFrom;
@@ -59,6 +63,7 @@ public:
 	// Debug
 	cinder::gl::Texture	mContourTexture;
 	cv::Mat mContourMat;
+    bool mDrawContour;
 	
 	// Blob detection and "user tracking"
 	static int smMAX_BLOBS;	

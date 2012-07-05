@@ -8,6 +8,7 @@
 
 #include "bbParticleField.h"
 #include "cinder/Rand.h"
+#include "CinderOpenCV.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -17,9 +18,11 @@ ParticleField::ParticleField() :
     mSceneState(NULL),
     mNumParticles(200),
     mColor(1,1,1),
-    mGoalVel(0.01),
-    mTargetThreshold(10),
-    mTargetDecay(0.3)
+    mGoalVel(0.15f),
+    mAvoidVel(1.0f),
+    mGlobalDecay(0.90f),
+    mTargetThreshold(10.0f),
+    mTargetDecay(0.3f)
 {
 }
 
@@ -29,7 +32,10 @@ void ParticleField::setup(SceneState* manager)
     mSceneState = manager;
 	mSceneState->mParams.addSeparator();
 	mSceneState->mParams.addParam("Num Particles", &mNumParticles);
+    mSceneState->mParams.addParam("FieldColor", &mColor);
 	mSceneState->mParams.addParam("Goal vel", &mGoalVel, "step=0.01");
+	mSceneState->mParams.addParam("AvoidVel", &mAvoidVel, "step=0.01");
+	mSceneState->mParams.addParam("GlobalDecay", &mGlobalDecay, "step=0.01");
 	mSceneState->mParams.addParam("TargetThresh", &mTargetThreshold);
 	mSceneState->mParams.addParam("TargetDecay", &mTargetDecay, "step=0.01");
     
@@ -67,19 +73,46 @@ void ParticleField::update()
         initField();    
     
     Rand r;
+    std::vector<Blob> blobs = mSceneState->mKinect->getUsers();
+    cv::Mat* contour = mSceneState->mKinect->getContourMat();
+
+    // BTRTODO: FIX THIS COORDINATE HACK!
+    float xs = (float) getWindowWidth() / 640.0f;
+    float ys = (float) getWindowHeight() / 480.0f;
     
 	for (int i = 0; i < mParticlePos.size(); i++)
 	{
+        mParticleVel[i] *= mGlobalDecay;
         // Seek towards goal
-        Vec3f diff = mParticleGoal[i] - mParticlePos[i];
-        if (diff.lengthSquared() < mTargetThreshold*mTargetThreshold)
         {
-            mParticleGoal[i] = randScreenVec();
-            mParticleVel[i] *= mTargetDecay;
-        } else {
-            diff.normalize();
-            diff *= mGoalVel;
-            mParticleVel[i] += diff;
+            Vec3f diff = mParticleGoal[i] - mParticlePos[i];
+            if (diff.lengthSquared() < mTargetThreshold*mTargetThreshold)
+            {
+                mParticleGoal[i] = randScreenVec();
+                mParticleVel[i] *= mTargetDecay;
+            } else {
+                diff.normalize();
+                diff *= mGoalVel;
+                mParticleVel[i] += diff;
+            }
+        }
+        // Away from blobs!
+        {
+            int x = constrain(mParticlePos[i].x / xs, 0.0f, 639.0f);
+            int y = constrain(mParticlePos[i].y / ys, 0.0f, 479.0f);
+            if (contour->at<uint8_t>(cv::Point(x, y)) > 0) 
+            {
+                for (int j = 0; j < blobs.size(); j++)
+                {
+                    if (blobs[j].mBounds.contains(Vec2f(mParticlePos[i].x, mParticlePos[i].y)))
+                    {
+                        Vec3f diff = Vec3f(blobs[j].mCentroid.x,blobs[j].mCentroid.y, 0)  - mParticlePos[i];
+                        diff.normalize();
+                        diff *= -mAvoidVel;
+                        mParticleVel[i] += diff;
+                    }
+                }
+            }
         }
     }
     // Update pos

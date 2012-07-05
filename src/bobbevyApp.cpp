@@ -168,6 +168,10 @@ void bobbevyApp::draw()
 	mIntroLight.draw();
     mFarSwarm.draw();
 	mCloseSwarm.draw();
+
+	if (mDebugDraw)
+		mKinect.draw();
+    
     mField.draw();
 
 	if (mSceneState.mBlackoutAmount > 0.0)
@@ -177,8 +181,6 @@ void bobbevyApp::draw()
 		gl::color( cinder::ColorA(1, 1, 1, 1) );
 	}
 
-	if (mDebugDraw)
-		mKinect.draw();
 	
 	// Params
 	if (mShowParams)

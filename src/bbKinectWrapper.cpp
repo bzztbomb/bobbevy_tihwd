@@ -30,12 +30,14 @@ void KinectWrapper::setup(params::InterfaceGl& params)
 	mStepFrom = 5;
 	mAreaThreshold = 1000.0f;
 	mInitInitial = true;	
+    mDrawContour = false;
     
 	params.addSeparator("CV Params");
 	params.addParam( "Step from", &mStepFrom, "min=1 max=255" );
 	params.addParam( "Threshold Step Size", &mStepSize, "min=1 max=255" );
     params.addParam( "CV Blur amount", &mBlurAmount, "min=3 max=55" );	
 	params.addParam( "CV area threshold", &mAreaThreshold, "min=1");
+    params.addParam( "Show contour", &mDrawContour);
 }
 
 void KinectWrapper::keyDown( KeyEvent event )
@@ -89,8 +91,8 @@ void KinectWrapper::findBlobs()
 	gray -= mInitial;
 	
 	// Debug texture
-	mContourMat = gray.clone();
-	mContourTexture = fromOcv(mContourMat);
+//	mContourMat = gray.clone();
+//	mContourTexture = fromOcv(mContourMat);
 	
 	mBlobs.clear();
 	float largest = mAreaThreshold;
@@ -98,6 +100,9 @@ void KinectWrapper::findBlobs()
 	{
 		ContourVector vec;
 		cv::threshold( gray, thresh, t, 255, CV_THRESH_BINARY );
+        mContourMat = thresh.clone();
+        mContourTexture = fromOcv(mContourMat);
+
 		cv::findContours( thresh, vec, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE );
 		
 		for( ContourVector::iterator iter = vec.begin(); iter != vec.end(); ++iter )
@@ -119,19 +124,25 @@ void KinectWrapper::findBlobs()
 			}
 		}
 	}
-	
+
+    float xs = (float) getWindowWidth() / 640.0f;
+    float ys = (float) getWindowHeight() / 480.0f;					
 	
 	for (BlobVector::iterator i = mBlobs.begin(); i != mBlobs.end(); i++)
 	{
 		i->mCentroid.x = i->mCentroid.y = 0.0f;
-		i->mLeftMost.x = 10000;
-		i->mRightMost.x = -10000;
-		i->mTopMost.y = 10000;
-		i->mBottomMost.y = -10000;
+        float mag = 10000.0f;
+		i->mLeftMost.x = mag;
+		i->mRightMost.x = -mag;
+		i->mTopMost.y = mag;
+		i->mBottomMost.y = -mag;
+        i->mBounds.x1 = i->mBounds.y1 = mag;
+        i->mBounds.x2 = i->mBounds.y2 = -mag;
 		for (vector<cv::Point>::iterator pt = i->mContourPoints.begin(); pt != i->mContourPoints.end(); ++pt)
 		{			
 			i->mCentroid.x += pt->x;
-			i->mCentroid.y += pt->y;			
+			i->mCentroid.y += pt->y;
+            i->mBounds.include(Vec2f(pt->x * xs, pt->y * ys));
 			if (i->mLeftMost.x > pt->x)
 			{
 				i->mLeftMost.x = pt->x;
@@ -187,12 +198,17 @@ void KinectWrapper::draw()
 	if (!mEnabled)
 		return;
 
+    glDisable(GL_TEXTURE_2D);
 	gl::color(Color(1.0f, 1.0f, 1.0f));
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
-//	if( mContourTexture )
-//		gl::draw( mContourTexture, getWindowBounds() );
-	if( mDepthTexture )
-		gl::draw( mDepthTexture, getWindowBounds() );
+    if (mDrawContour)
+    {
+        if( mContourTexture )
+            gl::draw( mContourTexture, getWindowBounds() );
+    } else {
+        if( mDepthTexture )
+            gl::draw( mDepthTexture, getWindowBounds() );
+    }
 	
 	if (true)
 	{
@@ -223,7 +239,8 @@ void KinectWrapper::draw()
 			}	
 			glEnd();
 			gl::drawSolidCircle(i->mCentroid, 10);
-			c++;			
+            gl::drawStrokedRect(i->mBounds);
+			c++;			            
 		}				
 	}
 }
@@ -244,4 +261,9 @@ Blob* KinectWrapper::getUser(UserToken which)
             return NULL;
     }
     return NULL;
+}
+
+std::vector<Blob> KinectWrapper::getUsers()
+{
+    return mBlobs;
 }
