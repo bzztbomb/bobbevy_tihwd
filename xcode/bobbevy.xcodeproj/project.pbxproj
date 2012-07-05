@@ -19,6 +19,16 @@
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		C805969415A52A8F00A6D7EC /* blackout.png in Resources */ = {isa = PBXBuildFile; fileRef = C805968B15A52A8F00A6D7EC /* blackout.png */; };
+		C805969515A52A8F00A6D7EC /* cinder_app_icon.ico in Resources */ = {isa = PBXBuildFile; fileRef = C805968C15A52A8F00A6D7EC /* cinder_app_icon.ico */; };
+		C805969615A52A8F00A6D7EC /* IntroLightFrag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C805968D15A52A8F00A6D7EC /* IntroLightFrag.glsl */; };
+		C805969715A52A8F00A6D7EC /* IntroLightVert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C805968E15A52A8F00A6D7EC /* IntroLightVert.glsl */; };
+		C805969815A52A8F00A6D7EC /* overlay.png in Resources */ = {isa = PBXBuildFile; fileRef = C805968F15A52A8F00A6D7EC /* overlay.png */; };
+		C805969915A52A8F00A6D7EC /* sun.png in Resources */ = {isa = PBXBuildFile; fileRef = C805969015A52A8F00A6D7EC /* sun.png */; };
+		C805969A15A52A8F00A6D7EC /* tree.png in Resources */ = {isa = PBXBuildFile; fileRef = C805969115A52A8F00A6D7EC /* tree.png */; };
+		C805969B15A52A8F00A6D7EC /* trees.png in Resources */ = {isa = PBXBuildFile; fileRef = C805969215A52A8F00A6D7EC /* trees.png */; };
+		C805969C15A52A8F00A6D7EC /* zoomToBlack.png in Resources */ = {isa = PBXBuildFile; fileRef = C805969315A52A8F00A6D7EC /* zoomToBlack.png */; };
+		C805969E15A52E6900A6D7EC /* FadeFrag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C805969D15A52E6900A6D7EC /* FadeFrag.glsl */; };
 		C811FBCC15A4F41700D036A6 /* bbParticleField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C811FBCB15A4F41700D036A6 /* bbParticleField.cpp */; };
 		C82C9424159F882500AAEDE0 /* Kinect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C82C9423159F882500AAEDE0 /* Kinect.cpp */; };
 		C82C9436159F888100AAEDE0 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C82C9435159F888100AAEDE0 /* IOKit.framework */; };
@@ -47,6 +57,16 @@
 		53E3CDFB0E86099300238D2B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* bobbevy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bobbevy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C805968B15A52A8F00A6D7EC /* blackout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blackout.png; path = ../resources/blackout.png; sourceTree = "<group>"; };
+		C805968C15A52A8F00A6D7EC /* cinder_app_icon.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; name = cinder_app_icon.ico; path = ../resources/cinder_app_icon.ico; sourceTree = "<group>"; };
+		C805968D15A52A8F00A6D7EC /* IntroLightFrag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = IntroLightFrag.glsl; path = ../resources/IntroLightFrag.glsl; sourceTree = "<group>"; };
+		C805968E15A52A8F00A6D7EC /* IntroLightVert.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = IntroLightVert.glsl; path = ../resources/IntroLightVert.glsl; sourceTree = "<group>"; };
+		C805968F15A52A8F00A6D7EC /* overlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = overlay.png; path = ../resources/overlay.png; sourceTree = "<group>"; };
+		C805969015A52A8F00A6D7EC /* sun.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sun.png; path = ../resources/sun.png; sourceTree = "<group>"; };
+		C805969115A52A8F00A6D7EC /* tree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = tree.png; path = ../resources/tree.png; sourceTree = "<group>"; };
+		C805969215A52A8F00A6D7EC /* trees.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = trees.png; path = ../resources/trees.png; sourceTree = "<group>"; };
+		C805969315A52A8F00A6D7EC /* zoomToBlack.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = zoomToBlack.png; path = ../resources/zoomToBlack.png; sourceTree = "<group>"; };
+		C805969D15A52E6900A6D7EC /* FadeFrag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = FadeFrag.glsl; path = ../resources/FadeFrag.glsl; sourceTree = "<group>"; };
 		C811FAFE15A4E62900D036A6 /* AccelEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccelEvent.h; sourceTree = "<group>"; };
 		C811FAFF15A4E62900D036A6 /* App.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = App.h; sourceTree = "<group>"; };
 		C811FB0015A4E62900D036A6 /* AppBasic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppBasic.h; sourceTree = "<group>"; };
@@ -351,6 +371,16 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C805969D15A52E6900A6D7EC /* FadeFrag.glsl */,
+				C805968B15A52A8F00A6D7EC /* blackout.png */,
+				C805968C15A52A8F00A6D7EC /* cinder_app_icon.ico */,
+				C805968D15A52A8F00A6D7EC /* IntroLightFrag.glsl */,
+				C805968E15A52A8F00A6D7EC /* IntroLightVert.glsl */,
+				C805968F15A52A8F00A6D7EC /* overlay.png */,
+				C805969015A52A8F00A6D7EC /* sun.png */,
+				C805969115A52A8F00A6D7EC /* tree.png */,
+				C805969215A52A8F00A6D7EC /* trees.png */,
+				C805969315A52A8F00A6D7EC /* zoomToBlack.png */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 				00CCAF14116A9FEE008396D5 /* CinderApp.icns */,
 			);
@@ -796,6 +826,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				00CCAF15116A9FEE008396D5 /* CinderApp.icns in Resources */,
+				C805969415A52A8F00A6D7EC /* blackout.png in Resources */,
+				C805969515A52A8F00A6D7EC /* cinder_app_icon.ico in Resources */,
+				C805969615A52A8F00A6D7EC /* IntroLightFrag.glsl in Resources */,
+				C805969715A52A8F00A6D7EC /* IntroLightVert.glsl in Resources */,
+				C805969815A52A8F00A6D7EC /* overlay.png in Resources */,
+				C805969915A52A8F00A6D7EC /* sun.png in Resources */,
+				C805969A15A52A8F00A6D7EC /* tree.png in Resources */,
+				C805969B15A52A8F00A6D7EC /* trees.png in Resources */,
+				C805969C15A52A8F00A6D7EC /* zoomToBlack.png in Resources */,
+				C805969E15A52E6900A6D7EC /* FadeFrag.glsl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

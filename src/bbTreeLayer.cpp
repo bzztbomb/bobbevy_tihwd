@@ -62,7 +62,8 @@ TreeLayer::TreeLayer() :
 	mTreeRadius(1.0f),
 	mTreeSizeVariance(2.0f),
 	mZoomToBlack(false),
-    mFboActive(true)
+    mFboActive(true),
+    mFadeAmount(1.0f)
 {
 	resetParams();
 }
@@ -70,6 +71,7 @@ TreeLayer::TreeLayer() :
 void TreeLayer::setup(SceneState* manager)
 {
 	mManager = manager;
+    manager->mParams.addSeparator();
 	manager->mParams.addParam("UpdateTrees", &mUpdateTrees);
 	manager->mParams.addParam("Num Trees", &mNumTrees, "min=0.0 max=1000.0 step=5");
 	manager->mParams.addParam("TreePanSpeedX", &mTreePanSpeed.value().x, "min=-10.0 max=10.0 step=0.0005 keyIncr=x keyDecr=X");
@@ -81,6 +83,7 @@ void TreeLayer::setup(SceneState* manager)
 	manager->mParams.addParam("SunColor", &mSunColor);
 	manager->mParams.addParam("ZoomTarget", &mZoomTarget);
 	manager->mParams.addParam("FboActive", &mFboActive);
+    manager->mParams.addParam("FadeAmount", &mFadeAmount.value());
 	
 	mTreeCam.lookAt(Vec3f(0,0,0), mTreeCam.getViewDirection(), -mTreeCam.getWorldUp());
 	
@@ -90,16 +93,14 @@ void TreeLayer::setup(SceneState* manager)
 	hiQFormat.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	hiQFormat.setMagFilter(GL_LINEAR_MIPMAP_LINEAR);
 	
-	texTree = gl::Texture(loadImage(loadAsset ("trees.png")), hiQFormat);
-	texSun = gl::Texture(loadImage(loadAsset("sun.png")), hiQFormat);
-	texOverlay = gl::Texture(loadImage(loadAsset("overlay.png")), hiQFormat);
-	texBlack = gl::Texture(loadImage(loadAsset("zoomToBlack.png")), hiQFormat);
+	texTree = gl::Texture(loadImage(loadResource ("trees.png")), hiQFormat);
+	texSun = gl::Texture(loadImage(loadResource("sun.png")), hiQFormat);
+	texOverlay = gl::Texture(loadImage(loadResource("overlay.png")), hiQFormat);
+	texBlack = gl::Texture(loadImage(loadResource("zoomToBlack.png")), hiQFormat);
 
 	gl::Fbo::Format format;
 	mFbo = gl::Fbo(getWindowWidth(), getWindowHeight(), format);
-	
-//    mNormalShader = gl::GlslProg(loadResource(RES_PASSTHRU_VERT_ID), loadResource(RES_NORMAL_FRAG_ID));
-
+    mFadeShader = gl::GlslProg(loadResource("IntroLightVert.glsl"), loadResource("FadeFrag.glsl"));
     
 	initGroundMesh();
 	initTreeMesh();	
@@ -271,7 +272,10 @@ void TreeLayer::draw()
     {
         gl::color( cinder::ColorA(1, 1, 1, 1) );
         gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
-        hackdraw(mFbo.getTexture(), mFbo.getTexture().getCleanBounds(), mFbo.getTexture().getCleanBounds());        
+//        mFadeShader.bind();
+//        mFadeShader.uniform("fadeAmount", mFadeAmount);
+        hackdraw(mFbo.getTexture(), mFbo.getTexture().getCleanBounds(), mFbo.getTexture().getCleanBounds());
+//        mFadeShader.unbind();
     }
 }
 

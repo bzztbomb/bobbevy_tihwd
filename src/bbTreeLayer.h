@@ -56,6 +56,8 @@ private:
     // Fade in
     bool mFboActive;
     cinder::gl::Fbo mFbo;
+    cinder::gl::GlslProg mFadeShader;
+    cinder::Anim<float> mFadeAmount;
 	
 	void drawTrees();
 	void initGroundMesh();

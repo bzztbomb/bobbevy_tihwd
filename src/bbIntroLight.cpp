@@ -37,7 +37,7 @@ void IntroLight::setup(SceneState* manager)
 	mManager->mParams.addParam("LightColor", &mLightColor);
 	mManager->mParams.addParam("LightPos", &mSourcePoint);
 	mManager->mParams.addParam("LightSize", &mLightSize());
-	mShader = gl::GlslProg( loadAsset( "introLightVert.glsl" ), loadAsset( "introLightFrag.glsl" ) );
+	mShader = gl::GlslProg( loadResource( "IntroLightVert.glsl" ), loadResource( "IntroLightFrag.glsl" ) );
 	mManager->mTimeline->apply(&mLightSizeOffset, 4.0f, 2.0f).pingPong(true).infinite(true);
 }
 

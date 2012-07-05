@@ -83,7 +83,7 @@ void bobbevyApp::setup()
 	hiQFormat.setMagFilter(GL_LINEAR_MIPMAP_LINEAR);
 	
 	// Blackout overlay
-	texBlackout = gl::Texture(loadImage(loadAsset("blackout.png")), hiQFormat);
+	texBlackout = gl::Texture(loadImage(loadResource("blackout.png")), hiQFormat);
 	
 	mTreeLayer.setup(&mSceneState);
 	mTreeLayer.setEnabled(true);
