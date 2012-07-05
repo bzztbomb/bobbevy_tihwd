@@ -13,8 +13,11 @@
 #include "sceneLayer.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/gl/Fbo.h"
+#include "cinder/gl/GlslProg.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Camera.h"
+
 
 class TreeLayer : public SceneLayer
 {
@@ -50,6 +53,9 @@ private:
 	bool mZoomToBlack;
 	cinder::Vec3f mZoomTarget;
 	cinder::gl::Texture texBlack;
+    // Fade in
+    bool mFboActive;
+    cinder::gl::Fbo mFbo;
 	
 	void drawTrees();
 	void initGroundMesh();
