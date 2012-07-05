@@ -272,10 +272,13 @@ void TreeLayer::draw()
     {
         gl::color( cinder::ColorA(1, 1, 1, 1) );
         gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
-//        mFadeShader.bind();
-//        mFadeShader.uniform("fadeAmount", mFadeAmount);
+        mFadeShader.bind();
+        mFbo.getTexture().bind();
+        mFadeShader.uniform("tex", 0);
+        mFadeShader.uniform("fadeAmount", mFadeAmount);
         hackdraw(mFbo.getTexture(), mFbo.getTexture().getCleanBounds(), mFbo.getTexture().getCleanBounds());
-//        mFadeShader.unbind();
+        mFadeShader.unbind();
+        mFbo.getTexture().unbind();
     }
 }
 
