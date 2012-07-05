@@ -18,8 +18,8 @@ ParticleField::ParticleField() :
     mSceneState(NULL),
     mNumParticles(200),
     mColor(1,1,1),
-    mGoalVel(0.15f),
-    mAvoidVel(1.0f),
+    mGoalVel(0.65f),
+    mAvoidVel(2.0f),
     mGlobalDecay(0.90f),
     mTargetThreshold(10.0f),
     mTargetDecay(0.3f)
@@ -69,6 +69,9 @@ void ParticleField::keyDown( cinder::app::KeyEvent event )
 
 void ParticleField::update()
 {
+    if (!mEnabled)
+		return;
+
     if (mNumParticles != mParticlePos.size())
         initField();    
     
@@ -119,6 +122,20 @@ void ParticleField::update()
     for (int i = 0; i < mParticlePos.size(); i++)
 	{
         mParticlePos[i] += mParticleVel[i];
+        if ((mParticlePos[i].x > getWindowWidth() || mParticlePos[i].x < 0) || 
+            mParticlePos[i].y > getWindowHeight() || mParticlePos[i].y < 0)
+        {
+            mParticlePos[i] = randScreenVec();
+            mParticleGoal[i] = randScreenVec();
+            mParticleVel[i] = Vec3f(0,0,0); 
+            for (int j = 0; j < blobs.size(); j++)
+            {
+                if (blobs[j].mBounds.contains(Vec2f(mParticlePos[i].x, mParticlePos[i].y)))
+                {
+                    mParticlePos[i] -= Vec3f(blobs[j].mCentroid.x, blobs[j].mCentroid.y, 0.0f);
+                }
+            }
+        }
     }
 }
 

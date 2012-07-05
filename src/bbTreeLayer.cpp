@@ -45,7 +45,7 @@ void TreeLayer::setup(SceneState* manager)
 	manager->mParams.addParam("TreePanSpeedY", &mTreePanSpeed.value().y, "min=-10.0 max=10.0 step=0.0002 keyIncr=y keyDecr=Y");
 	manager->mParams.addParam("TreePanSpeedZ", &mTreePanSpeed.value().z, "min=-10.0 max=10.0 step=0.0005 keyIncr=z keyDecr=Z");
 	manager->mParams.addParam("TreeRadius", &mTreeRadius, "min=0.0 max=100 step=0.1");
-	manager->mParams.addParam("TreeSizeVariance", &mTreeSizeVariance, "min=0.0f max=4.0f step=0.1 keyIncr=v keyDecr=V");
+	manager->mParams.addParam("TreeSizeVariance", &mTreeSizeVariance, "min=0.0f max=4.0f step=0.1");
 	manager->mParams.addParam("GroundColor", &mGroundColor);
 	manager->mParams.addParam("SunColor", &mSunColor);
 	manager->mParams.addParam("ZoomTarget", &mZoomTarget);

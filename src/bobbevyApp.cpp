@@ -132,7 +132,7 @@ void bobbevyApp::keyDown( KeyEvent event )
         case KeyEvent::KEY_n:
             mFarSwarm.setEnabled(!mFarSwarm.getEnabled());
             break;
-        case KeyEvent::KEY_m:
+        case KeyEvent::KEY_v:
             mField.setEnabled(!mField.getEnabled());
             break;
 	}			
