@@ -22,7 +22,9 @@ ParticleField::ParticleField() :
     mAvoidVel(10.0f),
     mGlobalDecay(0.90f),
     mTargetThreshold(10.0f),
-    mTargetDecay(0.3f)
+    mTargetDecay(0.3f),
+    mDropping(false),
+    mDropAccel(0.0f, 1.5f, 0.0f)
 {
 }
 
@@ -63,8 +65,22 @@ void ParticleField::initField()
     }
 }
 
+void ParticleField::setEnabled(bool e)
+{
+    SceneLayer::setEnabled(e);
+    mDropping = false;
+}
+
 void ParticleField::keyDown( cinder::app::KeyEvent event )
 {
+	if (!mEnabled)
+		return;
+    switch( event.getChar() )
+	{
+		case KeyEvent::KEY_m:
+            mDropping = true;
+            break;
+    }    
 }
 
 void ParticleField::update()
@@ -74,6 +90,12 @@ void ParticleField::update()
 
     if (mNumParticles != mParticlePos.size())
         initField();    
+    
+    if (mDropping)
+    {
+        updateDrop();
+        return;        
+    }
     
     Rand r;
     std::vector<Blob> blobs = mSceneState->mKinect->getUsers();
@@ -140,6 +162,20 @@ void ParticleField::update()
             }
         }
     }
+}
+
+void ParticleField::updateDrop()
+{
+    bool particleIn = false;
+	for (int i = 0; i < mParticlePos.size(); i++)
+	{
+		mParticleVel[i] += mDropAccel;
+		mParticlePos[i] += mParticleVel[i];
+        mParticleVel[i] *= mGlobalDecay;
+        particleIn |= (mParticlePos[i].y < getWindowHeight());            
+	}
+    if (!particleIn)
+        setEnabled(false);   
 }
 
 void ParticleField::draw()

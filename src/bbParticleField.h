@@ -27,6 +27,7 @@ public:
 	virtual void keyDown( cinder::app::KeyEvent event );
 	virtual void update();
 	virtual void draw();
+    virtual void setEnabled(bool e);
 private:
 	SceneState* mSceneState;
     int mNumParticles;
@@ -42,8 +43,12 @@ private:
     float mTargetThreshold;
     float mTargetDecay;
     
+    bool mDropping;
+    cinder::Vec3f mDropAccel;
+    
     void initField();
     cinder::Vec3f randScreenVec();
+    void updateDrop();
 };
 
 
