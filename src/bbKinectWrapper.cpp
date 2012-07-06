@@ -82,8 +82,10 @@ void KinectWrapper::findBlobs()
 	cv::cvtColor( input, gray, CV_RGB2GRAY );
 	cv::dilate(gray, gray, cv::Mat());
 	cv::blur( gray, gray, cv::Size( mBlurAmount, mBlurAmount ) );
+// BTRTODO: TEST THIS TO FILTER OUT MORE NOISE
+//    cv::threshold( gray, gray, 240, 255, CV_THRESH_TRUNC );	
 	
-	if (mInitInitial)
+    if (mInitInitial)
 	{
 		mInitial = gray.clone();
 		mInitInitial = false;
