@@ -83,7 +83,7 @@ void TreeLayer::setup(SceneState* manager)
 	manager->mParams.addParam("SunColor", &mSunColor);
 	manager->mParams.addParam("ZoomTarget", &mZoomTarget);
 	manager->mParams.addParam("FboActive", &mFboActive);
-    manager->mParams.addParam("FadeAmount", &mFadeAmount.value());
+    manager->mParams.addParam("FadeAmount", &mFadeAmount.value(), "min=0.0 max=1.0 step=0.1");
 	
 	mTreeCam.lookAt(Vec3f(0,0,0), mTreeCam.getViewDirection(), -mTreeCam.getWorldUp());
 	
@@ -138,6 +138,9 @@ void TreeLayer::keyDown( cinder::app::KeyEvent event )
 		case KeyEvent::KEY_5:
 			mManager->mTimeline->apply(&mTreePanSpeed, Vec3f(-0.05f, -0.002f, -0.03f), fastTween);
 			break;
+        case KeyEvent::KEY_6:
+            mTreePanSpeed.value().z -= 0.1f;
+            break;
 		case KeyEvent::KEY_9:
 			mTreePanSpeed = Vec3f(0,0,0);
 			break;
@@ -211,7 +214,7 @@ void TreeLayer::draw()
             mFbo.bindFramebuffer();
         
             // setup the viewport to match the dimensions of the FBO
-            gl::setViewport( mFbo.getBounds() );    
+            gl::setViewport( mFbo.getBounds() );
             // clear out the window with black
             gl::clear( Color( 0, 0, 0 ) ); 
             
