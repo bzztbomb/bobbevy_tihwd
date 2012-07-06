@@ -98,7 +98,6 @@ void bobbevyApp::setup()
     mFarSwarm.setup(&mSceneState);
     mFarSwarm.followUser(KinectWrapper::utFurthest);
     mField.setup(&mSceneState);
-    mField.setEnabled(true);
 }
 
 void bobbevyApp::keyDown( KeyEvent event )

@@ -62,6 +62,7 @@ private:
     float mTimeMult;
     float mTime;
     float mYMult;
+    float mFadeTransTime;
 	
 	void drawTrees();
 	void initGroundMesh();

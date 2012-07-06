@@ -67,7 +67,8 @@ TreeLayer::TreeLayer() :
     mWarpAmount(0.0),
     mTime(0.0f),
     mTimeMult(1.0f),
-    mYMult(1.0f)
+    mYMult(1.0f),
+    mFadeTransTime(20.0f)
 {
 	resetParams();
 }
@@ -98,6 +99,7 @@ void TreeLayer::setup(SceneState* manager)
     manager->mParams.addParam("WarpAmount", &mWarpAmount.value(), "min=0.0 max=100.0 step=0.001");
     manager->mParams.addParam("TimeMult", &mTimeMult, "min=0.0 max=100.0 step=0.01");
     manager->mParams.addParam("yMult", &mYMult, "min=0.0 max=10.0 step=0.01");
+    manager->mParams.addParam("FadeTransTime", &mFadeTransTime, "min=0");
     
 	mTreeCam.lookAt(Vec3f(0,0,0), mTreeCam.getViewDirection(), -mTreeCam.getWorldUp());
 	
@@ -156,15 +158,23 @@ void TreeLayer::keyDown( cinder::app::KeyEvent event )
         case KeyEvent::KEY_6:
             mTreePanSpeed.value().z -= 0.1f;
             break;
+        case KeyEvent::KEY_7:
+            mFadeAmount = 0.27f;
+            mWarpAmount = 0.006f;
+            break;
+        case KeyEvent::KEY_8:
+            mManager->mTimeline->apply(&mFadeAmount, 1.0f, mFadeTransTime);
+            mManager->mTimeline->apply(&mWarpAmount, 0.0f, mFadeTransTime);
+            break;
 		case KeyEvent::KEY_9:
 			mTreePanSpeed = Vec3f(0,0,0);
 			break;
 		case KeyEvent::KEY_0:
 			resetParams();
 			break;
-		case KeyEvent::KEY_8:
-			toggleZoomToBlack();
-			break;
+//		case KeyEvent::KEY_8:
+//			toggleZoomToBlack();
+//			break;
 	}
 }
 
