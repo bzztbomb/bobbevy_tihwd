@@ -71,7 +71,7 @@ void bobbevyApp::setup()
 	mSceneState.mParams = params::InterfaceGl("bobbevy", Vec2i(225, 200));	
 	mSceneState.mParams.addParam("DebugDraw", &mDebugDraw, "keyIncr=d");
 	mSceneState.mParams.addParam("ShowParams", &mShowParams, "keyIncr=p");
-	mSceneState.mParams.addParam("ShowFPS", &mShowFPS, "keyIncr=m");
+	mSceneState.mParams.addParam("ShowFPS", &mShowFPS);
 	
 	mSceneState.mTimeline = Timeline::create();
 	mSceneState.mTimeline->setDefaultAutoRemove(true);

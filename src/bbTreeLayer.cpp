@@ -156,7 +156,7 @@ void TreeLayer::keyDown( cinder::app::KeyEvent event )
 			mManager->mTimeline->apply(&mTreePanSpeed, Vec3f(-0.05f, -0.002f, -0.03f), fastTween);
 			break;
         case KeyEvent::KEY_6:
-            mTreePanSpeed.value().z -= 0.1f;
+			mManager->mTimeline->apply(&mTreePanSpeed, Vec3f(0.0f, 0.0f, -9.5f), fastTween);
             break;
         case KeyEvent::KEY_7:
             mFadeAmount = 0.27f;

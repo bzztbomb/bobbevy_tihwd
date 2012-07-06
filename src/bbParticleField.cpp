@@ -19,7 +19,7 @@ ParticleField::ParticleField() :
     mNumParticles(200),
     mColor(1,1,1),
     mGoalVel(0.65f),
-    mAvoidVel(2.0f),
+    mAvoidVel(10.0f),
     mGlobalDecay(0.90f),
     mTargetThreshold(10.0f),
     mTargetDecay(0.3f)

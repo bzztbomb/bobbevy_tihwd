@@ -1,0 +1,35 @@
+d = DebugDraw toggle
+p = Param toggle
+' ' = reset reference depth
+
+o = fade out
+i = fade in
+t = tree toggle
+l = light toggle
+b = close swarm
+n = far swarm
+v = particle field
+
+Light
+r = reveal
+k = hide/show light
+
+Trees
+X = TreeCam X Right, x Left
+Y = TreeCam Y Up, y Down
+Z = TreeCAM Z In, z Out
+
+1 = Tree Pan Normal
+2 = First tree pan fast
+3 = Second tree pan fast
+4 = Fade to black
+5 = Pan up
+6 = Fast Z zoom
+7 = Faded trees
+8 = Transition to color
+9 = Stop
+0 = Reset
+
+
+Particles
+m = Particle drop

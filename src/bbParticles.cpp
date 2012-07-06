@@ -36,10 +36,10 @@ SkeletonParticles::SkeletonParticles() :
     mColor(1,1,1),
     mDrag(0.9f),
     mTargetDrag(1.0f),
-    mDistanceThresh(40.0f)
+    mDistanceThresh(40.0f),
+    mDropping(false),
+    mDropAccel(0.0f, 1.5f, 0.0f)
 {
-	mDirVectors[0] = Vec3f(-1.0f, 0.0f, 0.0f);
-	mDirVectors[1] = Vec3f(1.0f, 0.0f, 0.0f);
 	Vec3f zero(0.0f, 0.0f, 0.0f);
 	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
 	{
@@ -55,6 +55,9 @@ SkeletonParticles::SkeletonParticles() :
     {
 		mRandTarg[i] = dumbRand() * randFloat(0.1, 0.9);
     }
+    mNodePos[0] = mTargetPoint;
+    for (int i = 1; i < 6; i++)
+        mNodePos[i] = mTargetPoint + (mRandTarg[i] * 100);    
 }
 
 void SkeletonParticles::followUser(KinectWrapper::UserToken ut)
@@ -76,6 +79,7 @@ void SkeletonParticles::setup(SceneState* manager)
 	mManager->mParams.addParam(mName + ": TargetDrag", &mTargetDrag, "step=0.1");
 	mManager->mParams.addParam(mName + ": DistanceThresh", &mDistanceThresh);
 	mManager->mParams.addParam(mName + ": Color", &mColor);
+	mManager->mParams.addParam(mName + ": DropAccel", &mDropAccel);
 
 	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
 	{
@@ -87,6 +91,12 @@ void SkeletonParticles::keyDown( KeyEvent event )
 {
 	if (!mEnabled)
 		return;
+    switch( event.getChar() )
+	{
+		case KeyEvent::KEY_m:
+            mDropping = true;
+            break;
+    }
 }
 
 void SkeletonParticles::resetParticle(int index)
@@ -125,6 +135,20 @@ void SkeletonParticles::updateSwarm()
 	}
 }
 
+void SkeletonParticles::updateDrop()
+{
+    bool particleIn = false;
+	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
+	{
+		mParticleVel[i] += mDropAccel;
+		mParticlePos[i] += mParticleVel[i];
+        mParticleVel[i] *= mDrag;
+        particleIn |= (mParticlePos[i].y < getWindowHeight());            
+	}
+    if (!particleIn)
+        setEnabled(false);
+}
+
 void SkeletonParticles::update()
 {
 	if (!mEnabled)
@@ -140,18 +164,12 @@ void SkeletonParticles::update()
 		mTargetPoint.z = 0;
 		mNodePos[0] = mTargetPoint;
 		for (int i = 1; i < 6; i++)
-			mNodePos[i] = mTargetPoint + (mRandTarg[i] * r);
-		
-		mDirVectors[0] = user->mRightMost;
-		mDirVectors[1] = user->mLeftMost;
-		for (int i = 0; i < 2; i++)
-		{
-			mDirVectors[i] -= mTargetPoint;
-			mDirVectors[i].normalize();
-			mDirVectors[i] *= mAfterTargetAccel;
-		}
-	}
-    updateSwarm();
+			mNodePos[i] = mTargetPoint + (mRandTarg[i] * r);		
+	} 
+    if (!mDropping)
+        updateSwarm();
+    else
+        updateDrop();
 }
 
 void SkeletonParticles::draw()
@@ -169,4 +187,17 @@ void SkeletonParticles::draw()
 								mParticlePos[i].x+2, mParticlePos[i].y+2));
 	}
 	gl::enableAlphaBlending();
+}
+
+void SkeletonParticles::setEnabled(bool e)
+{
+    SceneLayer::setEnabled(e);
+    if (mEnabled)
+    {
+        for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
+        {
+            resetParticle(i);
+        }
+        mDropping = false;
+    }
 }

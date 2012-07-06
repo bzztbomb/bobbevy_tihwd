@@ -26,12 +26,14 @@ public:
 
     void setName(const std::string& name);
     void followUser(KinectWrapper::UserToken ut);
+    void drop();
     
 	// SceneLayer
     virtual void setup(SceneState* manager);
 	virtual void keyDown( cinder::app::KeyEvent event );
 	virtual void update();
 	virtual void draw();
+    virtual void setEnabled(bool e);
 private:
     std::string mName;
 	SceneState* mManager;
@@ -39,7 +41,6 @@ private:
     KinectWrapper::UserToken mUserToken;
     
 	cinder::Vec3f mTargetPoint;
-	cinder::Vec3f mDirVectors[2];
 	std::vector<cinder::Vec3f> mParticlePos;
 	std::vector<cinder::Vec3f> mParticleVel;
 	std::vector<bool> mReachedTarget;
@@ -54,10 +55,13 @@ private:
     float mDrag;
     float mTargetDrag;
     float mDistanceThresh;
+    bool mDropping;
+    cinder::Vec3f mDropAccel;
     
     cinder::Color mColor;
 	
 	void updateSwarm();
+    void updateDrop();
 	void updateHose();
 	void resetParticle(int index);
 };

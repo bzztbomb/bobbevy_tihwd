@@ -65,7 +65,7 @@ void IntroLight::keyDown( KeyEvent event )
 			{
 				mManager->mTimeline->apply(&mLightSize, mTargetLightSize, 3.0f);
 			} else {
-				mLightSize = 0.0f;
+				mManager->mTimeline->apply(&mLightSize, 0.0f, 3.0f);
 			}
 			break;
 	}
