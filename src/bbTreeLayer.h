@@ -58,12 +58,17 @@ private:
     cinder::gl::Fbo mFbo;
     cinder::gl::GlslProg mFadeShader;
     cinder::Anim<float> mFadeAmount;
+    cinder::Anim<float> mWarpAmount;
+    float mTimeMult;
+    float mTime;
+    float mYMult;
 	
 	void drawTrees();
 	void initGroundMesh();
 	void initTreeMesh();
 	void addTree(const cinder::Vec3f& treePos, const cinder::Vec2f& treeScale, const cinder::Vec2f& texOffset, bool flipX);	
 	void toggleZoomToBlack();
+    void allocFBO();
 };
 
 

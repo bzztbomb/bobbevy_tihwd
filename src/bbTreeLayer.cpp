@@ -63,9 +63,20 @@ TreeLayer::TreeLayer() :
 	mTreeSizeVariance(2.0f),
 	mZoomToBlack(false),
     mFboActive(true),
-    mFadeAmount(1.0f)
+    mFadeAmount(1.0f),
+    mWarpAmount(0.0),
+    mTime(0.0f),
+    mTimeMult(1.0f),
+    mYMult(1.0f)
 {
 	resetParams();
+}
+
+void TreeLayer::allocFBO()
+{
+    gl::Fbo::Format format;
+    format.setSamples(4);
+	mFbo = gl::Fbo(getWindowWidth(), getWindowHeight(), format);
 }
 
 void TreeLayer::setup(SceneState* manager)
@@ -83,8 +94,11 @@ void TreeLayer::setup(SceneState* manager)
 	manager->mParams.addParam("SunColor", &mSunColor);
 	manager->mParams.addParam("ZoomTarget", &mZoomTarget);
 	manager->mParams.addParam("FboActive", &mFboActive);
-    manager->mParams.addParam("FadeAmount", &mFadeAmount.value(), "min=0.0 max=1.0 step=0.1");
-	
+    manager->mParams.addParam("FadeAmount", &mFadeAmount.value(), "min=0.0 max=1.0 step=0.01");
+    manager->mParams.addParam("WarpAmount", &mWarpAmount.value(), "min=0.0 max=100.0 step=0.001");
+    manager->mParams.addParam("TimeMult", &mTimeMult, "min=0.0 max=100.0 step=0.01");
+    manager->mParams.addParam("yMult", &mYMult, "min=0.0 max=10.0 step=0.01");
+    
 	mTreeCam.lookAt(Vec3f(0,0,0), mTreeCam.getViewDirection(), -mTreeCam.getWorldUp());
 	
 	// Tree engine
@@ -97,13 +111,14 @@ void TreeLayer::setup(SceneState* manager)
 	texSun = gl::Texture(loadImage(loadResource("sun.png")), hiQFormat);
 	texOverlay = gl::Texture(loadImage(loadResource("overlay.png")), hiQFormat);
 	texBlack = gl::Texture(loadImage(loadResource("zoomToBlack.png")), hiQFormat);
-
-	gl::Fbo::Format format;
-	mFbo = gl::Fbo(getWindowWidth(), getWindowHeight(), format);
+    
+    allocFBO();
     mFadeShader = gl::GlslProg(loadResource("IntroLightVert.glsl"), loadResource("FadeFrag.glsl"));
     
 	initGroundMesh();
 	initTreeMesh();	
+    
+    mTime = getElapsedSeconds();    
 }
 
 void TreeLayer::setEnabled(bool e)
@@ -193,6 +208,11 @@ void TreeLayer::update()
 		initTreeMesh();
 		initGroundMesh();
 	}	
+    
+    mTime = getElapsedSeconds();
+//    float chunk = M_PI * 2.0f * 10.0f;
+//    while (mTime > chunk)
+//        mTime -= chunk;
 }
 
 void TreeLayer::draw()
@@ -202,8 +222,7 @@ void TreeLayer::draw()
 
 	if (mFbo.getWidth() != getWindowWidth() || mFbo.getHeight() != getWindowHeight())
     {
-        gl::Fbo::Format format;
-        mFbo = gl::Fbo(getWindowWidth(), getWindowHeight(), format);
+        allocFBO();
     }    
     {
         gl::SaveFramebufferBinding bindingSaver;
@@ -224,11 +243,17 @@ void TreeLayer::draw()
         gl::disableDepthWrite();
         gl::disableDepthRead();
         gl::color( cinder::ColorA(1, 1, 1, 1) );
+        Area renderArea = getWindowBounds();
+        if (mFboActive)
+        {
+            renderArea.x2 *= mFadeAmount;
+            renderArea.y2 *= mFadeAmount;
+        }
+        gl::setMatricesWindowPersp(renderArea.x2, renderArea.y2);
         
         // Draw sun
         gl::color(mSunColor);
-        gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
-        gl::draw(texSun, getWindowBounds());
+        gl::draw(texSun, renderArea);
         gl::color( cinder::ColorA(1, 1, 1, 1) );
 
         // Set camera up
@@ -268,8 +293,8 @@ void TreeLayer::draw()
         
         // Draw overlay
         gl::disableDepthRead();
-        gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
-        gl::draw(texOverlay, getWindowBounds());	
+        gl::setMatricesWindowPersp(renderArea.x2, renderArea.y2);
+        gl::draw(texOverlay, renderArea);	
     }
     if (mFboActive)
     {
@@ -279,7 +304,15 @@ void TreeLayer::draw()
         mFbo.getTexture().bind();
         mFadeShader.uniform("tex", 0);
         mFadeShader.uniform("fadeAmount", mFadeAmount);
-        hackdraw(mFbo.getTexture(), mFbo.getTexture().getCleanBounds(), mFbo.getTexture().getCleanBounds());
+        mFadeShader.uniform("time", mTime * mTimeMult);
+        mFadeShader.uniform("warpAmp", mWarpAmount);
+        mFadeShader.uniform("yMult", mYMult);
+        mFadeShader.uniform("maxU", mFadeAmount);
+        Area destBounds = mFbo.getTexture().getCleanBounds();
+        Area srcBounds = destBounds;
+        srcBounds.x2 *= mFadeAmount;
+        srcBounds.y2 *= mFadeAmount;
+        hackdraw(mFbo.getTexture(), srcBounds, destBounds);
         mFadeShader.unbind();
         mFbo.getTexture().unbind();
     }
