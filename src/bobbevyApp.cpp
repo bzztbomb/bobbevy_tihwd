@@ -8,6 +8,7 @@
 
 #include "CinderOpenCV.h"
 #include "Kinect.h"
+#include "OscListener.h"
 
 #include "bbKinectWrapper.h"
 #include "sceneLayer.h"
@@ -15,6 +16,7 @@
 #include "bbIntroLight.h"
 #include "bbParticles.h"
 #include "bbParticleField.h"
+
 
 using namespace ci;
 using namespace ci::app;
@@ -38,6 +40,9 @@ private:
 	bool mDebugDraw;
 	bool mShowFPS;
 	bool mShowParams;
+    
+    osc::Listener mListener;
+    map<int, int> mMessageMap;
 
 	// Layers
 	SceneState mSceneState;
@@ -48,6 +53,9 @@ private:
     ParticleField mField;
 
 	gl::Texture texBlackout;
+    
+    void handleOSC();
+    void initMsgMap();
 };
 
 void bobbevyApp::prepareSettings( Settings* settings )
@@ -71,6 +79,9 @@ void bobbevyApp::setup()
 	mDebugDraw = false;
 	mShowFPS = false;
 	mShowParams = false;
+    
+    mListener.setup(23232);
+    initMsgMap();
 
 	mKinect.setup(mSceneState.mParams);
 	
@@ -98,6 +109,46 @@ void bobbevyApp::setup()
     mFarSwarm.setup(&mSceneState);
     mFarSwarm.followUser(KinectWrapper::utFurthest);
     mField.setup(&mSceneState);
+}
+
+void bobbevyApp::initMsgMap()
+{
+	mMessageMap['0'] = KeyEvent::KEY_0;
+	mMessageMap['1'] = KeyEvent::KEY_1;
+	mMessageMap['2'] = KeyEvent::KEY_2;
+	mMessageMap['3'] = KeyEvent::KEY_3;
+	mMessageMap['4'] = KeyEvent::KEY_4;
+	mMessageMap['5'] = KeyEvent::KEY_5;
+	mMessageMap['6'] = KeyEvent::KEY_6;
+	mMessageMap['7'] = KeyEvent::KEY_7;
+	mMessageMap['8'] = KeyEvent::KEY_8;
+	mMessageMap['9'] = KeyEvent::KEY_9;
+	mMessageMap['A'] = KeyEvent::KEY_a;
+	mMessageMap['B'] = KeyEvent::KEY_b;
+	mMessageMap['C'] = KeyEvent::KEY_c;
+	mMessageMap['D'] = KeyEvent::KEY_d;
+	mMessageMap['E'] = KeyEvent::KEY_e;
+	mMessageMap['F'] = KeyEvent::KEY_f;
+	mMessageMap['G'] = KeyEvent::KEY_g;
+	mMessageMap['H'] = KeyEvent::KEY_h;
+	mMessageMap['I'] = KeyEvent::KEY_i;
+	mMessageMap['J'] = KeyEvent::KEY_j;
+	mMessageMap['K'] = KeyEvent::KEY_k;
+	mMessageMap['L'] = KeyEvent::KEY_l;
+	mMessageMap['M'] = KeyEvent::KEY_m;
+	mMessageMap['N'] = KeyEvent::KEY_n;
+	mMessageMap['O'] = KeyEvent::KEY_o;
+	mMessageMap['P'] = KeyEvent::KEY_p;
+	mMessageMap['Q'] = KeyEvent::KEY_q;
+	mMessageMap['R'] = KeyEvent::KEY_r;
+	mMessageMap['S'] = KeyEvent::KEY_s;
+	mMessageMap['T'] = KeyEvent::KEY_t;
+	mMessageMap['U'] = KeyEvent::KEY_u;
+	mMessageMap['V'] = KeyEvent::KEY_v;
+	mMessageMap['W'] = KeyEvent::KEY_w;
+	mMessageMap['X'] = KeyEvent::KEY_x;
+	mMessageMap['Y'] = KeyEvent::KEY_y;
+	mMessageMap['Z'] = KeyEvent::KEY_z;
 }
 
 void bobbevyApp::keyDown( KeyEvent event )
@@ -149,6 +200,7 @@ void bobbevyApp::mouseDown( MouseEvent event )
 
 void bobbevyApp::update()
 {
+    handleOSC();
 	mSceneState.mTimeline->step(0.05);
 	mKinect.update();
 	mTreeLayer.update();
@@ -156,6 +208,58 @@ void bobbevyApp::update()
 	mCloseSwarm.update();
     mFarSwarm.update();
     mField.update();
+}
+
+void bobbevyApp::handleOSC()
+{
+    while (mListener.hasWaitingMessages()) 
+    {
+        osc::Message message;
+        mListener.getNextMessage(&message);
+        
+        if ((message.getAddress().compare("/bobbevy/key") == 0) && (message.getArgType(0) == osc::TYPE_STRING) && (message.getArgAsString(0).size() > 0))
+        {
+            int code = message.getArgAsString(0).c_str()[0];
+            map<int,int>::iterator iter = mMessageMap.find( code );
+            if( iter != mMessageMap.end() )
+            {
+                KeyEvent ev(iter->second, iter->second, 0, 0);
+                keyDown(ev);
+            }
+        } else {        
+            console() << "New message received" << std::endl;
+            console() << "Address: " << message.getAddress() << std::endl;
+            console() << "Num Arg: " << message.getNumArgs() << std::endl;
+            for (int i = 0; i < message.getNumArgs(); i++) {
+                console() << "-- Argument " << i << std::endl;
+                console() << "---- type: " << message.getArgTypeName(i) << std::endl;
+                if (message.getArgType(i) == osc::TYPE_INT32){
+                    try {
+                        console() << "------ value: "<< message.getArgAsInt32(i) << std::endl;
+                    }
+                    catch (...) {
+                        console() << "Exception reading argument as int32" << std::endl;
+                    }
+                    
+                }else if (message.getArgType(i) == osc::TYPE_FLOAT){
+                    try {
+                        console() << "------ value: " << message.getArgAsFloat(i) << std::endl;
+                    }
+                    catch (...) {
+                        console() << "Exception reading argument as float" << std::endl;
+                    }
+                }else if (message.getArgType(i) == osc::TYPE_STRING){
+                    try {
+                        console() << "------ value: " << message.getArgAsString(i).c_str() << std::endl;
+                    }
+                    catch (...) {
+                        console() << "Exception reading argument as string" << std::endl;
+                    }
+                    
+                }
+            }
+        }
+    }
 }
 
 void bobbevyApp::draw()
