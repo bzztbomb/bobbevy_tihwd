@@ -28,6 +28,7 @@ public:
 	virtual void update();
 	virtual void draw();	
 	virtual void setEnabled(bool e);
+    virtual void setBlurred();
 	
 	void resetParams();
 private:
@@ -57,6 +58,7 @@ private:
     bool mFboActive;
     cinder::gl::Fbo mFbo;
     cinder::gl::GlslProg mFadeShader;
+    cinder::Anim<float> mBlurAmount;
     cinder::Anim<float> mFadeAmount;
     cinder::Anim<float> mWarpAmount;
     float mTimeMult;

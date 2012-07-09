@@ -159,8 +159,7 @@ void TreeLayer::keyDown( cinder::app::KeyEvent event )
 			mManager->mTimeline->apply(&mTreePanSpeed, Vec3f(0.0f, 0.0f, -9.5f), fastTween);
             break;
         case KeyEvent::KEY_7:
-            mFadeAmount = 0.27f;
-            mWarpAmount = 0.006f;
+            setBlurred();
             break;
         case KeyEvent::KEY_8:
             mManager->mTimeline->apply(&mFadeAmount, 1.0f, mFadeTransTime);
@@ -440,4 +439,12 @@ void TreeLayer::resetParams()
 	mTreePan = Vec3f(0.0f, -1.1f, 0.0f);
 	mTreePanSpeed = Vec3f(-0.001f, 0.0f, 0.0f);
 	mZoomToBlack = false;
+    mFadeAmount = 1.0f;
+    mWarpAmount = 0.0f;        
+}
+
+void TreeLayer::setBlurred()
+{
+    mFadeAmount = 0.27f;
+    mWarpAmount = 0.006f;    
 }

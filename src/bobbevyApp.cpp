@@ -173,6 +173,10 @@ void bobbevyApp::keyDown( KeyEvent event )
 		case KeyEvent::KEY_t:
 			mTreeLayer.setEnabled(!mTreeLayer.getEnabled());
 			break;
+        case KeyEvent::KEY_e:
+            mTreeLayer.setEnabled(true);
+            mTreeLayer.setBlurred();
+            break;
 		case KeyEvent::KEY_l:
 			mIntroLight.setEnabled(!mIntroLight.getEnabled());
 			break;			

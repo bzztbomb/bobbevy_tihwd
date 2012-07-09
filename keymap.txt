@@ -5,6 +5,7 @@ p = Param toggle
 o = fade out
 i = fade in
 t = tree toggle
+f = tree toggle blurry
 l = light toggle
 b = close swarm
 n = far swarm
@@ -29,7 +30,7 @@ Z = TreeCAM Z In, z Out
 8 = Transition to color
 9 = Stop
 0 = Reset
-
+Q=intro blurry
 
 Particles
 m = Particle drop
