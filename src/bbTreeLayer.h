@@ -55,12 +55,14 @@ private:
 	cinder::Vec3f mZoomTarget;
 	cinder::gl::Texture texBlack;
     // Fade in
+    
     bool mFboActive;
     cinder::gl::Fbo mFbo;
     cinder::gl::GlslProg mFadeShader;
     cinder::Anim<float> mBlurAmount;
     cinder::Anim<float> mFadeAmount;
     cinder::Anim<float> mWarpAmount;
+    cinder::Anim<float> mAlphaAmount;
     float mTimeMult;
     float mTime;
     float mYMult;

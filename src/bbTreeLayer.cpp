@@ -64,7 +64,8 @@ TreeLayer::TreeLayer() :
 	mZoomToBlack(false),
     mFboActive(true),
     mFadeAmount(1.0f),
-    mWarpAmount(0.0),
+    mWarpAmount(0.0f),
+    mAlphaAmount(1.0f),
     mTime(0.0f),
     mTimeMult(1.0f),
     mYMult(1.0f),
@@ -97,6 +98,7 @@ void TreeLayer::setup(SceneState* manager)
 	manager->mParams.addParam("FboActive", &mFboActive);
     manager->mParams.addParam("FadeAmount", &mFadeAmount.value(), "min=0.0 max=1.0 step=0.01");
     manager->mParams.addParam("WarpAmount", &mWarpAmount.value(), "min=0.0 max=100.0 step=0.001");
+    manager->mParams.addParam("AlphaAmount", &mAlphaAmount.value(), "min=0.0 max=1.0 step=0.01");
     manager->mParams.addParam("TimeMult", &mTimeMult, "min=0.0 max=100.0 step=0.01");
     manager->mParams.addParam("yMult", &mYMult, "min=0.0 max=10.0 step=0.01");
     manager->mParams.addParam("FadeTransTime", &mFadeTransTime, "min=0");
@@ -164,6 +166,7 @@ void TreeLayer::keyDown( cinder::app::KeyEvent event )
         case KeyEvent::KEY_8:
             mManager->mTimeline->apply(&mFadeAmount, 1.0f, mFadeTransTime);
             mManager->mTimeline->apply(&mWarpAmount, 0.0f, mFadeTransTime);
+            mManager->mTimeline->apply(&mAlphaAmount, 1.0f, mFadeTransTime);
             break;
 		case KeyEvent::KEY_9:
 			mTreePanSpeed = Vec3f(0,0,0);
@@ -307,11 +310,12 @@ void TreeLayer::draw()
     }
     if (mFboActive)
     {
-        gl::color( cinder::ColorA(1, 1, 1, 1) );
+        gl::color( cinder::ColorA(1, 1, 1, mAlphaAmount) );
         gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
         mFadeShader.bind();
         mFbo.getTexture().bind();
         mFadeShader.uniform("tex", 0);
+        mFadeShader.uniform("alphaAmount", mAlphaAmount);
         mFadeShader.uniform("fadeAmount", mFadeAmount);
         mFadeShader.uniform("time", mTime * mTimeMult);
         mFadeShader.uniform("warpAmp", mWarpAmount);
@@ -441,10 +445,12 @@ void TreeLayer::resetParams()
 	mZoomToBlack = false;
     mFadeAmount = 1.0f;
     mWarpAmount = 0.0f;        
+    mAlphaAmount = 0.15f;
 }
 
 void TreeLayer::setBlurred()
 {
     mFadeAmount = 0.27f;
-    mWarpAmount = 0.006f;    
+    mWarpAmount = 0.006f;  
+    mAlphaAmount = 0.77f;
 }

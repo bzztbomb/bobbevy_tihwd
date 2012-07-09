@@ -1,3 +1,4 @@
+f = full screen
 d = DebugDraw toggle
 p = Param toggle
 ' ' = reset reference depth
