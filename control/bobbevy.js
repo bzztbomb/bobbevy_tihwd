@@ -164,6 +164,18 @@ pages = [ [
         "ontouchstart" : "oscManager.sendOSC(\"/bobbevy/key\", \"s\", \"M\");",
 			"isLocal": true,
     },
+
+    {
+        "name" : "lightToggleButton",
+        "type" : "Button",
+        "mode": "momentary",
+        "x" : 0.0, "y" : 0.6,
+        "width" : .1, "height" : .1,
+        "label" : "LightOn",
+        "ontouchstart" : "oscManager.sendOSC(\"/bobbevy/key\", \"s\", \"K\");",
+			"isLocal": true,
+    },
+
     {
         "name": "refreshButton",
         "type": "Button",
