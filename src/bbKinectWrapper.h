@@ -59,6 +59,7 @@ public:
     int mBlurAmount;
 	cv::Mat mInitial;
 	bool mInitInitial;	
+    int mLowPass;
 
 	// Debug
 	cinder::gl::Texture	mContourTexture;

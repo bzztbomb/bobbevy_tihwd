@@ -31,10 +31,12 @@ void KinectWrapper::setup(params::InterfaceGl& params)
 	mAreaThreshold = 1000.0f;
 	mInitInitial = true;	
     mDrawContour = false;
+    mLowPass = 242;
     
 	params.addSeparator("CV Params");
 	params.addParam( "Step from", &mStepFrom, "min=1 max=255" );
 	params.addParam( "Threshold Step Size", &mStepSize, "min=1 max=255" );
+    params.addParam( "LowPass filter", &mLowPass, "min=0 max=255");
     params.addParam( "CV Blur amount", &mBlurAmount, "min=3 max=55" );	
 	params.addParam( "CV area threshold", &mAreaThreshold, "min=1");
     params.addParam( "Show contour", &mDrawContour);
@@ -82,20 +84,15 @@ void KinectWrapper::findBlobs()
 	cv::cvtColor( input, gray, CV_RGB2GRAY );
 	cv::dilate(gray, gray, cv::Mat());
 	cv::blur( gray, gray, cv::Size( mBlurAmount, mBlurAmount ) );
-// BTRTODO: TEST THIS TO FILTER OUT MORE NOISE
-//    cv::threshold( gray, gray, 240, 255, CV_THRESH_TRUNC );	
-	
+    cv::threshold( gray, gray, mLowPass, mLowPass, CV_THRESH_TRUNC );	
+    
     if (mInitInitial)
 	{
 		mInitial = gray.clone();
 		mInitInitial = false;
 	}		
 	gray -= mInitial;
-	
-	// Debug texture
-//	mContourMat = gray.clone();
-//	mContourTexture = fromOcv(mContourMat);
-	
+		
 	mBlobs.clear();
 	float largest = mAreaThreshold;
 	for( int t = mStepFrom; t < 255; t += mStepSize )
