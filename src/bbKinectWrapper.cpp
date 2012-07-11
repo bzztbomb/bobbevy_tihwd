@@ -22,17 +22,18 @@ void KinectWrapper::setup(params::InterfaceGl& params)
 	if (Kinect::getNumDevices() == 0)
 		return;
 	mEnabled = true;
+    mBlobsEnabled = true;
 	mKinect = Kinect( Kinect::Device() ); // the default Device implies the first Kinect connected	
 	
 	
     mStepSize = 255; // Just threshold from step from!
-    mBlurAmount = 20;
+    mBlurAmount = 3;
 	mStepFrom = 5;
 	mAreaThreshold = 1000.0f;
 	mInitInitial = true;	
     mDrawContour = false;
-    mLowPass = 242;
-    mDilate = true;
+    mLowPass = 255;
+    mDilate = false;
     
 	params.addSeparator("CV Params");
 	params.addParam( "Step from", &mStepFrom, "min=1 max=255" );
@@ -42,6 +43,8 @@ void KinectWrapper::setup(params::InterfaceGl& params)
 	params.addParam( "CV area threshold", &mAreaThreshold, "min=1");
     params.addParam( "Show contour", &mDrawContour);
     params.addParam( "Dilate", &mDilate);
+    params.addParam( "KinectEnabled", &mEnabled);
+    params.addParam( "BlobsEnabled", &mBlobsEnabled);
 }
 
 void KinectWrapper::keyDown( KeyEvent event )
@@ -68,13 +71,17 @@ void KinectWrapper::update()
 
 void KinectWrapper::findBlobs()
 {
+    bool newDepth = false;
 	if( mKinect.checkNewDepthFrame() )
+    {
+        newDepth = true;
 		mDepthTexture = mKinect.getDepthImage();
+    }
 	
 	if( mKinect.checkNewVideoFrame() )
 		mColorTexture = mKinect.getVideoImage();
 	
-	if ((!mDepthTexture) || (!mColorTexture))
+	if ((!mDepthTexture) || (!mColorTexture) || (!newDepth) || (!mBlobsEnabled))
 		return;
 	
 	Surface8u to8 = Surface8u(mKinect.getDepthImage());
@@ -86,7 +93,10 @@ void KinectWrapper::findBlobs()
 	cv::cvtColor( input, gray, CV_RGB2GRAY );
     if (mDilate)
         cv::dilate(gray, gray, cv::Mat());
-	cv::blur( gray, gray, cv::Size( mBlurAmount, mBlurAmount ) );
+    if (mBlurAmount > 3)
+        cv::blur( gray, gray, cv::Size( mBlurAmount, mBlurAmount ) );
+    else
+        cv::medianBlur(gray, gray, (mBlurAmount%2==0)?mBlurAmount+1:mBlurAmount);
     
     if (mInitInitial)
 	{
@@ -100,11 +110,19 @@ void KinectWrapper::findBlobs()
 	for( int t = mStepFrom; t < 255; t += mStepSize )
 	{
 		ContourVector vec;
-        cv::threshold( gray, thresh, mLowPass, mLowPass, CV_THRESH_TOZERO_INV );	
-		cv::threshold( thresh, thresh, t, 255, CV_THRESH_BINARY );
-        mContourMat = thresh.clone();
-        mContourTexture = fromOcv(mContourMat);
-
+        if (mLowPass != 255)
+        {
+            cv::threshold( gray, thresh, mLowPass, mLowPass, CV_THRESH_TOZERO_INV );	
+            cv::threshold( thresh, thresh, t, 255, CV_THRESH_BINARY );
+        } else {
+            cv::threshold( gray, thresh, t, 255, CV_THRESH_BINARY );
+        }
+        if (mDrawContour)
+        {
+            mContourMat = thresh.clone();
+            mContourTexture = fromOcv(mContourMat);
+        }
+        
 		cv::findContours( thresh, vec, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE );
 		
 		for( ContourVector::iterator iter = vec.begin(); iter != vec.end(); ++iter )

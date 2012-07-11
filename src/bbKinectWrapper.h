@@ -61,6 +61,7 @@ public:
 	bool mInitInitial;	
     int mLowPass;
     bool mDilate;
+    bool mBlobsEnabled;
 
 	// Debug
 	cinder::gl::Texture	mContourTexture;
