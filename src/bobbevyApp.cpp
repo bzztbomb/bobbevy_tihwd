@@ -41,9 +41,15 @@ private:
 	bool mShowFPS;
 	bool mShowParams;
     
+    // Osc
     osc::Listener mListener;
     map<int, int> mMessageMap;
 
+    // Simulation
+    double mCurrentTime;
+    double mAccumlator;
+    double mDT;
+    
 	// Layers
 	SceneState mSceneState;
 	TreeLayer mTreeLayer;
@@ -60,7 +66,7 @@ private:
 
 void bobbevyApp::prepareSettings( Settings* settings )
 {
-	settings->setFrameRate( 30 );
+	settings->setFrameRate( 60 );
 	settings->setWindowSize( WIDTH, HEIGHT );
 	settings->setTitle( "bobbevy" );
 	settings->enableSecondaryDisplayBlanking(false);
@@ -77,7 +83,7 @@ void bobbevyApp::setup()
 	mSceneState.mTimeline->setDefaultAutoRemove(true);
 
 	mDebugDraw = false;
-	mShowFPS = false;
+	mShowFPS = true;
 	mShowParams = false;
     
     mListener.setup(23232);
@@ -97,10 +103,8 @@ void bobbevyApp::setup()
 	texBlackout = gl::Texture(loadImage(loadResource("blackout.png")), hiQFormat);
 	
 	mTreeLayer.setup(&mSceneState);
-	mTreeLayer.setEnabled(true);
 	
 	mIntroLight.setup(&mSceneState);
-	mIntroLight.setEnabled(true);	
 
     mCloseSwarm.setName("near");
     mCloseSwarm.setup(&mSceneState);
@@ -109,6 +113,10 @@ void bobbevyApp::setup()
     mFarSwarm.setup(&mSceneState);
     mFarSwarm.followUser(KinectWrapper::utFurthest);
     mField.setup(&mSceneState);
+    
+    mCurrentTime = getElapsedSeconds();
+    mAccumlator = 0.0;
+    mDT = 1.0/30.0;
 }
 
 void bobbevyApp::initMsgMap()
@@ -205,13 +213,22 @@ void bobbevyApp::mouseDown( MouseEvent event )
 void bobbevyApp::update()
 {
     handleOSC();
-	mSceneState.mTimeline->step(0.05);
-	mKinect.update();
-	mTreeLayer.update();
-	mIntroLight.update();
-	mCloseSwarm.update();
-    mFarSwarm.update();
-    mField.update();
+    double newTime = getElapsedSeconds();
+    double frameTime = newTime - mCurrentTime;
+    mCurrentTime = newTime;
+    mAccumlator += frameTime;
+    while (mAccumlator >= mDT)
+    {
+        mAccumlator -= mDT;
+        
+        mSceneState.mTimeline->step(0.05);
+        mKinect.update();
+        mTreeLayer.update();
+        mIntroLight.update();
+        mCloseSwarm.update();
+        mFarSwarm.update();
+        mField.update();
+    }
 }
 
 void bobbevyApp::handleOSC()
