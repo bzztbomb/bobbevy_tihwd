@@ -40,6 +40,7 @@
 		C88BB97015A6BE2700634E79 /* OscListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88BB96C15A6BE2700634E79 /* OscListener.cpp */; };
 		C88BB97115A6BE2700634E79 /* OscMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88BB96D15A6BE2700634E79 /* OscMessage.cpp */; };
 		C88BB97215A6BE2700634E79 /* OscSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88BB96E15A6BE2700634E79 /* OscSender.cpp */; };
+		C8F3035215AD049A00993674 /* trees-with-leaves-aligned-scaled.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3035115AD049A00993674 /* trees-with-leaves-aligned-scaled.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -293,6 +294,7 @@
 		C88BB96C15A6BE2700634E79 /* OscListener.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscListener.cpp; sourceTree = "<group>"; };
 		C88BB96D15A6BE2700634E79 /* OscMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscMessage.cpp; sourceTree = "<group>"; };
 		C88BB96E15A6BE2700634E79 /* OscSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscSender.cpp; sourceTree = "<group>"; };
+		C8F3035115AD049A00993674 /* trees-with-leaves-aligned-scaled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "trees-with-leaves-aligned-scaled.png"; path = "../resources/trees-with-leaves-aligned-scaled.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -397,6 +399,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C8F3035115AD049A00993674 /* trees-with-leaves-aligned-scaled.png */,
 				C805969D15A52E6900A6D7EC /* FadeFrag.glsl */,
 				C805968B15A52A8F00A6D7EC /* blackout.png */,
 				C805968C15A52A8F00A6D7EC /* cinder_app_icon.ico */,
@@ -926,6 +929,7 @@
 				C805969B15A52A8F00A6D7EC /* trees.png in Resources */,
 				C805969C15A52A8F00A6D7EC /* zoomToBlack.png in Resources */,
 				C805969E15A52E6900A6D7EC /* FadeFrag.glsl in Resources */,
+				C8F3035215AD049A00993674 /* trees-with-leaves-aligned-scaled.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

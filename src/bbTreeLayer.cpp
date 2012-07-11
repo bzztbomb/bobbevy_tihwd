@@ -111,7 +111,9 @@ void TreeLayer::setup(SceneState* manager)
 	hiQFormat.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	hiQFormat.setMagFilter(GL_LINEAR_MIPMAP_LINEAR);
 	
-	texTree = gl::Texture(loadImage(loadResource ("trees.png")), hiQFormat);
+//	texTree = gl::Texture(loadImage(loadResource ("trees.png")), hiQFormat);
+	texTree = gl::Texture(loadImage(loadResource ("trees-with-leaves-aligned-scaled.png")), hiQFormat);
+
 	texSun = gl::Texture(loadImage(loadResource("sun.png")), hiQFormat);
 	texOverlay = gl::Texture(loadImage(loadResource("overlay.png")), hiQFormat);
 	texBlack = gl::Texture(loadImage(loadResource("zoomToBlack.png")), hiQFormat);
