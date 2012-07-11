@@ -305,7 +305,7 @@ void TreeLayer::draw()
         if (!mWithLeaves)
             texTree.unbind();
         else
-            texTreeWithLeaves.enableAndBind();
+            texTreeWithLeaves.unbind();
         
         if (mZoomToBlack)
         {

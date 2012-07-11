@@ -35,11 +35,17 @@ public:
 	virtual void draw();
     virtual void setEnabled(bool e);
 private:
+    static const int smNumOffsets;
     std::string mName;
 	SceneState* mManager;
     // User
     KinectWrapper::UserToken mUserToken;
     
+    cinder::gl::Texture texBrown;
+    cinder::gl::Texture texYellow;
+
+    int mNumParticles;
+    int mNumPositions;
 	cinder::Vec3f mTargetPoint;
 	std::vector<cinder::Vec3f> mParticlePos;
 	std::vector<cinder::Vec3f> mParticleVel;
@@ -50,8 +56,8 @@ private:
 	// Swarm
 	std::vector<int> mWhichNode;
 	std::vector<cinder::Vec3f> mRandOffset;
-	cinder::Vec3f mRandTarg[6];
-	cinder::Vec3f mNodePos[6];
+    std::vector<cinder::Vec3f> mNodePos;
+    cinder::Rectf mBounds;
     float mDrag;
     float mTargetDrag;
     float mDistanceThresh;

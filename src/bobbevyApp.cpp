@@ -217,6 +217,8 @@ void bobbevyApp::update()
     double frameTime = newTime - mCurrentTime;
     mCurrentTime = newTime;
     mAccumlator += frameTime;
+//    int i = 0;
+//    int max_ticks = 0;
     while (mAccumlator >= mDT)
     {
         mAccumlator -= mDT;
@@ -228,6 +230,12 @@ void bobbevyApp::update()
         mCloseSwarm.update();
         mFarSwarm.update();
         mField.update();
+//        i++;
+//        if (i > max_ticks)
+//        {
+//            mAccumlator = mDT * -10;
+//            mCurrentTime = getElapsedSeconds();
+//        }
     }
 }
 

@@ -41,6 +41,9 @@
 		C88BB97115A6BE2700634E79 /* OscMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88BB96D15A6BE2700634E79 /* OscMessage.cpp */; };
 		C88BB97215A6BE2700634E79 /* OscSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88BB96E15A6BE2700634E79 /* OscSender.cpp */; };
 		C8F3035215AD049A00993674 /* trees-with-leaves-aligned-scaled.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3035115AD049A00993674 /* trees-with-leaves-aligned-scaled.png */; };
+		C8F3E25515AD401F005A336F /* particles.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3E25415AD401F005A336F /* particles.png */; };
+		C8F3E25815AD48C0005A336F /* particle_brown.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3E25615AD48C0005A336F /* particle_brown.png */; };
+		C8F3E25915AD48C0005A336F /* particle_yellow.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3E25715AD48C0005A336F /* particle_yellow.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -295,6 +298,9 @@
 		C88BB96D15A6BE2700634E79 /* OscMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscMessage.cpp; sourceTree = "<group>"; };
 		C88BB96E15A6BE2700634E79 /* OscSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscSender.cpp; sourceTree = "<group>"; };
 		C8F3035115AD049A00993674 /* trees-with-leaves-aligned-scaled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "trees-with-leaves-aligned-scaled.png"; path = "../resources/trees-with-leaves-aligned-scaled.png"; sourceTree = "<group>"; };
+		C8F3E25415AD401F005A336F /* particles.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = particles.png; path = ../resources/particles.png; sourceTree = "<group>"; };
+		C8F3E25615AD48C0005A336F /* particle_brown.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = particle_brown.png; path = ../resources/particle_brown.png; sourceTree = "<group>"; };
+		C8F3E25715AD48C0005A336F /* particle_yellow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = particle_yellow.png; path = ../resources/particle_yellow.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -399,6 +405,9 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C8F3E25615AD48C0005A336F /* particle_brown.png */,
+				C8F3E25715AD48C0005A336F /* particle_yellow.png */,
+				C8F3E25415AD401F005A336F /* particles.png */,
 				C8F3035115AD049A00993674 /* trees-with-leaves-aligned-scaled.png */,
 				C805969D15A52E6900A6D7EC /* FadeFrag.glsl */,
 				C805968B15A52A8F00A6D7EC /* blackout.png */,
@@ -930,6 +939,9 @@
 				C805969C15A52A8F00A6D7EC /* zoomToBlack.png in Resources */,
 				C805969E15A52E6900A6D7EC /* FadeFrag.glsl in Resources */,
 				C8F3035215AD049A00993674 /* trees-with-leaves-aligned-scaled.png in Resources */,
+				C8F3E25515AD401F005A336F /* particles.png in Resources */,
+				C8F3E25815AD48C0005A336F /* particle_brown.png in Resources */,
+				C8F3E25915AD48C0005A336F /* particle_yellow.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
