@@ -37,6 +37,9 @@ private:
     cinder::Color mColor;
     cinder::Rand mRand;
     
+    cinder::gl::Texture texBrown;
+    cinder::gl::Texture texYellow;
+
     float mGoalVel;
     float mAvoidVel;
     float mGlobalDecay;

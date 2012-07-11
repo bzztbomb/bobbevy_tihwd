@@ -117,7 +117,7 @@ void KinectWrapper::findBlobs()
         } else {
             cv::threshold( gray, thresh, t, 255, CV_THRESH_BINARY );
         }
-        if (mDrawContour)
+        //if (mDrawContour)
         {
             mContourMat = thresh.clone();
             mContourTexture = fromOcv(mContourMat);

@@ -207,6 +207,7 @@ void SkeletonParticles::draw()
             gl::color(mColor * r.nextFloat(0.7, 1.0));
             Vec2f velNorm(mParticleVel[i].x, mParticleVel[i].y);
             velNorm.normalize();
+            velNorm *= -1.0f;
             Vec2f polar = toPolar(velNorm);
             gl::drawBillboard(mParticlePos[i], Vec2f(16.0f, 16.0f), toDegrees(polar.y), bbRight, bbUp);
         }

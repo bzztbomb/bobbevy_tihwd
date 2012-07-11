@@ -41,6 +41,12 @@ void ParticleField::setup(SceneState* manager)
 	mSceneState->mParams.addParam("TargetThresh", &mTargetThreshold);
 	mSceneState->mParams.addParam("TargetDecay", &mTargetDecay, "step=0.01");
     
+    gl::Texture::Format hiQFormat;
+    //	hiQFormat.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
+    //	hiQFormat.setMagFilter(GL_LINEAR_MIPMAP_LINEAR);
+    texYellow = gl::Texture(loadImage(loadResource ("particle_yellow.png")), hiQFormat);
+    texBrown = gl::Texture(loadImage(loadResource ("particle_brown.png")), hiQFormat);
+    
     initField();
 }
 
@@ -183,14 +189,35 @@ void ParticleField::draw()
 	if (!mEnabled)
 		return;
 	gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
-	gl::disableAlphaBlending();
-	glDisable(GL_TEXTURE_2D);
-    Rand r;
-	for (int i = 0; i < mParticlePos.size(); i++)
-	{
-        gl::color(mColor * r.nextFloat(0.7, 1.0));
-		gl::drawSolidRect(Rectf(mParticlePos[i].x-2, mParticlePos[i].y-2,
-								mParticlePos[i].x+2, mParticlePos[i].y+2));
-	}
 	gl::enableAlphaBlending();
+    Vec3f bbUp(0.0f, -1.0f, 0.0f); 
+    Vec3f bbRight(-1.0f, 0.0f, 0.0f);
+    Rand r;
+    for (int i = 0; i < 2; i++)
+    {
+        int startIndex = 0;
+        if (i==0)
+        {
+            startIndex = 0;
+            texBrown.enableAndBind();
+        } else {
+            texYellow.enableAndBind();
+            startIndex = 1;
+        }
+        
+        for (int i = startIndex; i < mParticlePos.size(); i+=2)
+        {
+            gl::color(mColor * r.nextFloat(0.7, 1.0));
+            Vec2f velNorm(mParticleVel[i].x, mParticleVel[i].y);
+            velNorm.normalize();
+            velNorm *= -1.0f;
+            Vec2f polar = toPolar(velNorm);
+            gl::drawBillboard(mParticlePos[i], Vec2f(16.0f, 16.0f), toDegrees(polar.y), bbRight, bbUp);
+        }
+        if (i==0)
+            texBrown.unbind();
+        else
+            texYellow.unbind();
+    }
+	gl::disableAlphaBlending();
 }
