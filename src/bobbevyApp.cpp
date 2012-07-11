@@ -320,9 +320,11 @@ void bobbevyApp::draw()
 	
 	if (mShowFPS)
 	{
+        gl::enableAlphaBlending();
 		gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
 		std::string s = boost::lexical_cast<std::string>(getAverageFps());
 		gl::drawString(s, Vec2f(100,100));
+        gl::disableAlphaBlending();
 	}
 }
 
