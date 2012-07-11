@@ -110,9 +110,10 @@ void TreeLayer::setup(SceneState* manager)
 	hiQFormat.enableMipmapping();
 	hiQFormat.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	hiQFormat.setMagFilter(GL_LINEAR_MIPMAP_LINEAR);
-	
-//	texTree = gl::Texture(loadImage(loadResource ("trees.png")), hiQFormat);
-	texTree = gl::Texture(loadImage(loadResource ("trees-with-leaves-aligned-scaled.png")), hiQFormat);
+
+	mWithLeaves = true;
+	texTree = gl::Texture(loadImage(loadResource ("trees.png")), hiQFormat);
+	texTreeWithLeaves = gl::Texture(loadImage(loadResource ("trees-with-leaves-aligned-scaled.png")), hiQFormat);
 
 	texSun = gl::Texture(loadImage(loadResource("sun.png")), hiQFormat);
 	texOverlay = gl::Texture(loadImage(loadResource("overlay.png")), hiQFormat);
@@ -176,6 +177,9 @@ void TreeLayer::keyDown( cinder::app::KeyEvent event )
 		case KeyEvent::KEY_0:
 			resetParams();
 			break;
+        case KeyEvent::KEY_a:
+            mWithLeaves = !mWithLeaves;
+            break;
 //		case KeyEvent::KEY_8:
 //			toggleZoomToBlack();
 //			break;
@@ -289,13 +293,19 @@ void TreeLayer::draw()
         gl::enableAlphaTest(0.1f);
         
         // Enable our tree texture
-        texTree.enableAndBind();
+        if (!mWithLeaves)
+            texTree.enableAndBind();
+        else
+            texTreeWithLeaves.enableAndBind();
 //        glTranslatef(0, 0, -travelBounds.z);
         gl::draw(mTreeMesh);
         glTranslatef(0, 0, -travelBounds.z);
         gl::draw(mTreeMesh);
         glTranslatef(0, 0, travelBounds.z);
-        texTree.unbind();
+        if (!mWithLeaves)
+            texTree.unbind();
+        else
+            texTreeWithLeaves.enableAndBind();
         
         if (mZoomToBlack)
         {
@@ -455,6 +465,7 @@ void TreeLayer::resetParams()
     mFadeAmount = 1.0f;
     mWarpAmount = 0.0f;        
     mAlphaAmount = 0.15f;
+    mWithLeaves = false;
 }
 
 void TreeLayer::setBlurred()
@@ -462,4 +473,9 @@ void TreeLayer::setBlurred()
     mFadeAmount = 0.27f;
     mWarpAmount = 0.006f;  
     mAlphaAmount = 0.77f;
+}
+
+void TreeLayer::setLeaves(bool l)
+{
+    mWithLeaves = l;
 }

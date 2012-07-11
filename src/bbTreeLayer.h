@@ -23,21 +23,26 @@ class TreeLayer : public SceneLayer
 {
 public:
 	TreeLayer();
-	virtual void setup(SceneState* manager);
+
+    void setBlurred();
+    void setLeaves(bool l);    
+	void resetParams();
+    
+	// SceneLayer
+    virtual void setup(SceneState* manager);
 	virtual void keyDown( cinder::app::KeyEvent event );
 	virtual void update();
 	virtual void draw();	
-	virtual void setEnabled(bool e);
-    virtual void setBlurred();
-	
-	void resetParams();
+	virtual void setEnabled(bool e);	
 private:
 	SceneState* mManager;	
 	// Trees
 	cinder::gl::Texture texSun;
 	cinder::gl::Texture texTree;
+	cinder::gl::Texture texTreeWithLeaves;    
 	cinder::gl::Texture texOverlay;
 	bool mTreesEnabled;
+    bool mWithLeaves;
 	int mNumTrees;
 	float mTreeRadius;
 	float mTreeSizeVariance;

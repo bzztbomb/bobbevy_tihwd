@@ -116,7 +116,7 @@ void bobbevyApp::setup()
     
     mCurrentTime = getElapsedSeconds();
     mAccumlator = 0.0;
-    mDT = 1.0/30.0;
+    mDT = 1.0/60.0;
 }
 
 void bobbevyApp::initMsgMap()
@@ -183,7 +183,7 @@ void bobbevyApp::keyDown( KeyEvent event )
 			break;
         case KeyEvent::KEY_e:
             mTreeLayer.setEnabled(true);
-            mTreeLayer.setBlurred();
+            mTreeLayer.setLeaves(true);
             break;
 		case KeyEvent::KEY_l:
 			mIntroLight.setEnabled(!mIntroLight.getEnabled());
@@ -221,7 +221,7 @@ void bobbevyApp::update()
     {
         mAccumlator -= mDT;
         
-        mSceneState.mTimeline->step(0.05);
+        mSceneState.mTimeline->step(0.025);
         mKinect.update();
         mTreeLayer.update();
         mIntroLight.update();
