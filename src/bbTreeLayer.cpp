@@ -77,7 +77,7 @@ TreeLayer::TreeLayer() :
 void TreeLayer::allocFBO()
 {
     gl::Fbo::Format format;
-    format.setSamples(4);
+    //format.setSamples(4);
 	mFbo = gl::Fbo(getWindowWidth(), getWindowHeight(), format);
 }
 
@@ -284,16 +284,17 @@ void TreeLayer::draw()
         glEnable(GL_TEXTURE);
         glEnable(GL_TEXTURE_2D);
         
-        gl::disableDepthWrite();
+//        gl::disableDepthWrite();
         gl::enableDepthRead();
-        gl::enableAlphaBlending();
+        gl::enableAlphaTest(0.1f);
         
         // Enable our tree texture
         texTree.enableAndBind();
+//        glTranslatef(0, 0, -travelBounds.z);
+        gl::draw(mTreeMesh);
         glTranslatef(0, 0, -travelBounds.z);
         gl::draw(mTreeMesh);
         glTranslatef(0, 0, travelBounds.z);
-        gl::draw(mTreeMesh);
         texTree.unbind();
         
         if (mZoomToBlack)
@@ -305,13 +306,19 @@ void TreeLayer::draw()
             texBlack.unbind();
         }
         
+        gl::disableAlphaTest();
+        gl::enableAlphaBlending();
+        
         // Draw overlay
         gl::disableDepthRead();
+        gl::disableDepthWrite();
         gl::setMatricesWindowPersp(renderArea.x2, renderArea.y2);
         gl::draw(texOverlay, renderArea);	
+        gl::disableAlphaBlending();
     }
     if (mFboActive)
     {
+        gl::enableAlphaBlending();
         gl::color( cinder::ColorA(1, 1, 1, mAlphaAmount) );
         gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
         mFadeShader.bind();
