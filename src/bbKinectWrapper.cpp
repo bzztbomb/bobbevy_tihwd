@@ -32,6 +32,7 @@ void KinectWrapper::setup(params::InterfaceGl& params)
 	mInitInitial = true;	
     mDrawContour = false;
     mLowPass = 242;
+    mDilate = true;
     
 	params.addSeparator("CV Params");
 	params.addParam( "Step from", &mStepFrom, "min=1 max=255" );
@@ -40,6 +41,7 @@ void KinectWrapper::setup(params::InterfaceGl& params)
     params.addParam( "CV Blur amount", &mBlurAmount, "min=3 max=55" );	
 	params.addParam( "CV area threshold", &mAreaThreshold, "min=1");
     params.addParam( "Show contour", &mDrawContour);
+    params.addParam( "Dilate", &mDilate);
 }
 
 void KinectWrapper::keyDown( KeyEvent event )
@@ -82,9 +84,9 @@ void KinectWrapper::findBlobs()
 	cv::Mat thresh;
 	
 	cv::cvtColor( input, gray, CV_RGB2GRAY );
-	cv::dilate(gray, gray, cv::Mat());
+    if (mDilate)
+        cv::dilate(gray, gray, cv::Mat());
 	cv::blur( gray, gray, cv::Size( mBlurAmount, mBlurAmount ) );
-    cv::threshold( gray, gray, mLowPass, mLowPass, CV_THRESH_TRUNC );	
     
     if (mInitInitial)
 	{
@@ -98,7 +100,8 @@ void KinectWrapper::findBlobs()
 	for( int t = mStepFrom; t < 255; t += mStepSize )
 	{
 		ContourVector vec;
-		cv::threshold( gray, thresh, t, 255, CV_THRESH_BINARY );
+        cv::threshold( gray, thresh, mLowPass, mLowPass, CV_THRESH_TOZERO_INV );	
+		cv::threshold( thresh, thresh, t, 255, CV_THRESH_BINARY );
         mContourMat = thresh.clone();
         mContourTexture = fromOcv(mContourMat);
 

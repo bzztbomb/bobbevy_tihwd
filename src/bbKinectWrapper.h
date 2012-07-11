@@ -60,6 +60,7 @@ public:
 	cv::Mat mInitial;
 	bool mInitInitial;	
     int mLowPass;
+    bool mDilate;
 
 	// Debug
 	cinder::gl::Texture	mContourTexture;
