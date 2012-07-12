@@ -102,7 +102,26 @@ pages = [ [
         "ontouchstart" : "oscManager.sendOSC(\"/bobbevy/key\", \"s\", \"O\");",
 			"isLocal": true,
     },
-
+    {
+        "name" : "inSlowButton",
+        "type" : "Button",
+        "mode": "momentary",
+        "x" : .8, "y" : 0,
+        "width" : .1, "height" : .1,
+        "label" : "FadeInSlow",
+        "ontouchstart" : "oscManager.sendOSC(\"/bobbevy/key\", \"s\", \"G\");",
+			"isLocal": true,
+    },
+    {
+        "name" : "inSlowButton",
+        "type" : "Button",
+        "mode": "momentary",
+        "x" : .9, "y" : 0,
+        "width" : .1, "height" : .1,
+        "label" : "Reset timeline",
+        "ontouchstart" : "oscManager.sendOSC(\"/bobbevy/key\", \"s\", \"H\");",
+			"isLocal": true,
+    },
 
     {
         "name" : "panNormalButton",

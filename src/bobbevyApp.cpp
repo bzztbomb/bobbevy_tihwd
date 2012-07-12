@@ -59,6 +59,8 @@ private:
     ParticleField mField;
 
     ColorA mBlackoutColor;
+    float mFadeInSlow;
+    float mFadeInNormal;
     
     void handleOSC();
     void initMsgMap();
@@ -78,6 +80,8 @@ void bobbevyApp::setup()
 	mSceneState.mParams.addParam("DebugDraw", &mDebugDraw, "keyIncr=d");
 	mSceneState.mParams.addParam("ShowParams", &mShowParams, "keyIncr=p");
 	mSceneState.mParams.addParam("ShowFPS", &mShowFPS);
+    mSceneState.mParams.addParam("FadeInNormal", &mFadeInNormal);
+    mSceneState.mParams.addParam("FadeInSlow", &mFadeInSlow);
 	
 	mSceneState.mTimeline = Timeline::create();
 	mSceneState.mTimeline->setDefaultAutoRemove(true);
@@ -116,6 +120,9 @@ void bobbevyApp::setup()
     mCurrentTime = getElapsedSeconds();
     mAccumlator = 0.0;
     mDT = 1.0/30.0;
+    
+    mFadeInNormal = 5.0f;
+    mFadeInSlow = 100.0f * 4.0f; 
 }
 
 void bobbevyApp::initMsgMap()
@@ -169,14 +176,6 @@ void bobbevyApp::keyDown( KeyEvent event )
 		case KeyEvent::KEY_f:
 			setFullScreen( !isFullScreen() );
 			break;
-		case KeyEvent::KEY_o:
-			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 1.0f, 5.0f);
-			break;			
-		case KeyEvent::KEY_i:
-			if (mSceneState.mBlackoutAmount >= 1.0)
-				mTreeLayer.resetParams();
-			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 0.0f, 5.0f);
-			break;			
 		case KeyEvent::KEY_t:
 			mTreeLayer.setEnabled(!mTreeLayer.getEnabled());
 			break;
@@ -196,12 +195,29 @@ void bobbevyApp::keyDown( KeyEvent event )
         case KeyEvent::KEY_v:
             mField.setEnabled(!mField.getEnabled());
             break;
+        // Fade in/out
         case KeyEvent::KEY_c:
             mBlackoutColor = ColorA(1.0, 0.85f, 0.85f, 1.0f);
             break;
         case KeyEvent::KEY_d:
             mBlackoutColor = ColorA(0.0, 0.0f, 0.0f, 1.0f);
             break;            
+		case KeyEvent::KEY_o:
+			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 1.0f, 5.0f);
+			break;			
+		case KeyEvent::KEY_i:
+			if (mSceneState.mBlackoutAmount >= 1.0)
+				mTreeLayer.resetParams();
+			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 0.0f, mFadeInNormal);
+			break;
+		case KeyEvent::KEY_g:
+			if (mSceneState.mBlackoutAmount >= 1.0)
+				mTreeLayer.resetParams();
+			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 0.0f, mFadeInSlow);
+			break;	
+        case KeyEvent::KEY_h:
+            mSceneState.mTimeline->clear();
+            break;
 	}			
 	mTreeLayer.keyDown(event);
 	mIntroLight.keyDown(event);
@@ -306,11 +322,13 @@ void bobbevyApp::draw()
 
 	if (mSceneState.mBlackoutAmount > 0.0)
 	{
+        gl::enableAlphaBlending();
         ColorA b = mBlackoutColor;
         b.a = mSceneState.mBlackoutAmount;
 		gl::color( b );
         gl::drawSolidRect(getWindowBounds());
 		gl::color( cinder::ColorA(1, 1, 1, 1) );
+        gl::disableAlphaBlending();
 	}    
     
 	if (mDebugDraw)
