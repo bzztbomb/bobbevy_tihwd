@@ -62,7 +62,7 @@ TreeLayer::TreeLayer() :
 	mTreeRadius(1.0f),
 	mTreeSizeVariance(2.0f),
 	mZoomToBlack(false),
-    mFboActive(true),
+    mFboActive(false),
     mFadeAmount(1.0f),
     mWarpAmount(0.0f),
     mAlphaAmount(1.0f),
@@ -270,9 +270,11 @@ void TreeLayer::draw()
         gl::setMatricesWindowPersp(renderArea.x2, renderArea.y2);
         
         // Draw sun
+        gl::enableAlphaBlending();
         gl::color(mSunColor);
         gl::draw(texSun, renderArea);
         gl::color( cinder::ColorA(1, 1, 1, 1) );
+//        gl::disableAlphaBlending();
 
         // Set camera up
         mTreeCam.lookAt(mTreePan, mTreePan + mTreeCam.getViewDirection(), mTreeCam.getWorldUp());
