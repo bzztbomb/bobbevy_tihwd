@@ -3,6 +3,8 @@ d = DebugDraw toggle
 p = Param toggle
 ' ' = reset reference depth
 
+c = fade color white
+d = fade color black
 o = fade out
 i = fade in
 t = tree toggle

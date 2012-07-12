@@ -58,7 +58,7 @@ private:
 	SkeletonParticles mFarSwarm;
     ParticleField mField;
 
-	gl::Texture texBlackout;
+    ColorA mBlackoutColor;
     
     void handleOSC();
     void initMsgMap();
@@ -85,6 +85,7 @@ void bobbevyApp::setup()
 	mDebugDraw = false;
 	mShowFPS = true;
 	mShowParams = false;
+    mBlackoutColor = ColorA(0.0f, 0.0f, 0.0f, 1.0f);
     
     mListener.setup(23232);
     initMsgMap();
@@ -99,9 +100,7 @@ void bobbevyApp::setup()
 	hiQFormat.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	hiQFormat.setMagFilter(GL_LINEAR_MIPMAP_LINEAR);
 	
-	// Blackout overlay
-	texBlackout = gl::Texture(loadImage(loadResource("blackout.png")), hiQFormat);
-	
+	// Blackout overlay	
 	mTreeLayer.setup(&mSceneState);
 	
 	mIntroLight.setup(&mSceneState);
@@ -116,7 +115,7 @@ void bobbevyApp::setup()
     
     mCurrentTime = getElapsedSeconds();
     mAccumlator = 0.0;
-    mDT = 1.0/60.0;
+    mDT = 1.0/30.0;
 }
 
 void bobbevyApp::initMsgMap()
@@ -197,6 +196,12 @@ void bobbevyApp::keyDown( KeyEvent event )
         case KeyEvent::KEY_v:
             mField.setEnabled(!mField.getEnabled());
             break;
+        case KeyEvent::KEY_c:
+            mBlackoutColor = ColorA(1.0, 0.85f, 0.85f, 1.0f);
+            break;
+        case KeyEvent::KEY_d:
+            mBlackoutColor = ColorA(0.0, 0.0f, 0.0f, 1.0f);
+            break;            
 	}			
 	mTreeLayer.keyDown(event);
 	mIntroLight.keyDown(event);
@@ -223,7 +228,7 @@ void bobbevyApp::update()
     {
         mAccumlator -= mDT;
         
-        mSceneState.mTimeline->step(0.025);
+        mSceneState.mTimeline->step(0.05);
         mKinect.update();
         mTreeLayer.update();
         mIntroLight.update();
@@ -298,22 +303,23 @@ void bobbevyApp::draw()
 	
 	mTreeLayer.draw();
 	mIntroLight.draw();
-    mFarSwarm.draw();
-	mCloseSwarm.draw();
-
-	if (mDebugDraw)
-		mKinect.draw();
-    
-    mField.draw();
 
 	if (mSceneState.mBlackoutAmount > 0.0)
 	{
-		gl::color( cinder::ColorA(1, 1, 1, mSceneState.mBlackoutAmount) );
-		gl::draw(texBlackout, getWindowBounds());
+        ColorA b = mBlackoutColor;
+        b.a = mSceneState.mBlackoutAmount;
+		gl::color( b );
+        gl::drawSolidRect(getWindowBounds());
 		gl::color( cinder::ColorA(1, 1, 1, 1) );
-	}
+	}    
+    
+	if (mDebugDraw)
+		mKinect.draw();
+    
+    mFarSwarm.draw();
+	mCloseSwarm.draw(); 
+    mField.draw();
 
-	
 	// Params
 	if (mShowParams)
 	{
