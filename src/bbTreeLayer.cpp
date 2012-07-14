@@ -69,7 +69,8 @@ TreeLayer::TreeLayer() :
     mTime(0.0f),
     mTimeMult(1.0f),
     mYMult(1.0f),
-    mFadeTransTime(20.0f)
+    mFadeTransTime(20.0f),
+    mFogColor(255.0f / 255.0f, 225.0f / 255.0f, 225.0f / 255.0f, 1.0f)
 {
 	resetParams();
 }
@@ -102,6 +103,7 @@ void TreeLayer::setup(SceneState* manager)
     manager->mParams.addParam("TimeMult", &mTimeMult, "min=0.0 max=100.0 step=0.01");
     manager->mParams.addParam("yMult", &mYMult, "min=0.0 max=10.0 step=0.01");
     manager->mParams.addParam("FadeTransTime", &mFadeTransTime, "min=0");
+    manager->mParams.addParam("FogColor", &mFogColor);
     
 	mTreeCam.lookAt(Vec3f(0,0,0), mTreeCam.getViewDirection(), -mTreeCam.getWorldUp());
 	
@@ -121,6 +123,7 @@ void TreeLayer::setup(SceneState* manager)
     
     allocFBO();
     mFadeShader = gl::GlslProg(loadResource("IntroLightVert.glsl"), loadResource("FadeFrag.glsl"));
+    mTreeShader = gl::GlslProg(loadResource("TreeVert.glsl"), loadResource("TreeFrag.glsl"));
     
 	initGroundMesh();
 	initTreeMesh();	
@@ -166,11 +169,11 @@ void TreeLayer::keyDown( cinder::app::KeyEvent event )
         case KeyEvent::KEY_7:
             setBlurred();
             break;
-        case KeyEvent::KEY_8:
-            mManager->mTimeline->apply(&mFadeAmount, 1.0f, mFadeTransTime);
-            mManager->mTimeline->apply(&mWarpAmount, 0.0f, mFadeTransTime);
-            mManager->mTimeline->apply(&mAlphaAmount, 1.0f, mFadeTransTime);
-            break;
+//        case KeyEvent::KEY_8:
+//            mManager->mTimeline->apply(&mFadeAmount, 1.0f, mFadeTransTime);
+//            mManager->mTimeline->apply(&mWarpAmount, 0.0f, mFadeTransTime);
+//            mManager->mTimeline->apply(&mAlphaAmount, 1.0f, mFadeTransTime);
+//            break;
 		case KeyEvent::KEY_9:
 			mTreePanSpeed = Vec3f(0,0,0);
 			break;
@@ -180,9 +183,9 @@ void TreeLayer::keyDown( cinder::app::KeyEvent event )
         case KeyEvent::KEY_a:
             mWithLeaves = !mWithLeaves;
             break;
-//		case KeyEvent::KEY_8:
-//			toggleZoomToBlack();
-//			break;
+		case KeyEvent::KEY_8:
+			toggleZoomToBlack();
+			break;
 	}
 }
 
@@ -191,7 +194,7 @@ void TreeLayer::toggleZoomToBlack()
 	mZoomToBlack = !mZoomToBlack;
 	if (mZoomToBlack)
 	{
-		mZoomTarget = Vec3f(0, 0, -10.0f);
+		mZoomTarget = Vec3f(0.0f, 0.0f, -10.0f);
 		mTreePanSpeed = mZoomTarget / (9.0f*30.0f);
 	}
 }
@@ -217,7 +220,10 @@ void TreeLayer::update()
 		}
 		mZoomTarget -= mTreePanSpeed;
 		if (mZoomTarget.z > -1.1f)
+        {
 			mZoomTarget.z = -1.1f;			
+            mTreePanSpeed = Vec3f(0.0f, 0.0f, 0.0f);
+        }
 	}
 	
 	if (mUpdateTrees)
@@ -270,15 +276,20 @@ void TreeLayer::draw()
         gl::setMatricesWindowPersp(renderArea.x2, renderArea.y2);
         
         // Draw sun
-        gl::enableAlphaBlending();
-        gl::color(mSunColor);
-        gl::draw(texSun, renderArea);
-        gl::color( cinder::ColorA(1, 1, 1, 1) );
-//        gl::disableAlphaBlending();
-
+        
         // Set camera up
         mTreeCam.lookAt(mTreePan, mTreePan + mTreeCam.getViewDirection(), mTreeCam.getWorldUp());
         gl::setMatrices(mTreeCam);
+        
+        mTreeShader.bind();
+        mTreeShader.uniform("farClip", mTreeCam.getFarClip() / 10.0f);
+        mTreeShader.uniform("fogColor", mFogColor);
+                
+        Vec3f bbRight, bbUp;
+        texSun.enableAndBind();
+        gl::color(mSunColor);
+        mTreeCam.getBillboardVectors(&bbRight, &bbUp);
+        gl::drawBillboard(mTreePan + Vec3f(0.0f, 0.0f, -mTreeCam.getFarClip()), Vec2f( mTreeCam.getFarClip(), mTreeCam.getFarClip()), 0, bbRight, bbUp);        
         
         // Draw ground
         gl::enableDepthWrite();
@@ -290,7 +301,6 @@ void TreeLayer::draw()
         glEnable(GL_TEXTURE);
         glEnable(GL_TEXTURE_2D);
         
-//        gl::disableDepthWrite();
         gl::enableDepthRead();
         gl::enableAlphaTest(0.1f);
         
@@ -299,7 +309,6 @@ void TreeLayer::draw()
             texTree.enableAndBind();
         else
             texTreeWithLeaves.enableAndBind();
-//        glTranslatef(0, 0, -travelBounds.z);
         gl::draw(mTreeMesh);
         glTranslatef(0, 0, -travelBounds.z);
         gl::draw(mTreeMesh);
@@ -314,9 +323,11 @@ void TreeLayer::draw()
             texBlack.enableAndBind();
             Vec3f bbRight, bbUp;
             mTreeCam.getBillboardVectors(&bbRight, &bbUp);
-            gl::drawBillboard(mTreePan + mZoomTarget, Vec2f(20, 20), 0, bbRight, bbUp); 
+            gl::drawBillboard(mTreePan + mZoomTarget, Vec2f(2, 2), 0, bbRight, bbUp); 
             texBlack.unbind();
         }
+        
+        mTreeShader.unbind();
         
         gl::disableAlphaTest();
         gl::enableAlphaBlending();
@@ -377,7 +388,7 @@ void TreeLayer::initGroundMesh()
 	
 	// now create the triangles from the vertices
 	mGroundMesh.appendTriangle( vIdx0, vIdx1, vIdx2 );
-	mGroundMesh.appendTriangle( vIdx0, vIdx2, vIdx3 );
+	mGroundMesh.appendTriangle( vIdx0, vIdx2, vIdx3 );    
 }
 
 void TreeLayer::initTreeMesh()

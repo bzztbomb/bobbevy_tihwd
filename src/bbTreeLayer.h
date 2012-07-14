@@ -64,6 +64,7 @@ private:
     bool mFboActive;
     cinder::gl::Fbo mFbo;
     cinder::gl::GlslProg mFadeShader;
+    cinder::gl::GlslProg mTreeShader;    
     cinder::Anim<float> mBlurAmount;
     cinder::Anim<float> mFadeAmount;
     cinder::Anim<float> mWarpAmount;
@@ -72,6 +73,8 @@ private:
     float mTime;
     float mYMult;
     float mFadeTransTime;
+    
+    cinder::ColorA mFogColor;
 	
 	void drawTrees();
 	void initGroundMesh();
