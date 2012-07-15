@@ -178,6 +178,7 @@ void bobbevyApp::keyDown( KeyEvent event )
 			break;
 		case KeyEvent::KEY_t:
 			mTreeLayer.setEnabled(!mTreeLayer.getEnabled());
+            mTreeLayer.setLeaves(false);
 			break;
         case KeyEvent::KEY_e:
             mTreeLayer.setEnabled(true);

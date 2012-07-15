@@ -532,4 +532,6 @@ void TreeLayer::setBlurred()
 void TreeLayer::setLeaves(bool l)
 {
     mWithLeaves = l;
+    if (mWithLeaves)
+        mTreePanSpeed = Vec3f(0,0,0);        
 }
