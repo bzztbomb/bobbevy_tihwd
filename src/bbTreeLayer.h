@@ -38,6 +38,8 @@ private:
 	SceneState* mManager;	
 	// Trees
 	cinder::gl::Texture texSun;
+	cinder::gl::Texture texGround;
+    cinder::gl::Texture texClip;
 	cinder::gl::Texture texTree;
 	cinder::gl::Texture texTreeWithLeaves;    
 	cinder::gl::Texture texOverlay;
@@ -74,7 +76,10 @@ private:
     float mYMult;
     float mFadeTransTime;
     
-    cinder::ColorA mFogColor;
+    
+    cinder::Anim<cinder::Color> mFogColor;
+    cinder::Anim<float> mFogDistance;
+    cinder::Anim<float> mFogHeight;
 	
 	void drawTrees();
 	void initGroundMesh();

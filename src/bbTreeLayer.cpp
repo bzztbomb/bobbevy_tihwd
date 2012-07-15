@@ -70,7 +70,8 @@ TreeLayer::TreeLayer() :
     mTimeMult(1.0f),
     mYMult(1.0f),
     mFadeTransTime(20.0f),
-    mFogColor(255.0f / 255.0f, 225.0f / 255.0f, 225.0f / 255.0f, 1.0f)
+    mFogDistance(120.0f),
+    mFogHeight(200.0f)
 {
 	resetParams();
 }
@@ -103,7 +104,10 @@ void TreeLayer::setup(SceneState* manager)
     manager->mParams.addParam("TimeMult", &mTimeMult, "min=0.0 max=100.0 step=0.01");
     manager->mParams.addParam("yMult", &mYMult, "min=0.0 max=10.0 step=0.01");
     manager->mParams.addParam("FadeTransTime", &mFadeTransTime, "min=0");
-    manager->mParams.addParam("FogColor", &mFogColor);
+    manager->mParams.addParam("FogColor", &mFogColor.value());
+    manager->mParams.addParam("FogDistance", &mFogDistance.value(), "step=1.0");
+    manager->mParams.addParam("FogHeight", &mFogHeight.value());
+    
     
 	mTreeCam.lookAt(Vec3f(0,0,0), mTreeCam.getViewDirection(), -mTreeCam.getWorldUp());
 	
@@ -116,8 +120,9 @@ void TreeLayer::setup(SceneState* manager)
 	mWithLeaves = true;
 	texTree = gl::Texture(loadImage(loadResource ("trees.png")), hiQFormat);
 	texTreeWithLeaves = gl::Texture(loadImage(loadResource ("trees-with-leaves-aligned-scaled.png")), hiQFormat);
-
+    texClip = gl::Texture(loadImage(loadResource("blackout.png")), hiQFormat);
 	texSun = gl::Texture(loadImage(loadResource("sun.png")), hiQFormat);
+    texGround = gl::Texture(loadImage(loadResource("groundTexture.png")), hiQFormat);                            
 	texOverlay = gl::Texture(loadImage(loadResource("overlay.png")), hiQFormat);
 	texBlack = gl::Texture(loadImage(loadResource("zoomToBlack.png")), hiQFormat);
     
@@ -129,6 +134,7 @@ void TreeLayer::setup(SceneState* manager)
 	initTreeMesh();	
     
     mTime = getElapsedSeconds();    
+    mFogColor = mSunColor;
 }
 
 void TreeLayer::setEnabled(bool e)
@@ -186,6 +192,16 @@ void TreeLayer::keyDown( cinder::app::KeyEvent event )
 		case KeyEvent::KEY_8:
 			toggleZoomToBlack();
 			break;
+        case KeyEvent::KEY_w:
+            mFogColor = Color(30.0 / 255.0, 10.0 / 255.0, 10.0 / 255.0);
+            mFogDistance = 1;
+            break;
+        case KeyEvent::KEY_r:                        
+            mManager->mTimeline->apply(&mFogDistance, 12.0f, slowTween);            
+            break;
+        case KeyEvent::KEY_u:
+            mManager->mTimeline->apply(&mFogDistance, 40.0f, slowTween);                        
+            break;
 	}
 }
 
@@ -280,29 +296,45 @@ void TreeLayer::draw()
         // Set camera up
         mTreeCam.lookAt(mTreePan, mTreePan + mTreeCam.getViewDirection(), mTreeCam.getWorldUp());
         gl::setMatrices(mTreeCam);
+
+        Vec3f tl, tr, bl, br;
+        mTreeCam.getFarClipCoordinates(&tl, &tr, &bl, &br);
+
         
-        mTreeShader.bind();
-        mTreeShader.uniform("farClip", mTreeCam.getFarClip() / 10.0f);
-        mTreeShader.uniform("fogColor", mFogColor);
-                
         Vec3f bbRight, bbUp;
-        texSun.enableAndBind();
-        gl::color(mSunColor);
         mTreeCam.getBillboardVectors(&bbRight, &bbUp);
-        gl::drawBillboard(mTreePan + Vec3f(0.0f, 0.0f, -mTreeCam.getFarClip()), Vec2f( mTreeCam.getFarClip(), mTreeCam.getFarClip()), 0, bbRight, bbUp);        
+
+        mTreeShader.bind();
+        mTreeShader.uniform("farClip", mFogDistance);
+        mTreeShader.uniform("fogColor", ColorA(mFogColor));
+        mTreeShader.uniform("fogHeight", mFogHeight);
         
-        // Draw ground
+        texClip.bind();
+        gl::drawBillboard(mTreePan + Vec3f(0.0f, 0.0f, -(mTreeCam.getFarClip()-1.0f)), Vec2f( mTreeCam.getFarClip()*10, mTreeCam.getFarClip()*10), 0, bbRight, bbUp);                
+        texClip.unbind();
+#define NORMAL 1
+#if NORMAL        
+        // Draw sun
+        mTreeShader.unbind();
+        gl::enableAlphaBlending();
+        texSun.enableAndBind();        
+        gl::color(mSunColor);
+        gl::drawBillboard(mTreePan + Vec3f(0.0f, 0.0f, -(mTreeCam.getFarClip()-1.0f)), Vec2f( mTreeCam.getFarClip(), mTreeCam.getFarClip()), 0, bbRight, bbUp);        
+        gl::disableAlphaBlending();
+        texSun.unbind();
+        mTreeShader.bind();
+        
         gl::enableDepthWrite();
         gl::enableDepthRead();
-        
-        glDisable(GL_TEXTURE);
-        glDisable(GL_TEXTURE_2D);
+
+        // Draw ground
+        gl::color(mGroundColor);
+        texGround.enableAndBind();
         gl::draw(mGroundMesh);
-        glEnable(GL_TEXTURE);
-        glEnable(GL_TEXTURE_2D);
+        texGround.unbind();
         
-        gl::enableDepthRead();
         gl::enableAlphaTest(0.1f);
+        gl::enableAlphaBlending();
         
         // Enable our tree texture
         if (!mWithLeaves)
@@ -326,18 +358,19 @@ void TreeLayer::draw()
             gl::drawBillboard(mTreePan + mZoomTarget, Vec2f(2, 2), 0, bbRight, bbUp); 
             texBlack.unbind();
         }
-        
+#endif
         mTreeShader.unbind();
         
         gl::disableAlphaTest();
         gl::enableAlphaBlending();
-        
         // Draw overlay
+#if NORMAL        
         gl::disableDepthRead();
         gl::disableDepthWrite();
         gl::setMatricesWindowPersp(renderArea.x2, renderArea.y2);
         gl::draw(texOverlay, renderArea);	
         gl::disableAlphaBlending();
+#endif
     }
     if (mFboActive)
     {
@@ -370,15 +403,23 @@ void TreeLayer::initGroundMesh()
 	float minv = -10000.0f;
 	float maxv = 10000.0f;
 	float yVal = 0;
-	mGroundMesh.appendVertex(Vec3f(minv, yVal, minv ));
 	Color groundColor(mGroundColor);
+    
+	mGroundMesh.appendVertex(Vec3f(minv, yVal, minv ));
 	mGroundMesh.appendColorRGB(groundColor);
-	mGroundMesh.appendVertex( Vec3f(minv, yVal, maxv) );
+    mGroundMesh.appendTexCoord(Vec2f(0.0f, 0.0f));
+    
+	mGroundMesh.appendVertex( Vec3f(minv, yVal, maxv) );    
 	mGroundMesh.appendColorRGB(groundColor);
-	mGroundMesh.appendVertex( Vec3f(maxv, yVal, maxv) );
+    mGroundMesh.appendTexCoord(Vec2f(0.0f, 0.0f));
+    
+	mGroundMesh.appendVertex( Vec3f(maxv, yVal, maxv) );    
 	mGroundMesh.appendColorRGB(groundColor);
+    mGroundMesh.appendTexCoord(Vec2f(0.0f, 0.0f));
+    
 	mGroundMesh.appendVertex( Vec3f(maxv, yVal, minv));
 	mGroundMesh.appendColorRGB(groundColor);
+    mGroundMesh.appendTexCoord(Vec2f(0.0f, 0.0f));
 	
 	// get the index of the vertex. not necessary with this example, but good practice
 	int vIdx0 = mGroundMesh.getNumVertices() - 4;

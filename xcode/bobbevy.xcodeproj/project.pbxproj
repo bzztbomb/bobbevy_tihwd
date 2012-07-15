@@ -42,6 +42,7 @@
 		C88BB97215A6BE2700634E79 /* OscSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88BB96E15A6BE2700634E79 /* OscSender.cpp */; };
 		C8CE8EAD15B21C8B0076054E /* TreeFrag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAB15B21C8B0076054E /* TreeFrag.glsl */; };
 		C8CE8EAE15B21C8B0076054E /* TreeVert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAC15B21C8B0076054E /* TreeVert.glsl */; };
+		C8CE8EB015B2257A0076054E /* groundTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAF15B2257A0076054E /* groundTexture.png */; };
 		C8F3035215AD049A00993674 /* trees-with-leaves-aligned-scaled.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3035115AD049A00993674 /* trees-with-leaves-aligned-scaled.png */; };
 		C8F3E25515AD401F005A336F /* particles.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3E25415AD401F005A336F /* particles.png */; };
 		C8F3E25815AD48C0005A336F /* particle_brown.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3E25615AD48C0005A336F /* particle_brown.png */; };
@@ -301,6 +302,7 @@
 		C88BB96E15A6BE2700634E79 /* OscSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscSender.cpp; sourceTree = "<group>"; };
 		C8CE8EAB15B21C8B0076054E /* TreeFrag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TreeFrag.glsl; path = ../resources/TreeFrag.glsl; sourceTree = "<group>"; };
 		C8CE8EAC15B21C8B0076054E /* TreeVert.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TreeVert.glsl; path = ../resources/TreeVert.glsl; sourceTree = "<group>"; };
+		C8CE8EAF15B2257A0076054E /* groundTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = groundTexture.png; path = ../resources/groundTexture.png; sourceTree = "<group>"; };
 		C8F3035115AD049A00993674 /* trees-with-leaves-aligned-scaled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "trees-with-leaves-aligned-scaled.png"; path = "../resources/trees-with-leaves-aligned-scaled.png"; sourceTree = "<group>"; };
 		C8F3E25415AD401F005A336F /* particles.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = particles.png; path = ../resources/particles.png; sourceTree = "<group>"; };
 		C8F3E25615AD48C0005A336F /* particle_brown.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = particle_brown.png; path = ../resources/particle_brown.png; sourceTree = "<group>"; };
@@ -409,6 +411,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C8CE8EAF15B2257A0076054E /* groundTexture.png */,
 				C8CE8EAB15B21C8B0076054E /* TreeFrag.glsl */,
 				C8CE8EAC15B21C8B0076054E /* TreeVert.glsl */,
 				C8F3E25615AD48C0005A336F /* particle_brown.png */,
@@ -950,6 +953,7 @@
 				C8F3E25915AD48C0005A336F /* particle_yellow.png in Resources */,
 				C8CE8EAD15B21C8B0076054E /* TreeFrag.glsl in Resources */,
 				C8CE8EAE15B21C8B0076054E /* TreeVert.glsl in Resources */,
+				C8CE8EB015B2257A0076054E /* groundTexture.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

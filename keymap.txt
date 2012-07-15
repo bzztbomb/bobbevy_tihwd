@@ -10,7 +10,7 @@ i = fade in
 g= fade in slow
 h = clear timeline
 t = tree toggle
-f = tree toggle with leaves
+e = tree toggle with leaves
 l = light toggle
 b = close swarm
 n = far swarm
@@ -36,6 +36,10 @@ Z = TreeCAM Z In, z Out
 9 = Stop
 0 = Reset
 Q=intro blurry
+w=fogged out
+r=less fogged
+u=normal fog
 
 Particles
 m = Particle drop
+w = fog color tween
