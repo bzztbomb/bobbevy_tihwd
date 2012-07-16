@@ -65,7 +65,8 @@ void ParticleField::initField()
     Vec3f zero(0.0f, 0.0f, 0.0f);
     for (int i = 0; i < mNumParticles; i++)
     {
-        mParticlePos.push_back(randScreenVec());
+//        mParticlePos.push_back(randScreenVec());
+        mParticlePos.push_back(Vec3f(mRand.nextFloat() * getWindowWidth(), 0.0f, 0.0f));
         mParticleGoal.push_back(randScreenVec());
         mParticleVel.push_back(zero);
     }
@@ -75,6 +76,7 @@ void ParticleField::setEnabled(bool e)
 {
     SceneLayer::setEnabled(e);
     mDropping = false;
+    initField();
 }
 
 void ParticleField::keyDown( cinder::app::KeyEvent event )

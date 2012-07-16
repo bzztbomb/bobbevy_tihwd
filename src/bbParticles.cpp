@@ -29,7 +29,7 @@ Vec3f dumbRand()
 SkeletonParticles::SkeletonParticles() :
 	mManager(NULL),
 	mTargetPoint(300.0f, 300.0f, 0.0f),
-	mMaxVel(0.8f),
+	mMaxVel(1.6f),
 	mAfterTargetAccel(2.0f),
 	mSwarm(true),
     mUserToken(KinectWrapper::utClosest),
@@ -38,7 +38,7 @@ SkeletonParticles::SkeletonParticles() :
     mTargetDrag(1.0f),
     mDistanceThresh(3.0f),
     mDropping(false),
-    mDropAccel(0.0f, 0.5f, 0.0f),
+    mDropAccel(0.0f, 1.0f, 0.0f),
     mNumParticles(200),
     mNumPositions(100),
     mBounds(100,100,600,600)
