@@ -70,7 +70,7 @@ TreeLayer::TreeLayer() :
     mTimeMult(1.0f),
     mYMult(1.0f),
     mFadeTransTime(20.0f),
-    mFogDistance(120.0f),
+    mFogDistance(40.0f),
     mFogHeight(200.0f)
 {
 	resetParams();
@@ -134,7 +134,6 @@ void TreeLayer::setup(SceneState* manager)
 	initTreeMesh();	
     
     mTime = getElapsedSeconds();    
-    mFogColor = mSunColor;
 }
 
 void TreeLayer::setEnabled(bool e)
@@ -333,7 +332,7 @@ void TreeLayer::draw()
         gl::draw(mGroundMesh);
         texGround.unbind();
         
-        gl::enableAlphaTest(0.1f);
+        gl::enableAlphaTest(0.0f);
         gl::enableAlphaBlending();
         
         // Enable our tree texture
@@ -341,10 +340,13 @@ void TreeLayer::draw()
             texTree.enableAndBind();
         else
             texTreeWithLeaves.enableAndBind();
-        gl::draw(mTreeMesh);
-        glTranslatef(0, 0, -travelBounds.z);
-        gl::draw(mTreeMesh);
-        glTranslatef(0, 0, travelBounds.z);
+        
+        {
+            glTranslatef(0, 0, -travelBounds.z);
+            gl::draw(mTreeMesh);
+            glTranslatef(0, 0, travelBounds.z);
+            gl::draw(mTreeMesh);
+        }
         if (!mWithLeaves)
             texTree.unbind();
         else
@@ -449,7 +451,7 @@ void TreeLayer::initTreeMesh()
 			Vec2f r = randit.nextVec2f() * (mTreeRadius / 4.0f);
 			Vec3f treePos = rowCurrent + Vec3f(r.x, 0.0f, r.y);
 			Vec2f scale = Vec2f(scaleFactors[whichTree], 1.0f);
-			Vec2f treeScale = scale * (1 + randit.nextFloat(mTreeSizeVariance));
+			Vec2f treeScale = scale * (1.0 + randit.nextFloat(mTreeSizeVariance));
 			treePos.y -= treeScale.y * 0.5;
 			float minBound = -mNumTrees*mTreeRadius / 2.0f;
 			if (treePos.x - (treeScale.x*scale.x) < minBound)
@@ -473,7 +475,7 @@ void TreeLayer::initTreeMesh()
 		}
 	}
 	Vec3f bbsize = mTreeMesh.calcBoundingBox().getSize();
-	travelBounds = Vec3f(mNumTrees*mTreeRadius, 0.0f, bbsize.z);
+	travelBounds = Vec3f(mNumTrees*mTreeRadius, 0.0f, bbsize.z + mTreeRadius);
 }
 
 void TreeLayer::addTree(const Vec3f& treePos, const Vec2f& treeScale, const Vec2f& texOffset, bool flipX)
