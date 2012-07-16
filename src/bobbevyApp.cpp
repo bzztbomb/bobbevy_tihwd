@@ -207,8 +207,6 @@ void bobbevyApp::keyDown( KeyEvent event )
 			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 1.0f, 5.0f);
 			break;			
 		case KeyEvent::KEY_i:
-			if (mSceneState.mBlackoutAmount >= 1.0)
-				mTreeLayer.resetParams();
 			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 0.0f, mFadeInNormal);
 			break;
 		case KeyEvent::KEY_g:
