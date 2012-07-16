@@ -330,7 +330,7 @@ pages = [ [
         "mode": "toggle",
         "colors": ["#000", "#444", "#aaa"],
         "stroke": "#aaaaaa",
-        "ontouchstart": "oscManager.sendOSC(\"/bobbevy/key\", \"s\", \"E\"); oscManager.sendOSC(\"/bobbevy/key\", \"s\", \"9\");oscManager.sendOSC(\"/bobbevy/key\", \"s\", \"W\");oscManager.sendOSC(\"/bobbevy/key\", \"s\", \"I\");",
+        "ontouchstart": "oscManager.sendOSC(\"/bobbevy/key\", \"s\", \"E\"); oscManager.sendOSC(\"/bobbevy/key\", \"s\", \"9\");oscManager.sendOSC(\"/bobbevy/key\", \"s\", \"W\");oscManager.sendOSC(\"/bobbevy/key\", \"s\", \"G\");",
         "label":"FadeInSlowNoMove",
 			"isLocal": true,
     },

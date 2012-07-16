@@ -121,8 +121,8 @@ void bobbevyApp::setup()
     mAccumlator = 0.0;
     mDT = 1.0/30.0;
     
-    mFadeInNormal = 5.0f;
-    mFadeInSlow = 100.0f * 4.0f; 
+    mFadeInNormal = 10.0f;
+    mFadeInSlow = 40.0f; 
 }
 
 void bobbevyApp::initMsgMap()
@@ -210,8 +210,6 @@ void bobbevyApp::keyDown( KeyEvent event )
 			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 0.0f, mFadeInNormal);
 			break;
 		case KeyEvent::KEY_g:
-			if (mSceneState.mBlackoutAmount >= 1.0)
-				mTreeLayer.resetParams();
 			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 0.0f, mFadeInSlow);
 			break;	
         case KeyEvent::KEY_h:
