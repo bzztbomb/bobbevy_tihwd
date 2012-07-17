@@ -227,6 +227,7 @@ void bobbevyApp::keyDown( KeyEvent event )
 
 void bobbevyApp::mouseDown( MouseEvent event )
 {
+    mFarSwarm.mouseDown(event);
 }
 
 void bobbevyApp::update()

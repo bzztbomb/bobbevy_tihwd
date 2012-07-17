@@ -36,6 +36,8 @@ public:
 	virtual void update();
 	virtual void draw();
     virtual void setEnabled(bool e);
+    
+    void mouseDown(cinder::app::MouseEvent event);
 private:
     static const int smNumOffsets;
     std::string mName;
@@ -75,6 +77,7 @@ private:
 	void updateSwarm();
     void updateDrop();
 	void updateHose();
+    void updateWaiting();
 	void resetParticle(int index);
 };
 

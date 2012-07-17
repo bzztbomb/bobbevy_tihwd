@@ -216,7 +216,8 @@ void TreeLayer::update()
             {
                 mSwarm[i]->setEnabled(true);
                 mSwarm[i]->moveSwarm(false);
-                mSwarm[i]->setZValue(0.0f);            
+                mSwarm[i]->setZValue(0.0f);
+                mManager->mTimeline->apply(&mFogDistance, 12.0f, 2.0f);            
             }
         }
 	}
@@ -458,6 +459,7 @@ void TreeLayer::resetParams()
     mWarpAmount = 0.0f;        
     mAlphaAmount = 0.15f;
     mWithLeaves = false;
+    mFogDistance = 40.0f;
 }
 
 void TreeLayer::setBlurred()
