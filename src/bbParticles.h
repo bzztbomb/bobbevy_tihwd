@@ -27,6 +27,8 @@ public:
     void setName(const std::string& name);
     void followUser(KinectWrapper::UserToken ut);
     void drop();
+    void moveSwarm(bool move);
+    void setZValue(float z);
     
 	// SceneLayer
     virtual void setup(SceneState* manager);
@@ -65,6 +67,10 @@ private:
     cinder::Vec3f mDropAccel;
     
     cinder::Color mColor;
+    
+    float mZValue;
+    cinder::Vec2f mParticleSize;
+    bool mMoveSwarm;
 	
 	void updateSwarm();
     void updateDrop();

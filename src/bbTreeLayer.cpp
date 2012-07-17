@@ -23,6 +23,8 @@ using namespace gl;
 #define WIDTH 800
 #define HEIGHT 600
 
+const int TreeLayer::NUM_SWARMS = 2;
+
 TreeLayer::TreeLayer() :
 	mTreeCam(WIDTH, HEIGHT, 60.0f, 1.0f, 1000.0f ),
 	mGroundColor(44.0f / 255.0f, 32.0f / 255.0f, 30.0f / 255.0f),
@@ -181,6 +183,11 @@ void TreeLayer::toggleZoomToBlack()
 	{        
 		mZoomTarget = Vec3f(0.0f, 0.0f, -((travelBounds.z-mTreeRadius) + mTreePan.z));
 		mTreePanSpeed = mZoomTarget / (9.0f*30.0f);
+        for (int i = 0; i < NUM_SWARMS; i++)
+        {
+//            mSwarm[i]->setEnabled(true);
+            mSwarm[i]->setZValue(mTreePan.z + mZoomTarget.z);
+        }
 	}
 }
 
@@ -205,6 +212,12 @@ void TreeLayer::update()
         {
 			mZoomTarget.z = dist;			
             mTreePanSpeed = Vec3f(0.0f, 0.0f, 0.0f);
+            for (int i = 0; i < NUM_SWARMS; i++)
+            {
+                mSwarm[i]->setEnabled(true);
+                mSwarm[i]->moveSwarm(false);
+                mSwarm[i]->setZValue(0.0f);            
+            }
         }
 	}
 	
@@ -305,7 +318,7 @@ void TreeLayer::draw()
         middlePos.y = -scale.y * 0.5f;
         gl::drawBillboard(middlePos + Vec3f(mZoomOffset, 0.0f, 0.0f), scale, 0.0f, bbRight, bbUp); 
         gl::drawBillboard(middlePos - Vec3f(mZoomOffset, 0.0f, 0.0f), scale, 0.0f, bbRight, bbUp);         
-        texBlack.unbind();
+        texBlack.unbind();        
     }    
  
     
@@ -459,4 +472,10 @@ void TreeLayer::setLeaves(bool l)
     mWithLeaves = l;
     if (mWithLeaves)
         mTreePanSpeed = Vec3f(0,0,0);        
+}
+
+void TreeLayer::setSwarms(SkeletonParticles* swarm0, SkeletonParticles* swarm1)
+{
+    mSwarm[0] = swarm0;
+    mSwarm[1] = swarm1;
 }

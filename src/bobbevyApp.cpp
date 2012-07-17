@@ -106,7 +106,8 @@ void bobbevyApp::setup()
 	
 	// Blackout overlay	
 	mTreeLayer.setup(&mSceneState);
-	
+	mTreeLayer.setSwarms(&mCloseSwarm, &mFarSwarm);
+    
 	mIntroLight.setup(&mSceneState);
 
     mCloseSwarm.setName("near");

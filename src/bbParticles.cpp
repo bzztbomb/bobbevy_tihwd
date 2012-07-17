@@ -23,6 +23,9 @@ Vec3f dumbRand()
     return r;
 }
 
+float spawnSize = 7.0f;
+Vec3f spawnOffset(7.23f, 2.54f, 0.0f);
+
 //
 // SkeletonParticles
 //
@@ -41,7 +44,10 @@ SkeletonParticles::SkeletonParticles() :
     mDropAccel(0.0f, 1.0f, 0.0f),
     mNumParticles(200),
     mNumPositions(100),
-    mBounds(100,100,600,600)
+    mBounds(100,100,600,600),
+    mZValue(0.0f),
+    mParticleSize(16.0f, 16.0f),
+    mMoveSwarm(true)
 {
 	Vec3f zero(0.0f, 0.0f, 0.0f);
 	for (int i = 0; i < mNumParticles; i++)
@@ -87,6 +93,8 @@ void SkeletonParticles::setup(SceneState* manager)
 	mManager->mParams.addParam(mName + ": Color", &mColor);
 	mManager->mParams.addParam(mName + ": DropAccel", &mDropAccel);
 	mManager->mParams.addParam(mName + ": NumParticles", &mNumParticles);
+	mManager->mParams.addParam(mName + ": spawnOffset", &spawnOffset);
+	mManager->mParams.addParam(mName + ": spawnSize", &spawnSize);
 
 	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
 	{
@@ -102,6 +110,9 @@ void SkeletonParticles::keyDown( KeyEvent event )
 	{
 		case KeyEvent::KEY_m:
             mDropping = true;
+            break;
+        case KeyEvent::KEY_j:
+            moveSwarm(true);
             break;
     }
 }
@@ -167,6 +178,11 @@ void SkeletonParticles::update()
 {
 	if (!mEnabled)
 		return;
+    
+    if (!mMoveSwarm)
+    {
+        return;
+    }
 	
 	// Calc target point, left and right vectors
 	Blob* user = mManager->mKinect->getUser(mUserToken);
@@ -186,6 +202,8 @@ void SkeletonParticles::draw()
 		return;
 	gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
 	gl::enableAlphaBlending();
+//    gl::enableDepthRead();
+    
     Vec3f bbUp(0.0f, -1.0f, 0.0f); 
     Vec3f bbRight(-1.0f, 0.0f, 0.0f);
 
@@ -206,10 +224,12 @@ void SkeletonParticles::draw()
         {
             gl::color(mColor * r.nextFloat(0.7, 1.0));
             Vec2f velNorm(mParticleVel[i].x, mParticleVel[i].y);
-            velNorm.normalize();
+            velNorm.safeNormalize();
             velNorm *= -1.0f;
             Vec2f polar = toPolar(velNorm);
-            gl::drawBillboard(mParticlePos[i], Vec2f(16.0f, 16.0f), toDegrees(polar.y), bbRight, bbUp);
+            Vec3f drawPos(mParticlePos[i].x, mParticlePos[i].y, mZValue);
+            gl::drawBillboard(drawPos, 
+                              mParticleSize, toDegrees(polar.y), bbRight, bbUp);
         }
         if (i==0)
             texBrown.unbind();
@@ -229,5 +249,41 @@ void SkeletonParticles::setEnabled(bool e)
             resetParticle(i);
         }
         mDropping = false;
+        mMoveSwarm = true;
+    }
+}
+
+void SkeletonParticles::setZValue(float z)
+{
+    mZValue = z;
+}
+
+void SkeletonParticles::moveSwarm(bool move)
+{
+    mMoveSwarm = move;
+    if (!mMoveSwarm)
+    {
+        float offset = (mUserToken == KinectWrapper::utClosest) ? (getWindowWidth() / 7.0f) : -(getWindowWidth() / 6.0f);
+        Vec3f center((getWindowWidth() / 2.0f) + offset, getWindowHeight() / 2.0f, 0.0f); 
+        int idx = 0;
+        for (int i = 0; i < 20; i++)
+        {
+            for (int j = 0; j < 10; j++)
+            {
+                Vec3f pos = center;
+                Vec2f rand = randVec2f() * randFloat(0.6f, 1.0f);
+                if (rand.x > 0)
+                    mParticleVel[idx] = Vec3f(10.0f, 0.0f, 0.0f);
+                else
+                    mParticleVel[idx] = Vec3f(-10.0f, 0.0f, 0.0f);
+                pos.x += rand.x * (getWindowWidth() / spawnOffset.x);
+                pos.y += -abs(rand.y) * (getWindowHeight() / spawnOffset.y);
+                mParticlePos[idx] = pos;
+                idx++;
+            }
+        }
+        mParticleSize = Vec2f(8.0f, 8.0f);
+    } else {
+        mParticleSize = Vec2f(16.0f, 16.0f);
     }
 }

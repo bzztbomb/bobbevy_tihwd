@@ -16,7 +16,7 @@
 #include "cinder/gl/GlslProg.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Camera.h"
-
+#include "bbParticles.h"
 
 class TreeLayer : public SceneLayer
 {
@@ -26,6 +26,7 @@ public:
     void setBlurred();
     void setLeaves(bool l);    
 	void resetParams();
+    void setSwarms(SkeletonParticles* swarm0, SkeletonParticles* swarm1);
     
 	// SceneLayer
     virtual void setup(SceneState* manager);
@@ -77,6 +78,9 @@ private:
     cinder::Anim<cinder::Color> mFogColor;
     cinder::Anim<float> mFogDistance;
     cinder::Anim<float> mFogHeight;
+    
+    static const int NUM_SWARMS;
+    SkeletonParticles* mSwarm[2];
 	
 	void drawTrees();
 	void initGroundMesh();
