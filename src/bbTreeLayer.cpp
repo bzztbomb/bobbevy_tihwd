@@ -23,35 +23,6 @@ using namespace gl;
 #define WIDTH 800
 #define HEIGHT 600
 
-void hackdraw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
-{
-	SaveTextureBindState saveBindState( texture.getTarget() );
-	BoolState saveEnabledState( texture.getTarget() );
-	ClientBoolState vertexArrayState( GL_VERTEX_ARRAY );
-	ClientBoolState texCoordArrayState( GL_TEXTURE_COORD_ARRAY );	
-	texture.enableAndBind();
-    
-	glEnableClientState( GL_VERTEX_ARRAY );
-	GLfloat verts[8];
-	glVertexPointer( 2, GL_FLOAT, 0, verts );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	GLfloat texCoords[8];
-	glTexCoordPointer( 2, GL_FLOAT, 0, texCoords );
-    
-	verts[0*2+0] = destRect.getX2(); verts[0*2+1] = destRect.getY2();	
-	verts[1*2+0] = destRect.getX1(); verts[1*2+1] = destRect.getY2();	
-	verts[2*2+0] = destRect.getX2(); verts[2*2+1] = destRect.getY1();	
-	verts[3*2+0] = destRect.getX1(); verts[3*2+1] = destRect.getY1();	
-    
-	const Rectf srcCoords = texture.getAreaTexCoords( srcArea );
-	texCoords[0*2+0] = srcCoords.getX2(); texCoords[0*2+1] = srcCoords.getY1();	
-	texCoords[1*2+0] = srcCoords.getX1(); texCoords[1*2+1] = srcCoords.getY1();	
-	texCoords[2*2+0] = srcCoords.getX2(); texCoords[2*2+1] = srcCoords.getY2();	
-	texCoords[3*2+0] = srcCoords.getX1(); texCoords[3*2+1] = srcCoords.getY2();	
-    
-	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-}
-
 TreeLayer::TreeLayer() :
 	mTreeCam(WIDTH, HEIGHT, 60.0f, 1.0f, 1000.0f ),
 	mGroundColor(44.0f / 255.0f, 32.0f / 255.0f, 30.0f / 255.0f),
@@ -62,7 +33,6 @@ TreeLayer::TreeLayer() :
 	mTreeRadius(1.0f),
 	mTreeSizeVariance(2.0f),
 	mZoomToBlack(false),
-    mFboActive(false),
     mFadeAmount(1.0f),
     mWarpAmount(0.0f),
     mAlphaAmount(1.0f),
@@ -74,13 +44,6 @@ TreeLayer::TreeLayer() :
     mFogHeight(200.0f)
 {
 	resetParams();
-}
-
-void TreeLayer::allocFBO()
-{
-    gl::Fbo::Format format;
-    //format.setSamples(4);
-	mFbo = gl::Fbo(getWindowWidth(), getWindowHeight(), format);
 }
 
 void TreeLayer::setup(SceneState* manager)
@@ -97,7 +60,6 @@ void TreeLayer::setup(SceneState* manager)
 	manager->mParams.addParam("GroundColor", &mGroundColor);
 	manager->mParams.addParam("SunColor", &mSunColor);
 	manager->mParams.addParam("ZoomTarget", &mZoomTarget);
-	manager->mParams.addParam("FboActive", &mFboActive);
     manager->mParams.addParam("FadeAmount", &mFadeAmount.value(), "min=0.0 max=1.0 step=0.01");
     manager->mParams.addParam("WarpAmount", &mWarpAmount.value(), "min=0.0 max=100.0 step=0.001");
     manager->mParams.addParam("AlphaAmount", &mAlphaAmount.value(), "min=0.0 max=1.0 step=0.01");
@@ -126,8 +88,6 @@ void TreeLayer::setup(SceneState* manager)
 	texOverlay = gl::Texture(loadImage(loadResource("overlay.png")), hiQFormat);
 	texBlack = gl::Texture(loadImage(loadResource("zoomToBlack.png")), hiQFormat);
     
-    allocFBO();
-    mFadeShader = gl::GlslProg(loadResource("IntroLightVert.glsl"), loadResource("FadeFrag.glsl"));
     mTreeShader = gl::GlslProg(loadResource("TreeVert.glsl"), loadResource("TreeFrag.glsl"));
     
 	initGroundMesh();
@@ -258,144 +218,93 @@ void TreeLayer::draw()
 {
 	if (!mEnabled)
 		return;
-
-	if (mFbo.getWidth() != getWindowWidth() || mFbo.getHeight() != getWindowHeight())
-    {
-        allocFBO();
-    }    
-    {
-        gl::SaveFramebufferBinding bindingSaver;
-        
-        if (mFboActive)
-        {
-            // bind the framebuffer - now everything we draw will go there
-            mFbo.bindFramebuffer();
-        
-            // setup the viewport to match the dimensions of the FBO
-            gl::setViewport( mFbo.getBounds() );
-            // clear out the window with black
-            gl::clear( Color( 0, 0, 0 ) ); 
             
-        }
-        
-        // Set up draw states
-        gl::disableDepthWrite();
-        gl::disableDepthRead();
-        gl::color( cinder::ColorA(1, 1, 1, 1) );
-        Area renderArea = getWindowBounds();
-        if (mFboActive)
-        {
-            renderArea.x2 *= mFadeAmount;
-            renderArea.y2 *= mFadeAmount;
-        }
-        gl::setMatricesWindowPersp(renderArea.x2, renderArea.y2);
-        
-        // Draw sun
-        
-        // Set camera up
-        mTreeCam.lookAt(mTreePan, mTreePan + mTreeCam.getViewDirection(), mTreeCam.getWorldUp());
-        gl::setMatrices(mTreeCam);
+    // Set up draw states
+    gl::disableDepthWrite();
+    gl::disableDepthRead();
+    gl::color( cinder::ColorA(1, 1, 1, 1) );
+    Area renderArea = getWindowBounds();
+    gl::setMatricesWindowPersp(renderArea.x2, renderArea.y2);
+    
+    // Draw sun
+    
+    // Set camera up
+    mTreeCam.lookAt(mTreePan, mTreePan + mTreeCam.getViewDirection(), mTreeCam.getWorldUp());
+    gl::setMatrices(mTreeCam);
 
-        Vec3f tl, tr, bl, br;
-        mTreeCam.getFarClipCoordinates(&tl, &tr, &bl, &br);
+    Vec3f tl, tr, bl, br;
+    mTreeCam.getFarClipCoordinates(&tl, &tr, &bl, &br);
 
-        
+    
+    Vec3f bbRight, bbUp;
+    mTreeCam.getBillboardVectors(&bbRight, &bbUp);
+
+    mTreeShader.bind();
+    mTreeShader.uniform("farClip", mFogDistance);
+    mTreeShader.uniform("fogColor", ColorA(mFogColor));
+    mTreeShader.uniform("fogHeight", mFogHeight);
+    
+    texClip.bind();
+    gl::drawBillboard(mTreePan + Vec3f(0.0f, 0.0f, -(mTreeCam.getFarClip()-1.0f)), Vec2f( mTreeCam.getFarClip()*10, mTreeCam.getFarClip()*10), 0, bbRight, bbUp);                
+    texClip.unbind();
+
+    // Draw sun
+    mTreeShader.unbind();
+    gl::enableAlphaBlending();
+    texSun.enableAndBind();        
+    gl::color(mSunColor);
+    gl::drawBillboard(mTreePan + Vec3f(0.0f, 0.0f, -(mTreeCam.getFarClip()-1.0f)), Vec2f( mTreeCam.getFarClip(), mTreeCam.getFarClip()), 0, bbRight, bbUp);        
+    gl::disableAlphaBlending();
+    texSun.unbind();
+    mTreeShader.bind();
+    
+    gl::enableDepthWrite();
+    gl::enableDepthRead();
+
+    // Draw ground
+    gl::color(mGroundColor);
+    texGround.enableAndBind();
+    gl::draw(mGroundMesh);
+    texGround.unbind();
+    
+    gl::enableAlphaTest(0.0f);
+    gl::enableAlphaBlending();
+    
+    // Enable our tree texture
+    if (!mWithLeaves)
+        texTree.enableAndBind();
+    else
+        texTreeWithLeaves.enableAndBind();
+    
+    {
+        glTranslatef(0, 0, -travelBounds.z);
+        gl::draw(mTreeMesh);
+        glTranslatef(0, 0, travelBounds.z);
+        gl::draw(mTreeMesh);
+    }
+    if (!mWithLeaves)
+        texTree.unbind();
+    else
+        texTreeWithLeaves.unbind();
+    
+    if (mZoomToBlack)
+    {
+        texBlack.enableAndBind();
         Vec3f bbRight, bbUp;
         mTreeCam.getBillboardVectors(&bbRight, &bbUp);
-
-        mTreeShader.bind();
-        mTreeShader.uniform("farClip", mFogDistance);
-        mTreeShader.uniform("fogColor", ColorA(mFogColor));
-        mTreeShader.uniform("fogHeight", mFogHeight);
-        
-        texClip.bind();
-        gl::drawBillboard(mTreePan + Vec3f(0.0f, 0.0f, -(mTreeCam.getFarClip()-1.0f)), Vec2f( mTreeCam.getFarClip()*10, mTreeCam.getFarClip()*10), 0, bbRight, bbUp);                
-        texClip.unbind();
-#define NORMAL 1
-#if NORMAL        
-        // Draw sun
-        mTreeShader.unbind();
-        gl::enableAlphaBlending();
-        texSun.enableAndBind();        
-        gl::color(mSunColor);
-        gl::drawBillboard(mTreePan + Vec3f(0.0f, 0.0f, -(mTreeCam.getFarClip()-1.0f)), Vec2f( mTreeCam.getFarClip(), mTreeCam.getFarClip()), 0, bbRight, bbUp);        
-        gl::disableAlphaBlending();
-        texSun.unbind();
-        mTreeShader.bind();
-        
-        gl::enableDepthWrite();
-        gl::enableDepthRead();
-
-        // Draw ground
-        gl::color(mGroundColor);
-        texGround.enableAndBind();
-        gl::draw(mGroundMesh);
-        texGround.unbind();
-        
-        gl::enableAlphaTest(0.0f);
-        gl::enableAlphaBlending();
-        
-        // Enable our tree texture
-        if (!mWithLeaves)
-            texTree.enableAndBind();
-        else
-            texTreeWithLeaves.enableAndBind();
-        
-        {
-            glTranslatef(0, 0, -travelBounds.z);
-            gl::draw(mTreeMesh);
-            glTranslatef(0, 0, travelBounds.z);
-            gl::draw(mTreeMesh);
-        }
-        if (!mWithLeaves)
-            texTree.unbind();
-        else
-            texTreeWithLeaves.unbind();
-        
-        if (mZoomToBlack)
-        {
-            texBlack.enableAndBind();
-            Vec3f bbRight, bbUp;
-            mTreeCam.getBillboardVectors(&bbRight, &bbUp);
-            gl::drawBillboard(mTreePan + mZoomTarget, Vec2f(2, 2), 0, bbRight, bbUp); 
-            texBlack.unbind();
-        }
-#endif
-        mTreeShader.unbind();
-        
-        gl::disableAlphaTest();
-        gl::enableAlphaBlending();
-        // Draw overlay
-#if NORMAL        
-        gl::disableDepthRead();
-        gl::disableDepthWrite();
-        gl::setMatricesWindowPersp(renderArea.x2, renderArea.y2);
-        gl::draw(texOverlay, renderArea);	
-        gl::disableAlphaBlending();
-#endif
+        gl::drawBillboard(mTreePan + mZoomTarget, Vec2f(2, 2), 0, bbRight, bbUp); 
+        texBlack.unbind();
     }
-    if (mFboActive)
-    {
-        gl::enableAlphaBlending();
-        gl::color( cinder::ColorA(1, 1, 1, mAlphaAmount) );
-        gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
-        mFadeShader.bind();
-        mFbo.getTexture().bind();
-        mFadeShader.uniform("tex", 0);
-        mFadeShader.uniform("alphaAmount", mAlphaAmount);
-        mFadeShader.uniform("fadeAmount", mFadeAmount);
-        mFadeShader.uniform("time", mTime * mTimeMult);
-        mFadeShader.uniform("warpAmp", mWarpAmount);
-        mFadeShader.uniform("yMult", mYMult);
-        mFadeShader.uniform("maxU", mFadeAmount);
-        Area destBounds = mFbo.getTexture().getCleanBounds();
-        Area srcBounds = destBounds;
-        srcBounds.x2 *= mFadeAmount;
-        srcBounds.y2 *= mFadeAmount;
-        hackdraw(mFbo.getTexture(), srcBounds, destBounds);
-        mFadeShader.unbind();
-        mFbo.getTexture().unbind();
-    }
+    mTreeShader.unbind();
+    
+    gl::disableAlphaTest();
+    gl::enableAlphaBlending();
+    // Draw overlay
+    gl::disableDepthRead();
+    gl::disableDepthWrite();
+    gl::setMatricesWindowPersp(renderArea.x2, renderArea.y2);
+    gl::draw(texOverlay, renderArea);	
+    gl::disableAlphaBlending();
 }
 
 void TreeLayer::initGroundMesh()

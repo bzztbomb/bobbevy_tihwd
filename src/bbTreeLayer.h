@@ -13,7 +13,6 @@
 #include "sceneLayer.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
-#include "cinder/gl/Fbo.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Camera.h"
@@ -63,9 +62,6 @@ private:
 	cinder::gl::Texture texBlack;
     // Fade in
     
-    bool mFboActive;
-    cinder::gl::Fbo mFbo;
-    cinder::gl::GlslProg mFadeShader;
     cinder::gl::GlslProg mTreeShader;    
     cinder::Anim<float> mBlurAmount;
     cinder::Anim<float> mFadeAmount;
