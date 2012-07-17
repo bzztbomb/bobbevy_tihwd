@@ -23,8 +23,6 @@ Vec3f dumbRand()
     return r;
 }
 
-float spawnSize = 0.5f;
-
 //
 // SkeletonParticles
 //
@@ -92,7 +90,6 @@ void SkeletonParticles::setup(SceneState* manager)
 	mManager->mParams.addParam(mName + ": Color", &mColor);
 	mManager->mParams.addParam(mName + ": DropAccel", &mDropAccel);
 	mManager->mParams.addParam(mName + ": NumParticles", &mNumParticles);
-	mManager->mParams.addParam(mName + ": spawnSize", &spawnSize, "step=0.01");
 
 	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
 	{
@@ -517,7 +514,7 @@ void SkeletonParticles::updateWaiting()
         targetPos += center;
         Vec3f diff = targetPos - mParticlePos[i];
         mParticleVel[i] += dumbRand() * 1.0f;
-        mParticleVel[i] += diff * spawnSize;
+        mParticleVel[i] += diff * 0.30;
         mParticleVel[i] *= mDrag;        
     }
 }

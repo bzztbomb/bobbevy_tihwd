@@ -73,7 +73,7 @@ private:
     float mYMult;
     float mFadeTransTime;
     float mZoomOffset;
-    
+    float mZoomTimeSec;
     
     cinder::Anim<cinder::Color> mFogColor;
     cinder::Anim<float> mFogDistance;

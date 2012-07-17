@@ -44,7 +44,8 @@ TreeLayer::TreeLayer() :
     mFadeTransTime(20.0f),
     mFogDistance(40.0f),
     mFogHeight(200.0f),
-    mZoomOffset(0.45f)
+    mZoomOffset(0.45f),
+    mZoomTimeSec(18.0f)
 {
 	resetParams();
     mFogColor = Color(30.0f / 255.0f, 10.0f / 255.0f, 10.0f / 255.0f);
@@ -74,6 +75,7 @@ void TreeLayer::setup(SceneState* manager)
     manager->mParams.addParam("FogDistance", &mFogDistance.value(), "step=1.0");
     manager->mParams.addParam("FogHeight", &mFogHeight.value());
     manager->mParams.addParam("ZoomOffset", &mZoomOffset, "step=0.1");    
+    manager->mParams.addParam("ZoomTimeSec", &mZoomTimeSec, "step=0.1");    
     
 	mTreeCam.lookAt(Vec3f(0,0,0), mTreeCam.getViewDirection(), -mTreeCam.getWorldUp());
 	
@@ -182,7 +184,7 @@ void TreeLayer::toggleZoomToBlack()
 	if (mZoomToBlack)
 	{        
 		mZoomTarget = Vec3f(0.0f, 0.0f, -((travelBounds.z-mTreeRadius) + mTreePan.z));
-		mTreePanSpeed = mZoomTarget / (9.0f*30.0f);
+		mTreePanSpeed = mZoomTarget / (mZoomTimeSec*30.0f);
         for (int i = 0; i < NUM_SWARMS; i++)
         {
 //            mSwarm[i]->setEnabled(true);
