@@ -34,16 +34,18 @@ TreeLayer::TreeLayer() :
 	mTreeSizeVariance(2.0f),
 	mZoomToBlack(false),
     mFadeAmount(1.0f),
-    mWarpAmount(0.0f),
+    mWarpAmount(0.0f),  
     mAlphaAmount(1.0f),
     mTime(0.0f),
     mTimeMult(1.0f),
     mYMult(1.0f),
     mFadeTransTime(20.0f),
     mFogDistance(40.0f),
-    mFogHeight(200.0f)
+    mFogHeight(200.0f),
+    mZoomOffset(0.45f)
 {
 	resetParams();
+    mFogColor = Color(30.0f / 255.0f, 10.0f / 255.0f, 10.0f / 255.0f);
 }
 
 void TreeLayer::setup(SceneState* manager)
@@ -69,7 +71,7 @@ void TreeLayer::setup(SceneState* manager)
     manager->mParams.addParam("FogColor", &mFogColor.value());
     manager->mParams.addParam("FogDistance", &mFogDistance.value(), "step=1.0");
     manager->mParams.addParam("FogHeight", &mFogHeight.value());
-    
+    manager->mParams.addParam("ZoomOffset", &mZoomOffset, "step=0.1");    
     
 	mTreeCam.lookAt(Vec3f(0,0,0), mTreeCam.getViewDirection(), -mTreeCam.getWorldUp());
 	
@@ -161,6 +163,14 @@ void TreeLayer::keyDown( cinder::app::KeyEvent event )
         case KeyEvent::KEY_u:
             mManager->mTimeline->apply(&mFogDistance, 40.0f, slowTween);                        
             break;
+        case KeyEvent::KEY_s:
+            {
+                float currX = mTreePan.x;
+                resetParams();
+                mTreePan.x = currX;
+                mWithLeaves = true;
+            }
+            break;
 	}
 }
 
@@ -168,8 +178,8 @@ void TreeLayer::toggleZoomToBlack()
 {
 	mZoomToBlack = !mZoomToBlack;
 	if (mZoomToBlack)
-	{
-		mZoomTarget = Vec3f(0.0f, 0.0f, -10.0f);
+	{        
+		mZoomTarget = Vec3f(0.0f, 0.0f, -((travelBounds.z-mTreeRadius) + mTreePan.z));
 		mTreePanSpeed = mZoomTarget / (9.0f*30.0f);
 	}
 }
@@ -189,14 +199,11 @@ void TreeLayer::update()
 	
 	if (mZoomToBlack)
 	{
-		if (mZoomTarget.z == -1.1f)
-		{
-//			setEnabled(false);
-		}
 		mZoomTarget -= mTreePanSpeed;
-		if (mZoomTarget.z > -1.1f)
+        float dist = -2.0f;
+		if (mZoomTarget.z > dist)
         {
-			mZoomTarget.z = -1.1f;			
+			mZoomTarget.z = dist;			
             mTreePanSpeed = Vec3f(0.0f, 0.0f, 0.0f);
         }
 	}
@@ -269,32 +276,39 @@ void TreeLayer::draw()
     
     gl::enableAlphaTest(0.0f);
     gl::enableAlphaBlending();
-    
+
+    gl::color(Color::white());    
     // Enable our tree texture
     if (!mWithLeaves)
         texTree.enableAndBind();
     else
         texTreeWithLeaves.enableAndBind();
-    
-    {
-        glTranslatef(0, 0, -travelBounds.z);
-        gl::draw(mTreeMesh);
-        glTranslatef(0, 0, travelBounds.z);
-        gl::draw(mTreeMesh);
-    }
+
+    glTranslatef(0, 0, -travelBounds.z);
+    gl::draw(mTreeMesh);
+    glTranslatef(0, 0, travelBounds.z);
+    gl::draw(mTreeMesh);
+
     if (!mWithLeaves)
         texTree.unbind();
     else
         texTreeWithLeaves.unbind();
-    
+
     if (mZoomToBlack)
     {
         texBlack.enableAndBind();
         Vec3f bbRight, bbUp;
         mTreeCam.getBillboardVectors(&bbRight, &bbUp);
-        gl::drawBillboard(mTreePan + mZoomTarget, Vec2f(2, 2), 0, bbRight, bbUp); 
+        Vec2f scale = Vec2f(1070.0f / 2311.0f, 1.0f);
+        scale *= 2.0f;
+        Vec3f middlePos = mTreePan + mZoomTarget;        
+        middlePos.y = -scale.y * 0.5f;
+        gl::drawBillboard(middlePos + Vec3f(mZoomOffset, 0.0f, 0.0f), scale, 0.0f, bbRight, bbUp); 
+        gl::drawBillboard(middlePos - Vec3f(mZoomOffset, 0.0f, 0.0f), scale, 0.0f, bbRight, bbUp);         
         texBlack.unbind();
-    }
+    }    
+ 
+    
     mTreeShader.unbind();
     
     gl::disableAlphaTest();
@@ -384,7 +398,7 @@ void TreeLayer::initTreeMesh()
 		}
 	}
 	Vec3f bbsize = mTreeMesh.calcBoundingBox().getSize();
-	travelBounds = Vec3f(mNumTrees*mTreeRadius, 0.0f, bbsize.z + mTreeRadius);
+	travelBounds = Vec3f(mNumTrees*mTreeRadius, 0.0f, bbsize.z + mTreeRadius*2.0f);
 }
 
 void TreeLayer::addTree(const Vec3f& treePos, const Vec2f& treeScale, const Vec2f& texOffset, bool flipX)
