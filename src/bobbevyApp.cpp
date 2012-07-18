@@ -283,7 +283,7 @@ void bobbevyApp::handleOSC()
             {
                 char which = message.getAddress()[7];
                 int index = boost::lexical_cast<int>(which);
-                mKinect.updateFakeBlob(index-1, Vec2f(message.getArgAsFloat(0), 1.0f - message.getArgAsFloat(1)));
+                mKinect.updateFakeBlob(index-1, Vec2f(message.getArgAsFloat(0), message.getArgAsFloat(1)));
             } else {
                 console() << "New message received" << std::endl;
                 console() << "Address: " << message.getAddress() << std::endl;

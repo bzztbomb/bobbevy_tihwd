@@ -8,6 +8,7 @@
  */
 
 #include "bbKinectWrapper.h"
+#include <memory.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -15,7 +16,8 @@ using namespace std;
 
 int KinectWrapper::smMAX_BLOBS = 3;
 
-KinectWrapper::KinectWrapper()
+KinectWrapper::KinectWrapper() :
+    mFakeSurface(640, 480, false, SurfaceChannelOrder::RGB)
 {
 
 }
@@ -93,25 +95,24 @@ bool KinectWrapper::getDepthData()
         if (!mFakeDataAvail)
             return false;
         mFakeDataAvail = false;
-        {
-            gl::SaveFramebufferBinding bindingSaver;        
-            // bind the framebuffer - now everything we draw will go there
-            mFbo.bindFramebuffer();
-            
-            // setup the viewport to match the dimensions of the FBO
-            gl::setViewport( mFbo.getBounds() );
-            gl::setMatricesWindow(mFbo.getBounds().getX2(), mFbo.getBounds().getY2());
+        
+        memset(mFakeSurface.getData(), 0, mFakeSurface.getRowBytes() * mFakeSurface.getHeight());
 
-            // clear out the window with black
-            gl::clear( Color( 0, 0, 0 ) );
-            
-            gl::color(ColorA(0.8f, 0.8f, 0.8f, 1.0f));
-            gl::drawSolidRect(Rectf(mFakeBlobs[0], mFakeBlobs[1]));
-                      
-            gl::color(ColorA(0.4f, 0.4f, 0.4f, 1.0f));
-            gl::drawSolidRect(Rectf(mFakeBlobs[2], mFakeBlobs[3]));                      
+        for (int index = 0; index < 4; index+=2)
+        {            
+            Vec2f minV(min(mFakeBlobs[index].x, mFakeBlobs[index+1].x), 
+                       min(mFakeBlobs[index].y, mFakeBlobs[index+1].y));
+            Vec2f maxV(max(mFakeBlobs[index].x, mFakeBlobs[index+1].x), 
+                       max(mFakeBlobs[index].y, mFakeBlobs[index+1].y));       
+            uint8_t* d = mFakeSurface.getData(minV);
+            int value = index==0 ? 192 : 128;
+            for (int i = minV.y; i < maxV.y; i++)
+            {
+                memset(d, value, (maxV.x-minV.x)*mFakeSurface.getPixelInc());
+                d += mFakeSurface.getRowBytes();
+            }
         }
-        mDepthTexture = mFbo.getTexture();
+        mDepthTexture = mFakeSurface;
         return true;
     }
 }
@@ -127,7 +128,7 @@ void KinectWrapper::findBlobs()
     if (mKinectEnabled)
         to8 = mKinect.getDepthImage();
     else
-        to8 = Surface8u(mDepthTexture);
+        to8 = mFakeSurface;
 	cv::Mat input( toOcv( to8)); 
 	
 	cv::Mat gray;
