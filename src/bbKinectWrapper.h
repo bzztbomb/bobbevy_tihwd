@@ -15,6 +15,7 @@
 #include "CinderOpenCV.h"
 #include "cinder/params/Params.h"
 #include "cinder/app/AppBasic.h"
+#include "cinder/gl/Fbo.h"
 
 struct Blob {
 	float mContourArea;
@@ -32,6 +33,8 @@ struct Blob {
 class KinectWrapper
 {
 public:
+    KinectWrapper();
+    
     enum UserToken
     {
         utClosest,
@@ -47,12 +50,21 @@ public:
     std::vector<Blob> getUsers();
     
     cv::Mat* getContourMat() { return &mContourMat; }
+    
+    void updateFakeBlob(int index, const cinder::Vec2f& pos);
 public:
 	// Kinect interface
-	bool mEnabled;
+    bool mEnabled;
+	bool mKinectEnabled;
 	cinder::Kinect	mKinect;
 	cinder::gl::Texture		mColorTexture, mDepthTexture;    
 
+    // Lack of Kinect interface
+    cinder::gl::Fbo mFbo;
+    cinder::Vec2f mFakeBlobs[4];
+    bool mFakeDataAvail;
+    cinder::Surface8u mFakeSurface;
+    
 	// Image processing
 	int mStepFrom;
     int mStepSize;
@@ -90,6 +102,7 @@ public:
 	typedef std::vector< std::vector<cv::Point> > ContourVector;
 	
 	void findBlobs();
+    bool getDepthData();    
 };
 
 #endif

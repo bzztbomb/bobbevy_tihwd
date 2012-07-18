@@ -276,35 +276,45 @@ void bobbevyApp::handleOSC()
                 keyDown(ev);
             }
         } else {        
-            console() << "New message received" << std::endl;
-            console() << "Address: " << message.getAddress() << std::endl;
-            console() << "Num Arg: " << message.getNumArgs() << std::endl;
-            for (int i = 0; i < message.getNumArgs(); i++) {
-                console() << "-- Argument " << i << std::endl;
-                console() << "---- type: " << message.getArgTypeName(i) << std::endl;
-                if (message.getArgType(i) == osc::TYPE_INT32){
-                    try {
-                        console() << "------ value: "<< message.getArgAsInt32(i) << std::endl;
+            if ((message.getAddress().find("/multi/") != std::string::npos) && 
+                (message.getNumArgs() == 2) &&
+                (message.getArgType(0) == osc::TYPE_FLOAT) &&
+                (message.getArgType(1) == osc::TYPE_FLOAT))
+            {
+                char which = message.getAddress()[7];
+                int index = boost::lexical_cast<int>(which);
+                mKinect.updateFakeBlob(index-1, Vec2f(message.getArgAsFloat(0), 1.0f - message.getArgAsFloat(1)));
+            } else {
+                console() << "New message received" << std::endl;
+                console() << "Address: " << message.getAddress() << std::endl;
+                console() << "Num Arg: " << message.getNumArgs() << std::endl;
+                for (int i = 0; i < message.getNumArgs(); i++) {
+                    console() << "-- Argument " << i << std::endl;
+                    console() << "---- type: " << message.getArgTypeName(i) << std::endl;
+                    if (message.getArgType(i) == osc::TYPE_INT32){
+                        try {
+                            console() << "------ value: "<< message.getArgAsInt32(i) << std::endl;
+                        }
+                        catch (...) {
+                            console() << "Exception reading argument as int32" << std::endl;
+                        }
+                        
+                    }else if (message.getArgType(i) == osc::TYPE_FLOAT){
+                        try {
+                            console() << "------ value: " << message.getArgAsFloat(i) << std::endl;
+                        }
+                        catch (...) {
+                            console() << "Exception reading argument as float" << std::endl;
+                        }
+                    }else if (message.getArgType(i) == osc::TYPE_STRING){
+                        try {
+                            console() << "------ value: " << message.getArgAsString(i).c_str() << std::endl;
+                        }
+                        catch (...) {
+                            console() << "Exception reading argument as string" << std::endl;
+                        }
+                        
                     }
-                    catch (...) {
-                        console() << "Exception reading argument as int32" << std::endl;
-                    }
-                    
-                }else if (message.getArgType(i) == osc::TYPE_FLOAT){
-                    try {
-                        console() << "------ value: " << message.getArgAsFloat(i) << std::endl;
-                    }
-                    catch (...) {
-                        console() << "Exception reading argument as float" << std::endl;
-                    }
-                }else if (message.getArgType(i) == osc::TYPE_STRING){
-                    try {
-                        console() << "------ value: " << message.getArgAsString(i).c_str() << std::endl;
-                    }
-                    catch (...) {
-                        console() << "Exception reading argument as string" << std::endl;
-                    }
-                    
                 }
             }
         }

@@ -15,17 +15,20 @@ using namespace std;
 
 int KinectWrapper::smMAX_BLOBS = 3;
 
+KinectWrapper::KinectWrapper()
+{
+
+}
+
 void KinectWrapper::setup(params::InterfaceGl& params)
 {
-	mEnabled = false;
 	console() << "There are " << Kinect::getNumDevices() << " Kinects connected." << std::endl;	
-	if (Kinect::getNumDevices() == 0)
-		return;
+	mKinectEnabled = (Kinect::getNumDevices() > 0);
+    if (mKinectEnabled)
+        mKinect = Kinect( Kinect::Device() ); // the default Device implies the first Kinect         
 	mEnabled = true;
     mBlobsEnabled = true;
-	mKinect = Kinect( Kinect::Device() ); // the default Device implies the first Kinect connected	
-	
-	
+		
     mStepSize = 255; // Just threshold from step from!
     mBlurAmount = 3;
 	mStepFrom = 5;
@@ -45,6 +48,9 @@ void KinectWrapper::setup(params::InterfaceGl& params)
     params.addParam( "Dilate", &mDilate);
     params.addParam( "KinectEnabled", &mEnabled);
     params.addParam( "BlobsEnabled", &mBlobsEnabled);
+    
+    gl::Fbo::Format format;
+	mFbo = gl::Fbo(640, 480, format);
 }
 
 void KinectWrapper::keyDown( KeyEvent event )
@@ -69,22 +75,59 @@ void KinectWrapper::update()
 	findBlobs();
 }
 
+bool KinectWrapper::getDepthData()
+{
+    if (mKinectEnabled)
+    {
+        bool newDepth = false;
+        if( mKinect.checkNewDepthFrame() )
+        {
+            newDepth = true;
+            mDepthTexture = mKinect.getDepthImage();
+        }
+        
+        if( mKinect.checkNewVideoFrame() )
+            mColorTexture = mKinect.getVideoImage();
+        return newDepth;
+    } else {        
+        if (!mFakeDataAvail)
+            return false;
+        mFakeDataAvail = false;
+        {
+            gl::SaveFramebufferBinding bindingSaver;        
+            // bind the framebuffer - now everything we draw will go there
+            mFbo.bindFramebuffer();
+            
+            // setup the viewport to match the dimensions of the FBO
+            gl::setViewport( mFbo.getBounds() );
+            gl::setMatricesWindow(mFbo.getBounds().getX2(), mFbo.getBounds().getY2());
+
+            // clear out the window with black
+            gl::clear( Color( 0, 0, 0 ) );
+            
+            gl::color(ColorA(0.8f, 0.8f, 0.8f, 1.0f));
+            gl::drawSolidRect(Rectf(mFakeBlobs[0], mFakeBlobs[1]));
+                      
+            gl::color(ColorA(0.4f, 0.4f, 0.4f, 1.0f));
+            gl::drawSolidRect(Rectf(mFakeBlobs[2], mFakeBlobs[3]));                      
+        }
+        mDepthTexture = mFbo.getTexture();
+        return true;
+    }
+}
+
 void KinectWrapper::findBlobs()
 {
-    bool newDepth = false;
-	if( mKinect.checkNewDepthFrame() )
-    {
-        newDepth = true;
-		mDepthTexture = mKinect.getDepthImage();
-    }
+    bool newDepth = getDepthData();
 	
-	if( mKinect.checkNewVideoFrame() )
-		mColorTexture = mKinect.getVideoImage();
-	
-	if ((!mDepthTexture) || (!mColorTexture) || (!newDepth) || (!mBlobsEnabled))
+	if ((!mDepthTexture) || (!newDepth) || (!mBlobsEnabled))
 		return;
 	
-	Surface8u to8 = Surface8u(mKinect.getDepthImage());
+	Surface8u to8;
+    if (mKinectEnabled)
+        to8 = mKinect.getDepthImage();
+    else
+        to8 = Surface8u(mDepthTexture);
 	cv::Mat input( toOcv( to8)); 
 	
 	cv::Mat gray;
@@ -286,4 +329,13 @@ Blob* KinectWrapper::getUser(UserToken which)
 std::vector<Blob> KinectWrapper::getUsers()
 {
     return mBlobs;
+}
+
+void KinectWrapper::updateFakeBlob(int index, const Vec2f& pos)
+{
+    if (index < 4)
+        mFakeBlobs[index] = pos;
+    mFakeBlobs[index].x *= 640.0f;
+    mFakeBlobs[index].y *= 480.0f;
+    mFakeDataAvail = true;
 }
