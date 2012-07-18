@@ -185,9 +185,9 @@ void bobbevyApp::keyDown( KeyEvent event )
             mTreeLayer.setEnabled(true);
             mTreeLayer.setLeaves(true);
             break;
-		case KeyEvent::KEY_l:
-			mIntroLight.setEnabled(!mIntroLight.getEnabled());
-			break;			
+//		case KeyEvent::KEY_l:
+//			mIntroLight.setEnabled(!mIntroLight.getEnabled());
+//			break;			
 		case KeyEvent::KEY_b:
 			mCloseSwarm.setEnabled(!mCloseSwarm.getEnabled());
 			break;			

@@ -60,10 +60,17 @@ void KinectWrapper::keyDown( KeyEvent event )
 	if (!mEnabled)
 		return;
 
-	switch( event.getChar() ){
-		case ' ':
+	switch( event.getCode() ){
+		case KeyEvent::KEY_a:
 			mInitInitial = true;
 			break;
+        case KeyEvent::KEY_7:
+            mKinectEnabled = false;
+            break;
+        case KeyEvent::KEY_l:
+            if (Kinect::getNumDevices() > 0)
+                mKinectEnabled = true;
+            break;
 		default:
 			break;
 	}	

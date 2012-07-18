@@ -137,23 +137,12 @@ void TreeLayer::keyDown( cinder::app::KeyEvent event )
         case KeyEvent::KEY_6:
 			mManager->mTimeline->apply(&mTreePanSpeed, Vec3f(0.0f, 0.0f, -9.5f), fastTween);
             break;
-        case KeyEvent::KEY_7:
-            setBlurred();
-            break;
-//        case KeyEvent::KEY_8:
-//            mManager->mTimeline->apply(&mFadeAmount, 1.0f, mFadeTransTime);
-//            mManager->mTimeline->apply(&mWarpAmount, 0.0f, mFadeTransTime);
-//            mManager->mTimeline->apply(&mAlphaAmount, 1.0f, mFadeTransTime);
-//            break;
 		case KeyEvent::KEY_9:
 			mTreePanSpeed = Vec3f(0,0,0);
 			break;
 		case KeyEvent::KEY_0:
 			resetParams();
 			break;
-        case KeyEvent::KEY_a:
-            mWithLeaves = !mWithLeaves;
-            break;
 		case KeyEvent::KEY_8:
 			toggleZoomToBlack();
 			break;

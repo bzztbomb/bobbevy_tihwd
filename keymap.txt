@@ -1,7 +1,9 @@
 f = full screen
 d = DebugDraw toggle
 p = Param toggle
-' ' = reset reference depth
+a = reset reference depth
+l = enable Kinect
+7 = disable kinect
 
 c = fade color white
 d = fade color black
@@ -11,7 +13,6 @@ g= fade in slow
 h = clear timeline
 t = tree toggle
 e = tree toggle with leaves
-l = light toggle
 b = close swarm
 n = far swarm
 v = particle field
