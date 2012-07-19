@@ -60,7 +60,6 @@ public:
 	cinder::gl::Texture		mColorTexture, mDepthTexture;    
 
     // Lack of Kinect interface
-    cinder::gl::Fbo mFbo;
     cinder::Vec2f mFakeBlobs[4];
     bool mFakeDataAvail;
     cinder::Surface8u mFakeSurface;

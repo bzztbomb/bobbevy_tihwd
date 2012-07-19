@@ -87,7 +87,7 @@ void bobbevyApp::setup()
 	mSceneState.mTimeline->setDefaultAutoRemove(true);
 
 	mDebugDraw = false;
-	mShowFPS = true;
+	mShowFPS = false;
 	mShowParams = false;
     mBlackoutColor = ColorA(0.0f, 0.0f, 0.0f, 1.0f);
     
@@ -350,13 +350,14 @@ void bobbevyApp::draw()
 	// Params
 	if (mShowParams)
 	{
+        showCursor();
 		gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
 		gl::disableDepthWrite();
 		gl::disableDepthRead();
 		params::InterfaceGl::draw();
-		//		showCursor();
+				
 	} else {
-		//		hideCursor();
+		 hideCursor();
 	}
 	
 	if (mShowFPS)

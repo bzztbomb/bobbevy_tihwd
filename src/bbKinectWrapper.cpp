@@ -50,9 +50,6 @@ void KinectWrapper::setup(params::InterfaceGl& params)
     params.addParam( "Dilate", &mDilate);
     params.addParam( "KinectEnabled", &mEnabled);
     params.addParam( "BlobsEnabled", &mBlobsEnabled);
-    
-    gl::Fbo::Format format;
-	mFbo = gl::Fbo(640, 480, format);
 }
 
 void KinectWrapper::keyDown( KeyEvent event )
