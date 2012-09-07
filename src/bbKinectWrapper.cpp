@@ -9,6 +9,7 @@
 
 #include "bbKinectWrapper.h"
 #include <memory.h>
+#include <algorithm>
 
 using namespace ci;
 using namespace ci::app;
@@ -84,6 +85,11 @@ void KinectWrapper::update()
 	findBlobs();
 }
 
+bool cmpX(const cinder::Vec2f& a, const cinder::Vec2f& b)
+{
+    return a.x < b.x;
+}
+
 bool KinectWrapper::getDepthData()
 {
     if (mKinectEnabled)
@@ -105,12 +111,17 @@ bool KinectWrapper::getDepthData()
         
         memset(mFakeSurface.getData(), 0, mFakeSurface.getRowBytes() * mFakeSurface.getHeight());
 
-        for (int index = 0; index < 4; index+=2)
+        cinder::Vec2f fakeBlobs[NUM_FAKE_BLOB_PTS];
+        memcpy(&fakeBlobs[0], &mFakeBlobs[0], sizeof(fakeBlobs));
+        
+        sort(fakeBlobs, fakeBlobs+NUM_FAKE_BLOB_PTS, cmpX);
+        
+        for (int index = 0; index < NUM_FAKE_BLOB_PTS; index+=2)
         {            
-            Vec2f minV(min(mFakeBlobs[index].x, mFakeBlobs[index+1].x), 
-                       min(mFakeBlobs[index].y, mFakeBlobs[index+1].y));
-            Vec2f maxV(max(mFakeBlobs[index].x, mFakeBlobs[index+1].x), 
-                       max(mFakeBlobs[index].y, mFakeBlobs[index+1].y));       
+            Vec2f minV(min(fakeBlobs[index].x, fakeBlobs[index+1].x),
+                       min(fakeBlobs[index].y, fakeBlobs[index+1].y));
+            Vec2f maxV(max(fakeBlobs[index].x, fakeBlobs[index+1].x),
+                       max(fakeBlobs[index].y, fakeBlobs[index+1].y));
             uint8_t* d = mFakeSurface.getData(minV);
             int value = index==0 ? 192 : 128;
             for (int i = minV.y; i < maxV.y; i++)

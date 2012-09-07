@@ -30,6 +30,8 @@ struct Blob {
 	cinder::Vec3f mBottomMost;
 };
 
+#define NUM_FAKE_BLOB_PTS 4
+
 class KinectWrapper
 {
 public:
@@ -60,7 +62,7 @@ public:
 	cinder::gl::Texture		mColorTexture, mDepthTexture;    
 
     // Lack of Kinect interface
-    cinder::Vec2f mFakeBlobs[4];
+    cinder::Vec2f mFakeBlobs[NUM_FAKE_BLOB_PTS];
     bool mFakeDataAvail;
     cinder::Surface8u mFakeSurface;
     
