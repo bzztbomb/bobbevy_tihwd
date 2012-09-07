@@ -74,14 +74,16 @@ void bobbevyApp::prepareSettings( Settings* settings )
 	settings->enableSecondaryDisplayBlanking(false);
 }
 
+extern void publish_via_bonjour();
+
 void bobbevyApp::setup()
 {
 	mSceneState.mParams = params::InterfaceGl("bobbevy", Vec2i(225, 200));	
 	mSceneState.mParams.addParam("DebugDraw", &mDebugDraw, "keyIncr=d");
 	mSceneState.mParams.addParam("ShowParams", &mShowParams, "keyIncr=p");
 	mSceneState.mParams.addParam("ShowFPS", &mShowFPS);
-    mSceneState.mParams.addParam("FadeInNormal", &mFadeInNormal);
-    mSceneState.mParams.addParam("FadeInSlow", &mFadeInSlow);
+	mSceneState.mParams.addParam("FadeInNormal", &mFadeInNormal);
+	mSceneState.mParams.addParam("FadeInSlow", &mFadeInSlow);
 	
 	mSceneState.mTimeline = Timeline::create();
 	mSceneState.mTimeline->setDefaultAutoRemove(true);
@@ -92,6 +94,8 @@ void bobbevyApp::setup()
     mBlackoutColor = ColorA(0.0f, 0.0f, 0.0f, 1.0f);
     
     mListener.setup(23232);
+    publish_via_bonjour();
+    
     initMsgMap();
 
 	mKinect.setup(mSceneState.mParams);
@@ -350,14 +354,14 @@ void bobbevyApp::draw()
 	// Params
 	if (mShowParams)
 	{
-        showCursor();
+     //   showCursor();
 		gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
 		gl::disableDepthWrite();
 		gl::disableDepthRead();
 		params::InterfaceGl::draw();
 				
 	} else {
-		 hideCursor();
+		// hideCursor();
 	}
 	
 	if (mShowFPS)

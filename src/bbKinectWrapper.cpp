@@ -27,7 +27,10 @@ void KinectWrapper::setup(params::InterfaceGl& params)
 	console() << "There are " << Kinect::getNumDevices() << " Kinects connected." << std::endl;	
 	mKinectEnabled = (Kinect::getNumDevices() > 0);
     if (mKinectEnabled)
+    {
         mKinect = Kinect( Kinect::Device() ); // the default Device implies the first Kinect         
+//        mKinect.setVideoInfrared(true);
+    }
 	mEnabled = true;
     mBlobsEnabled = true;
 		
@@ -271,8 +274,9 @@ void KinectWrapper::draw()
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
     if (mDrawContour)
     {
-        if( mContourTexture )
-            gl::draw( mContourTexture, getWindowBounds() );
+        if( mColorTexture )
+            //gl::draw( mContourTexture, getWindowBounds() );
+            gl::draw( mColorTexture, getWindowBounds() );
     } else {
         if( mDepthTexture )
             gl::draw( mDepthTexture, getWindowBounds() );

@@ -43,6 +43,7 @@
 		C8CE8EAD15B21C8B0076054E /* TreeFrag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAB15B21C8B0076054E /* TreeFrag.glsl */; };
 		C8CE8EAE15B21C8B0076054E /* TreeVert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAC15B21C8B0076054E /* TreeVert.glsl */; };
 		C8CE8EB015B2257A0076054E /* groundTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAF15B2257A0076054E /* groundTexture.png */; };
+		C8D04B9815F9C4B100232A1C /* BonjourPublisher.mm in Sources */ = {isa = PBXBuildFile; fileRef = C8D04B9715F9C4B100232A1C /* BonjourPublisher.mm */; };
 		C8F3035215AD049A00993674 /* trees-with-leaves-aligned-scaled.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3035115AD049A00993674 /* trees-with-leaves-aligned-scaled.png */; };
 		C8F3E25515AD401F005A336F /* particles.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3E25415AD401F005A336F /* particles.png */; };
 		C8F3E25815AD48C0005A336F /* particle_brown.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3E25615AD48C0005A336F /* particle_brown.png */; };
@@ -303,6 +304,8 @@
 		C8CE8EAB15B21C8B0076054E /* TreeFrag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TreeFrag.glsl; path = ../resources/TreeFrag.glsl; sourceTree = "<group>"; };
 		C8CE8EAC15B21C8B0076054E /* TreeVert.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TreeVert.glsl; path = ../resources/TreeVert.glsl; sourceTree = "<group>"; };
 		C8CE8EAF15B2257A0076054E /* groundTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = groundTexture.png; path = ../resources/groundTexture.png; sourceTree = "<group>"; };
+		C8D04B9615F9C4B100232A1C /* BonjourPublisher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BonjourPublisher.h; path = ../src/BonjourPublisher.h; sourceTree = "<group>"; };
+		C8D04B9715F9C4B100232A1C /* BonjourPublisher.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BonjourPublisher.mm; path = ../src/BonjourPublisher.mm; sourceTree = "<group>"; };
 		C8F3035115AD049A00993674 /* trees-with-leaves-aligned-scaled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "trees-with-leaves-aligned-scaled.png"; path = "../resources/trees-with-leaves-aligned-scaled.png"; sourceTree = "<group>"; };
 		C8F3E25415AD401F005A336F /* particles.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = particles.png; path = ../resources/particles.png; sourceTree = "<group>"; };
 		C8F3E25615AD48C0005A336F /* particle_brown.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = particle_brown.png; path = ../resources/particle_brown.png; sourceTree = "<group>"; };
@@ -343,6 +346,8 @@
 				C82C9A40159FE14B00AAEDE0 /* bbParticles.cpp */,
 				C811FBCB15A4F41700D036A6 /* bbParticleField.cpp */,
 				C811FBCD15A4F44800D036A6 /* bbParticleField.h */,
+				C8D04B9615F9C4B100232A1C /* BonjourPublisher.h */,
+				C8D04B9715F9C4B100232A1C /* BonjourPublisher.mm */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -975,6 +980,7 @@
 				C88BB97015A6BE2700634E79 /* OscListener.cpp in Sources */,
 				C88BB97115A6BE2700634E79 /* OscMessage.cpp in Sources */,
 				C88BB97215A6BE2700634E79 /* OscSender.cpp in Sources */,
+				C8D04B9815F9C4B100232A1C /* BonjourPublisher.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1050,7 +1056,7 @@
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PREBINDING = NO;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				SDKROOT = macosx10.7;
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/blocks/Cinder-Kinect/include $(CINDER_PATH)/blocks/Cinder-OpenCV/include \"$(CINDER_PATH)/include\" ../include $(CINDER_PATH)/blocks/osc/include";
 			};
 			name = Debug;
@@ -1066,7 +1072,7 @@
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PREBINDING = NO;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				SDKROOT = macosx10.7;
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/blocks/Cinder-Kinect/include $(CINDER_PATH)/blocks/Cinder-OpenCV/include \"$(CINDER_PATH)/include\" ../include $(CINDER_PATH)/blocks/osc/include";
 			};
 			name = Release;
