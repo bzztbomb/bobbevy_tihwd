@@ -336,19 +336,19 @@ void TreeLayer::initGroundMesh()
 	Color groundColor(mGroundColor);
     
 	mGroundMesh.appendVertex(Vec3f(minv, yVal, minv ));
-	mGroundMesh.appendColorRGB(groundColor);
+	mGroundMesh.appendColorRgb(groundColor);
     mGroundMesh.appendTexCoord(Vec2f(0.0f, 0.0f));
     
 	mGroundMesh.appendVertex( Vec3f(minv, yVal, maxv) );    
-	mGroundMesh.appendColorRGB(groundColor);
+	mGroundMesh.appendColorRgb(groundColor);
     mGroundMesh.appendTexCoord(Vec2f(0.0f, 0.0f));
     
 	mGroundMesh.appendVertex( Vec3f(maxv, yVal, maxv) );    
-	mGroundMesh.appendColorRGB(groundColor);
+	mGroundMesh.appendColorRgb(groundColor);
     mGroundMesh.appendTexCoord(Vec2f(0.0f, 0.0f));
     
 	mGroundMesh.appendVertex( Vec3f(maxv, yVal, minv));
-	mGroundMesh.appendColorRGB(groundColor);
+	mGroundMesh.appendColorRgb(groundColor);
     mGroundMesh.appendTexCoord(Vec2f(0.0f, 0.0f));
 	
 	// get the index of the vertex. not necessary with this example, but good practice
@@ -425,7 +425,7 @@ void TreeLayer::addTree(const Vec3f& treePos, const Vec2f& treeScale, const Vec2
 	for (int i = 0; i < 4; i++)
 	{
 		mTreeMesh.appendVertex(verts[i]);
-		mTreeMesh.appendColorRGB(treeColor);
+		mTreeMesh.appendColorRgb(treeColor);
 		Vec2f tc = Vec2f(flipX ? texCoordsFlipped[i*2] : texCoords[i*2], flipX ? texCoordsFlipped[i*2+1] : texCoords[i*2+1]) + texOffset;
 		mTreeMesh.appendTexCoord(tc);
 	}
