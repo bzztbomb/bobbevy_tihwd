@@ -10,6 +10,8 @@
 #include "bbKinectWrapper.h"
 #include <memory.h>
 #include <algorithm>
+#include <boost/filesystem.hpp>
+#include "cinder/qtime/MovieWriter.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -18,7 +20,9 @@ using namespace std;
 int KinectWrapper::smMAX_BLOBS = 3;
 
 KinectWrapper::KinectWrapper() :
-    mFakeSurface(640, 480, false, SurfaceChannelOrder::RGB)
+    mFakeSurface(640, 480, false, SurfaceChannelOrder::RGB),
+    mRecordRequested(false),
+    mRecord(false)
 {
 
 }
@@ -54,6 +58,39 @@ void KinectWrapper::setup(params::InterfaceGl& params)
     params.addParam( "Dilate", &mDilate);
     params.addParam( "KinectEnabled", &mEnabled);
     params.addParam( "BlobsEnabled", &mBlobsEnabled);
+    params.addParam( "Record Kinect Data", &mRecordRequested);
+}
+
+void KinectWrapper::enableRecordIfNeeded()
+{
+    if (mRecord == mRecordRequested)
+        return;
+    if (mRecord)
+    {
+        // We are recording and should stop
+        mDepthWriter.finish();
+        mColorWriter.finish();
+    } else {
+        // We should start recording
+        // Figure out asset paths
+        fs::path depth_path;
+        fs::path color_path;
+        for (int i = 0; ; i++)
+        {
+            char buffer[32];
+            sprintf(buffer, "../%.10d_depth.mov", i);
+            depth_path = getAppPath() / buffer;
+            sprintf(buffer, "../%.10d_color.mov", i);
+            color_path = getAppPath() / buffer;
+            if ((!boost::filesystem::exists(depth_path)) &&
+                (!boost::filesystem::exists(color_path)))
+                break;
+        }
+        qtime::MovieWriter::Format format('raw ', 1.0);
+        mDepthWriter = qtime::MovieWriter(depth_path, 640, 480, format);
+        mColorWriter = qtime::MovieWriter(color_path, 640, 480, format);
+    }
+    mRecord = mRecordRequested;
 }
 
 void KinectWrapper::keyDown( KeyEvent event )
@@ -81,7 +118,8 @@ void KinectWrapper::update()
 {
 	if (!mEnabled)
 		return;
-
+    
+    enableRecordIfNeeded();
 	findBlobs();
 }
 
@@ -98,11 +136,20 @@ bool KinectWrapper::getDepthData()
         if( mKinect.checkNewDepthFrame() )
         {
             newDepth = true;
-            mDepthTexture = mKinect.getDepthImage();
+            ImageSourceRef d = mKinect.getDepthImage();
+            mDepthTexture = d;
+            if (mRecord)
+                mDepthWriter.addFrame(d);
         }
         
         if( mKinect.checkNewVideoFrame() )
-            mColorTexture = mKinect.getVideoImage();
+        {
+            ImageSourceRef c = mKinect.getVideoImage();
+            mColorTexture = c;
+            if (mRecord)
+                mColorWriter.addFrame(c);
+        }
+        
         return newDepth;
     } else {        
         if (!mFakeDataAvail)
