@@ -44,7 +44,8 @@ void KinectWrapper::setup(params::InterfaceGl& params)
 	mStepFrom = 5;
 	mAreaThreshold = 1000.0f;
 	mInitInitial = true;	
-    mDrawContour = false;
+    mDrawColor = false;
+    mEnableIR = false;
     mLowPass = 255;
     mDilate = false;
     
@@ -54,7 +55,8 @@ void KinectWrapper::setup(params::InterfaceGl& params)
     params.addParam( "LowPass filter", &mLowPass, "min=0 max=255");
     params.addParam( "CV Blur amount", &mBlurAmount, "min=3 max=55" );	
 	params.addParam( "CV area threshold", &mAreaThreshold, "min=1");
-    params.addParam( "Show contour", &mDrawContour);
+    params.addParam( "Show color", &mDrawColor);
+    params.addParam( "Toggle IR", &mEnableIR);
     params.addParam( "Dilate", &mDilate);
     params.addParam( "KinectEnabled", &mEnabled);
     params.addParam( "BlobsEnabled", &mBlobsEnabled);
@@ -120,7 +122,11 @@ void KinectWrapper::update()
 		return;
     
     enableRecordIfNeeded();
-	findBlobs();
+	
+    if (mEnableIR != mKinect.isVideoInfrared())
+        mKinect.setVideoInfrared(mEnableIR);
+    
+    findBlobs();
 }
 
 bool cmpX(const cinder::Vec2f& a, const cinder::Vec2f& b)
@@ -226,11 +232,8 @@ void KinectWrapper::findBlobs()
         } else {
             cv::threshold( gray, thresh, t, 255, CV_THRESH_BINARY );
         }
-        //if (mDrawContour)
-        {
-            mContourMat = thresh.clone();
-            mContourTexture = fromOcv(mContourMat);
-        }
+        mContourMat = thresh.clone();
+        mContourTexture = fromOcv(mContourMat);
         
 		cv::findContours( thresh, vec, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE );
 		
@@ -330,7 +333,7 @@ void KinectWrapper::draw()
     glDisable(GL_TEXTURE_2D);
 	gl::color(Color(1.0f, 1.0f, 1.0f));
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
-    if (mDrawContour)
+    if (mDrawColor)
     {
         if( mColorTexture )
             //gl::draw( mContourTexture, getWindowBounds() );

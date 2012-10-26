@@ -80,7 +80,8 @@ public:
 	// Debug
 	cinder::gl::Texture	mContourTexture;
 	cv::Mat mContourMat;
-    bool mDrawContour;
+    bool mDrawColor;
+    bool mEnableIR;
     
     bool mRecordRequested;
     bool mRecord;
