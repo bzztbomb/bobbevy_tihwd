@@ -16,6 +16,7 @@
 #include "cinder/params/Params.h"
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/Fbo.h"
+#include "cinder/qtime/MovieWriter.h"
 
 struct Blob {
 	float mContourArea;
@@ -79,8 +80,14 @@ public:
 	// Debug
 	cinder::gl::Texture	mContourTexture;
 	cv::Mat mContourMat;
-    bool mDrawContour;
-	
+    bool mDrawColor;
+    bool mEnableIR;
+    
+    bool mRecordRequested;
+    bool mRecord;
+    cinder::qtime::MovieWriter mDepthWriter;    
+    cinder::qtime::MovieWriter mColorWriter;
+    
 	// Blob detection and "user tracking"
 	static int smMAX_BLOBS;	
 	struct SortDescendingArea
@@ -103,7 +110,9 @@ public:
 	typedef std::vector< std::vector<cv::Point> > ContourVector;
 	
 	void findBlobs();
-    bool getDepthData();    
+    bool getDepthData();
+private:
+    void enableRecordIfNeeded();
 };
 
 #endif

@@ -10,6 +10,8 @@
 #include "bbKinectWrapper.h"
 #include <memory.h>
 #include <algorithm>
+#include <boost/filesystem.hpp>
+#include "cinder/qtime/MovieWriter.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -18,7 +20,9 @@ using namespace std;
 int KinectWrapper::smMAX_BLOBS = 3;
 
 KinectWrapper::KinectWrapper() :
-    mFakeSurface(640, 480, false, SurfaceChannelOrder::RGB)
+    mFakeSurface(640, 480, false, SurfaceChannelOrder::RGB),
+    mRecordRequested(false),
+    mRecord(false)
 {
 
 }
@@ -40,7 +44,8 @@ void KinectWrapper::setup(params::InterfaceGl& params)
 	mStepFrom = 5;
 	mAreaThreshold = 1000.0f;
 	mInitInitial = true;	
-    mDrawContour = false;
+    mDrawColor = false;
+    mEnableIR = false;
     mLowPass = 255;
     mDilate = false;
     
@@ -50,10 +55,44 @@ void KinectWrapper::setup(params::InterfaceGl& params)
     params.addParam( "LowPass filter", &mLowPass, "min=0 max=255");
     params.addParam( "CV Blur amount", &mBlurAmount, "min=3 max=55" );	
 	params.addParam( "CV area threshold", &mAreaThreshold, "min=1");
-    params.addParam( "Show contour", &mDrawContour);
+    params.addParam( "Show color", &mDrawColor);
+    params.addParam( "Toggle IR", &mEnableIR);
     params.addParam( "Dilate", &mDilate);
     params.addParam( "KinectEnabled", &mEnabled);
     params.addParam( "BlobsEnabled", &mBlobsEnabled);
+    params.addParam( "Record Kinect Data", &mRecordRequested);
+}
+
+void KinectWrapper::enableRecordIfNeeded()
+{
+    if (mRecord == mRecordRequested)
+        return;
+    if (mRecord)
+    {
+        // We are recording and should stop
+        mDepthWriter.finish();
+        mColorWriter.finish();
+    } else {
+        // We should start recording
+        // Figure out asset paths
+        fs::path depth_path;
+        fs::path color_path;
+        for (int i = 0; ; i++)
+        {
+            char buffer[32];
+            sprintf(buffer, "../%.10d_depth.mov", i);
+            depth_path = getAppPath() / buffer;
+            sprintf(buffer, "../%.10d_color.mov", i);
+            color_path = getAppPath() / buffer;
+            if ((!boost::filesystem::exists(depth_path)) &&
+                (!boost::filesystem::exists(color_path)))
+                break;
+        }
+        qtime::MovieWriter::Format format('raw ', 1.0);
+        mDepthWriter = qtime::MovieWriter(depth_path, 640, 480, format);
+        mColorWriter = qtime::MovieWriter(color_path, 640, 480, format);
+    }
+    mRecord = mRecordRequested;
 }
 
 void KinectWrapper::keyDown( KeyEvent event )
@@ -81,8 +120,13 @@ void KinectWrapper::update()
 {
 	if (!mEnabled)
 		return;
-
-	findBlobs();
+    
+    enableRecordIfNeeded();
+	
+    if (mEnableIR != mKinect.isVideoInfrared())
+        mKinect.setVideoInfrared(mEnableIR);
+    
+    findBlobs();
 }
 
 bool cmpX(const cinder::Vec2f& a, const cinder::Vec2f& b)
@@ -98,11 +142,20 @@ bool KinectWrapper::getDepthData()
         if( mKinect.checkNewDepthFrame() )
         {
             newDepth = true;
-            mDepthTexture = mKinect.getDepthImage();
+            ImageSourceRef d = mKinect.getDepthImage();
+            mDepthTexture = d;
+            if (mRecord)
+                mDepthWriter.addFrame(d);
         }
         
         if( mKinect.checkNewVideoFrame() )
-            mColorTexture = mKinect.getVideoImage();
+        {
+            ImageSourceRef c = mKinect.getVideoImage();
+            mColorTexture = c;
+            if (mRecord)
+                mColorWriter.addFrame(c);
+        }
+        
         return newDepth;
     } else {        
         if (!mFakeDataAvail)
@@ -179,11 +232,8 @@ void KinectWrapper::findBlobs()
         } else {
             cv::threshold( gray, thresh, t, 255, CV_THRESH_BINARY );
         }
-        //if (mDrawContour)
-        {
-            mContourMat = thresh.clone();
-            mContourTexture = fromOcv(mContourMat);
-        }
+        mContourMat = thresh.clone();
+        mContourTexture = fromOcv(mContourMat);
         
 		cv::findContours( thresh, vec, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE );
 		
@@ -283,7 +333,7 @@ void KinectWrapper::draw()
     glDisable(GL_TEXTURE_2D);
 	gl::color(Color(1.0f, 1.0f, 1.0f));
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
-    if (mDrawContour)
+    if (mDrawColor)
     {
         if( mColorTexture )
             //gl::draw( mContourTexture, getWindowBounds() );
