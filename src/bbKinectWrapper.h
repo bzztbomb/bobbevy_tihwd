@@ -76,11 +76,27 @@ public:
     int mLowPass;
     bool mDilate;
     bool mBlobsEnabled;
+    enum BGMethod
+    {
+        bgmSubtract = 0,
+        bgmAbsDiff = 1,
+        bgmFGD = 2,
+        bgmMOG = 3
+    };
+    int mLastBGMethod;
+    int mBGMethod; // Should be values from above.
+    CvBGStatModel* mBgFg;
 
 	// Debug
 	cinder::gl::Texture	mContourTexture;
 	cv::Mat mContourMat;
-    bool mDrawColor;
+    enum DrawTex
+    {
+        dtDepth = 0,
+        dtColor = 1,
+        dtContour = 2
+    };
+    int mDrawTex;
     bool mEnableIR;
     
     bool mRecordRequested;

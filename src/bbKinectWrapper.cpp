@@ -44,18 +44,31 @@ void KinectWrapper::setup(params::InterfaceGl& params)
 	mStepFrom = 5;
 	mAreaThreshold = 1000.0f;
 	mInitInitial = true;	
-    mDrawColor = false;
+    mDrawTex = dtDepth;
     mEnableIR = false;
     mLowPass = 255;
     mDilate = false;
+    mLastBGMethod = mBGMethod = bgmSubtract;
+    mBgFg = NULL;
     
 	params.addSeparator("CV Params");
+    std::vector<std::string> enumNames;
+    enumNames.push_back("bgmSubtract");
+    enumNames.push_back("bgmAbsDiff");
+    enumNames.push_back("bgmFGD");
+    enumNames.push_back("bgmMOG");
+
+    params.addParam( "BG removal method", enumNames, &mBGMethod);
 	params.addParam( "Step from", &mStepFrom, "min=1 max=255" );
 	params.addParam( "Threshold Step Size", &mStepSize, "min=1 max=255" );
     params.addParam( "LowPass filter", &mLowPass, "min=0 max=255");
     params.addParam( "CV Blur amount", &mBlurAmount, "min=3 max=55" );	
 	params.addParam( "CV area threshold", &mAreaThreshold, "min=1");
-    params.addParam( "Show color", &mDrawColor);
+    std::vector<std::string> enumDraw;
+    enumDraw.push_back("Depth");
+    enumDraw.push_back("Color");
+    enumDraw.push_back("Contour");
+    params.addParam( "Texture", enumDraw, &mDrawTex);
     params.addParam( "Toggle IR", &mEnableIR);
     params.addParam( "Dilate", &mDilate);
     params.addParam( "KinectEnabled", &mEnabled);
@@ -122,6 +135,17 @@ void KinectWrapper::update()
 		return;
     
     enableRecordIfNeeded();
+    
+    if (mLastBGMethod != mBGMethod)
+    {
+        mLastBGMethod = mBGMethod;
+        mInitInitial = true;
+        if (mBgFg != NULL)
+        {
+            cvReleaseBGStatModel(&mBgFg);
+            mBgFg = NULL;
+        }
+    }
 	
     if (mEnableIR != mKinect.isVideoInfrared())
         mKinect.setVideoInfrared(mEnableIR);
@@ -205,57 +229,85 @@ void KinectWrapper::findBlobs()
 	cv::Mat gray;
 	cv::Mat thresh;
 	
-	cv::cvtColor( input, gray, CV_RGB2GRAY );
-    if (mDilate)
-        cv::dilate(gray, gray, cv::Mat());
-    if (mBlurAmount > 3)
-        cv::blur( gray, gray, cv::Size( mBlurAmount, mBlurAmount ) );
-    else
-        cv::medianBlur(gray, gray, (mBlurAmount%2==0)?mBlurAmount+1:mBlurAmount);
-    
-    if (mInitInitial)
-	{
-		mInitial = gray.clone();
-		mInitInitial = false;
-	}		
-	gray -= mInitial;
+    if ((mBGMethod == bgmSubtract || mBGMethod == bgmAbsDiff))
+    {
+        cv::cvtColor( input, gray, CV_RGB2GRAY );
+        if (mDilate)
+            cv::dilate(gray, gray, cv::Mat());
+        if (mBlurAmount > 3)
+            cv::blur( gray, gray, cv::Size( mBlurAmount, mBlurAmount ) );
+        else
+            cv::medianBlur(gray, gray, (mBlurAmount%2==0)?mBlurAmount+1:mBlurAmount);
+        
+        if (mInitInitial)
+        {
+            mInitial = gray.clone();
+            mInitInitial = false;
+        }
+        if (mBGMethod == bgmAbsDiff)
+        {
+            gray -= mInitial;
+            gray = cv::abs(gray);
+        } else {
+            gray -= mInitial;
+            mColorTexture = fromOcv(gray);
+        }
+        cv::threshold( gray, thresh, mStepFrom, 255, CV_THRESH_BINARY );
+    } else {
+        if (mBGMethod == bgmMOG)
+        {
+            cv::cvtColor( input, gray, CV_RGB2GRAY );
+        } else {
+            cv::resize(input, gray, cv::Size(320, 200));
+        }
+        IplImage i(gray);
+        if (mInitInitial || mBgFg == NULL)
+        {
+            if (mBGMethod == bgmFGD)
+                mBgFg = cvCreateFGDStatModel(&i);
+            else
+                mBgFg = cvCreateGaussianBGModel(&i);
+            mInitInitial = false;
+        }
+        cvUpdateBGStatModel(&i, mBgFg);
+        if (mBGMethod == bgmMOG)
+        {
+            thresh = mBgFg->foreground;
+        } else {
+            cv::Mat in(mBgFg->foreground);
+            cv::Mat out;
+            cv::resize(in, out, cv::Size(640, 480));
+            thresh = out;
+        }
+    }
 		
 	mBlobs.clear();
 	float largest = mAreaThreshold;
-	for( int t = mStepFrom; t < 255; t += mStepSize )
-	{
-		ContourVector vec;
-        if (mLowPass != 255)
+
+    mContourMat = thresh.clone();
+    mContourTexture = fromOcv(mContourMat);
+
+    ContourVector vec;
+    cv::findContours( thresh, vec, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE );
+    
+    for( ContourVector::iterator iter = vec.begin(); iter != vec.end(); ++iter )
+    {		
+        float a = cv::contourArea(*iter);
+        if (a > largest)
         {
-            cv::threshold( gray, thresh, mLowPass, mLowPass, CV_THRESH_TOZERO_INV );	
-            cv::threshold( thresh, thresh, t, 255, CV_THRESH_BINARY );
-        } else {
-            cv::threshold( gray, thresh, t, 255, CV_THRESH_BINARY );
+            Blob b;
+            b.mContourArea = a;
+            b.mContourPoints.resize(iter->size());
+            copy(iter->begin(), iter->end(), b.mContourPoints.begin());
+            mBlobs.push_back(b);
+            push_heap(mBlobs.begin(), mBlobs.end(), SortDescendingArea());
+            if (mBlobs.size() > KinectWrapper::smMAX_BLOBS)
+            {			
+                mBlobs.erase(mBlobs.end());
+                largest = mBlobs.rbegin()->mContourArea;
+            }
         }
-        mContourMat = thresh.clone();
-        mContourTexture = fromOcv(mContourMat);
-        
-		cv::findContours( thresh, vec, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE );
-		
-		for( ContourVector::iterator iter = vec.begin(); iter != vec.end(); ++iter )
-		{		
-			float a = cv::contourArea(*iter);
-			if (a > largest)
-			{
-				Blob b;
-				b.mContourArea = a;
-				b.mContourPoints.resize(iter->size());
-				copy(iter->begin(), iter->end(), b.mContourPoints.begin());
-				mBlobs.push_back(b);
-				push_heap(mBlobs.begin(), mBlobs.end(), SortDescendingArea());
-				if (mBlobs.size() > KinectWrapper::smMAX_BLOBS)
-				{			
-					mBlobs.erase(mBlobs.end());
-					largest = mBlobs.rbegin()->mContourArea;
-				}
-			}
-		}
-	}
+    }
 
     float xs = (float) getWindowWidth() / 640.0f;
     float ys = (float) getWindowHeight() / 480.0f;					
@@ -311,16 +363,22 @@ void KinectWrapper::findBlobs()
 		Vec3f sample = i->mTopMost;
 		for (int x = 0; x < steps; x++)
 		{
-			i->mZDist = max(i->mZDist, (float) *to8.getDataRed(Vec2f(sample.x, sample.y)));
-			sample += step;
+            if (mContourMat.at<uint8_t>(cv::Point(sample.x, sample.y)) > 0)
+            {
+                i->mZDist = max(i->mZDist, (float) *to8.getDataRed(Vec2f(sample.x, sample.y)));
+            }
+            sample += step;
 		}
 		step = (i->mRightMost - i->mLeftMost) / steps;
 		sample = i->mLeftMost;
 		for (int x = 0; x < steps; x++)
 		{
-			i->mZDist = max(i->mZDist, (float) *to8.getDataRed(Vec2f(sample.x, sample.y)));
-			sample += step;
-		}		
+            if (mContourMat.at<uint8_t>(cv::Point(sample.x, sample.y)) > 0)
+            {
+                i->mZDist = max(i->mZDist, (float) *to8.getDataRed(Vec2f(sample.x, sample.y)));
+            }
+            sample += step;
+		}
 	}
 	sort(mBlobs.begin(), mBlobs.end(), SortDescendingZ());
 }
@@ -333,14 +391,20 @@ void KinectWrapper::draw()
     glDisable(GL_TEXTURE_2D);
 	gl::color(Color(1.0f, 1.0f, 1.0f));
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
-    if (mDrawColor)
+    switch (mDrawTex)
     {
-        if( mColorTexture )
-            //gl::draw( mContourTexture, getWindowBounds() );
-            gl::draw( mColorTexture, getWindowBounds() );
-    } else {
-        if( mDepthTexture )
-            gl::draw( mDepthTexture, getWindowBounds() );
+        case dtDepth:
+            if (mDepthTexture)
+                gl::draw(mDepthTexture, getWindowBounds());
+            break;
+        case dtColor:
+            if (mColorTexture)
+                gl::draw(mColorTexture, getWindowBounds());
+            break;
+        case dtContour :
+            if (mContourTexture)
+                gl::draw(mContourTexture, getWindowBounds());
+            break;
     }
 	
 	if (true)
