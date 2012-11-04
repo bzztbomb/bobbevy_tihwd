@@ -1039,7 +1039,7 @@
 					"\"$(CINDER_PATH)/lib/libcinder.a\"",
 					"$(CINDER_PATH)/blocks/osc/lib/macosx/osc.a",
 					"-lcurl",
-					"\"$(CINDER_PATH)/blocks/Cinder-OpenCV/lib/macosx/libopencv_video.a",
+					"\"$(CINDER_PATH)/blocks/Cinder-OpenCV/lib/macosx/libopencv_video.a\"",
 				);
 				PRODUCT_NAME = bobbevy;
 				STRIP_INSTALLED_PRODUCT = YES;
