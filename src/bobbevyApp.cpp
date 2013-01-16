@@ -276,7 +276,7 @@ void bobbevyApp::handleOSC()
             map<int,int>::iterator iter = mMessageMap.find( code );
             if( iter != mMessageMap.end() )
             {
-                KeyEvent ev(iter->second, iter->second, 0, 0);
+                KeyEvent ev(getWindow(), iter->second, iter->second, 0, 0);
                 keyDown(ev);
             }
         } else {        

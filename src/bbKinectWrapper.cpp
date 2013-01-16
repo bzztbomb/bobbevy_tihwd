@@ -142,12 +142,12 @@ void KinectWrapper::update()
         mInitInitial = true;
         if (mBgFg != NULL)
         {
-            cvReleaseBGStatModel(&mBgFg);
+//            cvReleaseBGStatModel(&mBgFg);
             mBgFg = NULL;
         }
     }
 	
-    if (mEnableIR != mKinect.isVideoInfrared())
+    if ((mKinectEnabled) && (mEnableIR != mKinect.isVideoInfrared()))
         mKinect.setVideoInfrared(mEnableIR);
     
     findBlobs();
@@ -254,31 +254,33 @@ void KinectWrapper::findBlobs()
         }
         cv::threshold( gray, thresh, mStepFrom, 255, CV_THRESH_BINARY );
     } else {
+#if 0
         if (mBGMethod == bgmMOG)
         {
             cv::cvtColor( input, gray, CV_RGB2GRAY );
         } else {
             cv::resize(input, gray, cv::Size(320, 200));
         }
-        IplImage i(gray);
+//        IplImage i(gray);
         if (mInitInitial || mBgFg == NULL)
         {
-            if (mBGMethod == bgmFGD)
-                mBgFg = cvCreateFGDStatModel(&i);
-            else
-                mBgFg = cvCreateGaussianBGModel(&i);
+//            if (mBGMethod == bgmFGD)
+//                mBgFg = cvCreateFGDStatModel(&i);
+//            else
+//                mBgFg = cvCreateGaussianBGModel(&i);
             mInitInitial = false;
         }
-        cvUpdateBGStatModel(&i, mBgFg);
+//        cvUpdateBGStatModel(&i, mBgFg);
         if (mBGMethod == bgmMOG)
         {
-            thresh = mBgFg->foreground;
+//            thresh = mBgFg->foreground;
         } else {
-            cv::Mat in(mBgFg->foreground);
+//            cv::Mat in(mBgFg->foreground);
             cv::Mat out;
-            cv::resize(in, out, cv::Size(640, 480));
+//            cv::resize(in, out, cv::Size(640, 480));
             thresh = out;
         }
+#endif
     }
 		
 	mBlobs.clear();

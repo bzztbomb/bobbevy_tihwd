@@ -13,8 +13,8 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "CinderOpenCV.h"
-#include "cinder/params/Params.h"
 #include "cinder/app/AppBasic.h"
+#include "cinder/params/Params.h"
 #include "cinder/gl/Fbo.h"
 #include "cinder/qtime/MovieWriter.h"
 
@@ -85,7 +85,7 @@ public:
     };
     int mLastBGMethod;
     int mBGMethod; // Should be values from above.
-    CvBGStatModel* mBgFg;
+    CvStatModel* mBgFg;
 
 	// Debug
 	cinder::gl::Texture	mContourTexture;
