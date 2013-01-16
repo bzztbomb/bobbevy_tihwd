@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 44;
+	objectVersion = 45;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -46,6 +46,15 @@
 		C82E6B0E1689598E000BF266 /* OscListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C82E6AFE1689598E000BF266 /* OscListener.cpp */; };
 		C82E6B0F1689598E000BF266 /* OscMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C82E6B001689598E000BF266 /* OscMessage.cpp */; };
 		C82E6B101689598E000BF266 /* OscSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C82E6B021689598E000BF266 /* OscSender.cpp */; };
+		C85BFCA016A686F200EFB14F /* libbass.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C85BFC8716A686F200EFB14F /* libbass.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
+		C85BFCA116A686F200EFB14F /* QTimeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85BFC8A16A686F200EFB14F /* QTimeline.cpp */; };
+		C85BFCA216A686F200EFB14F /* QTimelineAudioItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85BFC8C16A686F200EFB14F /* QTimelineAudioItem.cpp */; };
+		C85BFCA316A686F200EFB14F /* QTimelineCue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85BFC8E16A686F200EFB14F /* QTimelineCue.cpp */; };
+		C85BFCA416A686F200EFB14F /* QTimelineCueManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85BFC9016A686F200EFB14F /* QTimelineCueManager.cpp */; };
+		C85BFCA516A686F200EFB14F /* QTimelineItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85BFC9216A686F200EFB14F /* QTimelineItem.cpp */; };
+		C85BFCA616A686F200EFB14F /* QTimelineModuleItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85BFC9716A686F200EFB14F /* QTimelineModuleItem.cpp */; };
+		C85BFCA716A686F200EFB14F /* QTimelineParam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85BFC9A16A686F200EFB14F /* QTimelineParam.cpp */; };
+		C85BFCA816A686F200EFB14F /* QTimelineTrack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85BFC9C16A686F200EFB14F /* QTimelineTrack.cpp */; };
 		C865A6E9159FE47D00C98D5C /* bbIntroLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C865A6E7159FE47D00C98D5C /* bbIntroLight.cpp */; };
 		C8CE8EAD15B21C8B0076054E /* TreeFrag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAB15B21C8B0076054E /* TreeFrag.glsl */; };
 		C8CE8EAE15B21C8B0076054E /* TreeVert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAC15B21C8B0076054E /* TreeVert.glsl */; };
@@ -313,6 +322,30 @@
 		C82E6B011689598E000BF266 /* OscMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OscMessage.h; path = ../../external/Cinder/blocks/osc/src/OscMessage.h; sourceTree = "<group>"; };
 		C82E6B021689598E000BF266 /* OscSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OscSender.cpp; path = ../../external/Cinder/blocks/osc/src/OscSender.cpp; sourceTree = "<group>"; };
 		C82E6B031689598E000BF266 /* OscSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OscSender.h; path = ../../external/Cinder/blocks/osc/src/OscSender.h; sourceTree = "<group>"; };
+		C85BFC8716A686F200EFB14F /* libbass.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libbass.dylib; sourceTree = "<group>"; };
+		C85BFC8916A686F200EFB14F /* bass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bass.h; sourceTree = "<group>"; };
+		C85BFC8A16A686F200EFB14F /* QTimeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTimeline.cpp; sourceTree = "<group>"; };
+		C85BFC8B16A686F200EFB14F /* QTimeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimeline.h; sourceTree = "<group>"; };
+		C85BFC8C16A686F200EFB14F /* QTimelineAudioItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTimelineAudioItem.cpp; sourceTree = "<group>"; };
+		C85BFC8D16A686F200EFB14F /* QTimelineAudioItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineAudioItem.h; sourceTree = "<group>"; };
+		C85BFC8E16A686F200EFB14F /* QTimelineCue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTimelineCue.cpp; sourceTree = "<group>"; };
+		C85BFC8F16A686F200EFB14F /* QTimelineCue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineCue.h; sourceTree = "<group>"; };
+		C85BFC9016A686F200EFB14F /* QTimelineCueManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTimelineCueManager.cpp; sourceTree = "<group>"; };
+		C85BFC9116A686F200EFB14F /* QTimelineCueManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineCueManager.h; sourceTree = "<group>"; };
+		C85BFC9216A686F200EFB14F /* QTimelineItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTimelineItem.cpp; sourceTree = "<group>"; };
+		C85BFC9316A686F200EFB14F /* QTimelineItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineItem.h; sourceTree = "<group>"; };
+		C85BFC9416A686F200EFB14F /* QTimelineKeyframe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineKeyframe.h; sourceTree = "<group>"; };
+		C85BFC9516A686F200EFB14F /* QTimelineMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineMenu.h; sourceTree = "<group>"; };
+		C85BFC9616A686F200EFB14F /* QTimelineModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineModule.h; sourceTree = "<group>"; };
+		C85BFC9716A686F200EFB14F /* QTimelineModuleItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTimelineModuleItem.cpp; sourceTree = "<group>"; };
+		C85BFC9816A686F200EFB14F /* QTimelineModuleItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineModuleItem.h; sourceTree = "<group>"; };
+		C85BFC9916A686F200EFB14F /* QTimelineOscController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineOscController.h; sourceTree = "<group>"; };
+		C85BFC9A16A686F200EFB14F /* QTimelineParam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTimelineParam.cpp; sourceTree = "<group>"; };
+		C85BFC9B16A686F200EFB14F /* QTimelineParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineParam.h; sourceTree = "<group>"; };
+		C85BFC9C16A686F200EFB14F /* QTimelineTrack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTimelineTrack.cpp; sourceTree = "<group>"; };
+		C85BFC9D16A686F200EFB14F /* QTimelineTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineTrack.h; sourceTree = "<group>"; };
+		C85BFC9E16A686F200EFB14F /* QTimelineWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineWidget.h; sourceTree = "<group>"; };
+		C85BFC9F16A686F200EFB14F /* QTimelineWidgetWithHandles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineWidgetWithHandles.h; sourceTree = "<group>"; };
 		C865A6E7159FE47D00C98D5C /* bbIntroLight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bbIntroLight.cpp; path = ../src/bbIntroLight.cpp; sourceTree = SOURCE_ROOT; };
 		C865A6E8159FE47D00C98D5C /* bbIntroLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bbIntroLight.h; path = ../src/bbIntroLight.h; sourceTree = SOURCE_ROOT; };
 		C8CE8EAB15B21C8B0076054E /* TreeFrag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TreeFrag.glsl; path = ../resources/TreeFrag.glsl; sourceTree = "<group>"; };
@@ -342,6 +375,7 @@
 				00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */,
 				00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */,
 				C82C9436159F888100AAEDE0 /* IOKit.framework in Frameworks */,
+				C85BFCA016A686F200EFB14F /* libbass.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -828,6 +862,7 @@
 		C82C9421159F845400AAEDE0 /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
+				C85BFC8416A6867300EFB14F /* QTimeline */,
 				C88BB95115A6BDDE00634E79 /* osc */,
 				C82C9422159F845900AAEDE0 /* Kinect */,
 			);
@@ -884,6 +919,63 @@
 			);
 			name = osc;
 			path = ../../external/Cinder/blocks/osc/src/osc;
+			sourceTree = "<group>";
+		};
+		C85BFC8416A6867300EFB14F /* QTimeline */ = {
+			isa = PBXGroup;
+			children = (
+				C85BFC8516A686F200EFB14F /* lib */,
+				C85BFC8816A686F200EFB14F /* src */,
+			);
+			name = QTimeline;
+			sourceTree = "<group>";
+		};
+		C85BFC8516A686F200EFB14F /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				C85BFC8616A686F200EFB14F /* macosx */,
+			);
+			name = lib;
+			path = ../../external/Cinder/blocks/QTimeline/lib;
+			sourceTree = "<group>";
+		};
+		C85BFC8616A686F200EFB14F /* macosx */ = {
+			isa = PBXGroup;
+			children = (
+				C85BFC8716A686F200EFB14F /* libbass.dylib */,
+			);
+			path = macosx;
+			sourceTree = "<group>";
+		};
+		C85BFC8816A686F200EFB14F /* src */ = {
+			isa = PBXGroup;
+			children = (
+				C85BFC8916A686F200EFB14F /* bass.h */,
+				C85BFC8A16A686F200EFB14F /* QTimeline.cpp */,
+				C85BFC8B16A686F200EFB14F /* QTimeline.h */,
+				C85BFC8C16A686F200EFB14F /* QTimelineAudioItem.cpp */,
+				C85BFC8D16A686F200EFB14F /* QTimelineAudioItem.h */,
+				C85BFC8E16A686F200EFB14F /* QTimelineCue.cpp */,
+				C85BFC8F16A686F200EFB14F /* QTimelineCue.h */,
+				C85BFC9016A686F200EFB14F /* QTimelineCueManager.cpp */,
+				C85BFC9116A686F200EFB14F /* QTimelineCueManager.h */,
+				C85BFC9216A686F200EFB14F /* QTimelineItem.cpp */,
+				C85BFC9316A686F200EFB14F /* QTimelineItem.h */,
+				C85BFC9416A686F200EFB14F /* QTimelineKeyframe.h */,
+				C85BFC9516A686F200EFB14F /* QTimelineMenu.h */,
+				C85BFC9616A686F200EFB14F /* QTimelineModule.h */,
+				C85BFC9716A686F200EFB14F /* QTimelineModuleItem.cpp */,
+				C85BFC9816A686F200EFB14F /* QTimelineModuleItem.h */,
+				C85BFC9916A686F200EFB14F /* QTimelineOscController.h */,
+				C85BFC9A16A686F200EFB14F /* QTimelineParam.cpp */,
+				C85BFC9B16A686F200EFB14F /* QTimelineParam.h */,
+				C85BFC9C16A686F200EFB14F /* QTimelineTrack.cpp */,
+				C85BFC9D16A686F200EFB14F /* QTimelineTrack.h */,
+				C85BFC9E16A686F200EFB14F /* QTimelineWidget.h */,
+				C85BFC9F16A686F200EFB14F /* QTimelineWidgetWithHandles.h */,
+			);
+			name = src;
+			path = ../../external/Cinder/blocks/QTimeline/src;
 			sourceTree = "<group>";
 		};
 		C88BB95115A6BDDE00634E79 /* osc */ = {
@@ -1001,6 +1093,14 @@
 				C82E6B0E1689598E000BF266 /* OscListener.cpp in Sources */,
 				C82E6B0F1689598E000BF266 /* OscMessage.cpp in Sources */,
 				C82E6B101689598E000BF266 /* OscSender.cpp in Sources */,
+				C85BFCA116A686F200EFB14F /* QTimeline.cpp in Sources */,
+				C85BFCA216A686F200EFB14F /* QTimelineAudioItem.cpp in Sources */,
+				C85BFCA316A686F200EFB14F /* QTimelineCue.cpp in Sources */,
+				C85BFCA416A686F200EFB14F /* QTimelineCueManager.cpp in Sources */,
+				C85BFCA516A686F200EFB14F /* QTimelineItem.cpp in Sources */,
+				C85BFCA616A686F200EFB14F /* QTimelineModuleItem.cpp in Sources */,
+				C85BFCA716A686F200EFB14F /* QTimelineParam.cpp in Sources */,
+				C85BFCA816A686F200EFB14F /* QTimelineTrack.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1022,6 +1122,10 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/Cinder/blocks/QTimeline/lib/macosx\"",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = (
 					"\"$(CINDER_PATH)/blocks/Cinder-Kinect/lib/macosx/libfreenect.a\"",
@@ -1053,6 +1157,10 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../external/Cinder/blocks/QTimeline/lib/macosx\"",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = (
 					"\"$(CINDER_PATH)/blocks/Cinder-Kinect/lib/macosx/libusb-1.0.a\"",

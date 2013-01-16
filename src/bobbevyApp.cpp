@@ -30,40 +30,40 @@ public:
 	void prepareSettings( Settings* settings );
 	void setup();
 	void keyDown( KeyEvent event );
-	void mouseDown( MouseEvent event );	
+	void mouseDown( MouseEvent event );
 	void update();
-	void draw();	
+	void draw();
 private:
 	KinectWrapper mKinect;
-
+  
 	// Debugging
 	bool mDebugDraw;
 	bool mShowFPS;
 	bool mShowParams;
-    
-    // Osc
-    osc::Listener mListener;
-    map<int, int> mMessageMap;
-
-    // Simulation
-    double mCurrentTime;
-    double mAccumlator;
-    double mDT;
-    
+  
+  // Osc
+  osc::Listener mListener;
+  map<int, int> mMessageMap;
+  
+  // Simulation
+  double mCurrentTime;
+  double mAccumlator;
+  double mDT;
+  
 	// Layers
 	SceneState mSceneState;
 	TreeLayer mTreeLayer;
 	IntroLight mIntroLight;
 	SkeletonParticles mCloseSwarm;
 	SkeletonParticles mFarSwarm;
-    ParticleField mField;
-
-    ColorA mBlackoutColor;
-    float mFadeInSlow;
-    float mFadeInNormal;
-    
-    void handleOSC();
-    void initMsgMap();
+  ParticleField mField;
+  
+  ColorA mBlackoutColor;
+  float mFadeInSlow;
+  float mFadeInNormal;
+  
+  void handleOSC();
+  void initMsgMap();
 };
 
 void bobbevyApp::prepareSettings( Settings* settings )
@@ -78,7 +78,7 @@ extern void publish_via_bonjour();
 
 void bobbevyApp::setup()
 {
-	mSceneState.mParams = params::InterfaceGl("bobbevy", Vec2i(225, 200));	
+	mSceneState.mParams = params::InterfaceGl("bobbevy", Vec2i(225, 200));
 	mSceneState.mParams.addParam("DebugDraw", &mDebugDraw, "keyIncr=d");
 	mSceneState.mParams.addParam("ShowParams", &mShowParams, "keyIncr=p");
 	mSceneState.mParams.addParam("ShowFPS", &mShowFPS);
@@ -87,17 +87,17 @@ void bobbevyApp::setup()
 	
 	mSceneState.mTimeline = Timeline::create();
 	mSceneState.mTimeline->setDefaultAutoRemove(true);
-
+  
 	mDebugDraw = false;
 	mShowFPS = false;
 	mShowParams = false;
-    mBlackoutColor = ColorA(0.0f, 0.0f, 0.0f, 1.0f);
-    
-    mListener.setup(23232);
-    publish_via_bonjour();
-    
-    initMsgMap();
-
+  mBlackoutColor = ColorA(0.0f, 0.0f, 0.0f, 1.0f);
+  
+  mListener.setup(23232);
+  publish_via_bonjour();
+  
+  initMsgMap();
+  
 	mKinect.setup(mSceneState.mParams);
 	
 	mSceneState.mKinect = &mKinect;
@@ -108,26 +108,26 @@ void bobbevyApp::setup()
 	hiQFormat.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	hiQFormat.setMagFilter(GL_LINEAR_MIPMAP_LINEAR);
 	
-	// Blackout overlay	
+	// Blackout overlay
 	mTreeLayer.setup(&mSceneState);
 	mTreeLayer.setSwarms(&mCloseSwarm, &mFarSwarm);
-    
+  
 	mIntroLight.setup(&mSceneState);
-
-    mCloseSwarm.setName("near");
-    mCloseSwarm.setup(&mSceneState);
-    mCloseSwarm.followUser(KinectWrapper::utClosest);
-    mFarSwarm.setName("far");
-    mFarSwarm.setup(&mSceneState);
-    mFarSwarm.followUser(KinectWrapper::utFurthest);
-    mField.setup(&mSceneState);
-    
-    mCurrentTime = getElapsedSeconds();
-    mAccumlator = 0.0;
-    mDT = 1.0/30.0;
-    
-    mFadeInNormal = 10.0f;
-    mFadeInSlow = 40.0f; 
+  
+  mCloseSwarm.setName("near");
+  mCloseSwarm.setup(&mSceneState);
+  mCloseSwarm.followUser(KinectWrapper::utClosest);
+  mFarSwarm.setName("far");
+  mFarSwarm.setup(&mSceneState);
+  mFarSwarm.followUser(KinectWrapper::utFurthest);
+  mField.setup(&mSceneState);
+  
+  mCurrentTime = getElapsedSeconds();
+  mAccumlator = 0.0;
+  mDT = 1.0/30.0;
+  
+  mFadeInNormal = 10.0f;
+  mFadeInSlow = 40.0f;
 }
 
 void bobbevyApp::initMsgMap()
@@ -177,200 +177,200 @@ void bobbevyApp::keyDown( KeyEvent event )
 		case KeyEvent::KEY_ESCAPE:
 			this->quit();
 			this->shutdown();
-			break;			
+			break;
 		case KeyEvent::KEY_f:
 			setFullScreen( !isFullScreen() );
 			break;
 		case KeyEvent::KEY_t:
 			mTreeLayer.setEnabled(!mTreeLayer.getEnabled());
-            mTreeLayer.setLeaves(false);
+      mTreeLayer.setLeaves(false);
 			break;
-        case KeyEvent::KEY_e:
-            mTreeLayer.setEnabled(true);
-            mTreeLayer.setLeaves(true);
-            break;
-//		case KeyEvent::KEY_l:
-//			mIntroLight.setEnabled(!mIntroLight.getEnabled());
-//			break;			
+    case KeyEvent::KEY_e:
+      mTreeLayer.setEnabled(true);
+      mTreeLayer.setLeaves(true);
+      break;
+      //		case KeyEvent::KEY_l:
+      //			mIntroLight.setEnabled(!mIntroLight.getEnabled());
+      //			break;
 		case KeyEvent::KEY_b:
 			mCloseSwarm.setEnabled(!mCloseSwarm.getEnabled());
-			break;			
-        case KeyEvent::KEY_n:
-            mFarSwarm.setEnabled(!mFarSwarm.getEnabled());
-            break;
-        case KeyEvent::KEY_v:
-            mField.setEnabled(!mField.getEnabled());
-            break;
-        // Fade in/out
-        case KeyEvent::KEY_c:
-            mBlackoutColor = ColorA(1.0, 0.85f, 0.85f, 1.0f);
-            break;
-        case KeyEvent::KEY_d:
-            mBlackoutColor = ColorA(0.0, 0.0f, 0.0f, 1.0f);
-            break;            
+			break;
+    case KeyEvent::KEY_n:
+      mFarSwarm.setEnabled(!mFarSwarm.getEnabled());
+      break;
+    case KeyEvent::KEY_v:
+      mField.setEnabled(!mField.getEnabled());
+      break;
+      // Fade in/out
+    case KeyEvent::KEY_c:
+      mBlackoutColor = ColorA(1.0, 0.85f, 0.85f, 1.0f);
+      break;
+    case KeyEvent::KEY_d:
+      mBlackoutColor = ColorA(0.0, 0.0f, 0.0f, 1.0f);
+      break;
 		case KeyEvent::KEY_o:
 			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 1.0f, 5.0f);
-			break;			
+			break;
 		case KeyEvent::KEY_i:
 			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 0.0f, mFadeInNormal);
 			break;
 		case KeyEvent::KEY_g:
 			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 0.0f, mFadeInSlow);
-			break;	
-        case KeyEvent::KEY_h:
-            mSceneState.mTimeline->clear();
-            break;
-	}			
+			break;
+    case KeyEvent::KEY_h:
+      mSceneState.mTimeline->clear();
+      break;
+	}
 	mTreeLayer.keyDown(event);
 	mIntroLight.keyDown(event);
 	mKinect.keyDown(event);
 	mCloseSwarm.keyDown(event);
-    mFarSwarm.keyDown(event);
-    mField.keyDown(event);
+  mFarSwarm.keyDown(event);
+  mField.keyDown(event);
 }
 
 void bobbevyApp::mouseDown( MouseEvent event )
 {
-    mFarSwarm.mouseDown(event);
+  mFarSwarm.mouseDown(event);
 }
 
 void bobbevyApp::update()
 {
-    handleOSC();
-    double newTime = getElapsedSeconds();
-    double frameTime = newTime - mCurrentTime;
-    mCurrentTime = newTime;
-    mAccumlator += frameTime;
-//    int i = 0;
-//    int max_ticks = 0;
-    while (mAccumlator >= mDT)
-    {
-        mAccumlator -= mDT;
-        
-        mSceneState.mTimeline->step(0.05);
-        mKinect.update();
-        mTreeLayer.update();
-        mIntroLight.update();
-        mCloseSwarm.update();
-        mFarSwarm.update();
-        mField.update();
-//        i++;
-//        if (i > max_ticks)
-//        {
-//            mAccumlator = mDT * -10;
-//            mCurrentTime = getElapsedSeconds();
-//        }
-    }
+  handleOSC();
+  double newTime = getElapsedSeconds();
+  double frameTime = newTime - mCurrentTime;
+  mCurrentTime = newTime;
+  mAccumlator += frameTime;
+  //    int i = 0;
+  //    int max_ticks = 0;
+  while (mAccumlator >= mDT)
+  {
+    mAccumlator -= mDT;
+    
+    mSceneState.mTimeline->step(0.05);
+    mKinect.update();
+    mTreeLayer.update();
+    mIntroLight.update();
+    mCloseSwarm.update();
+    mFarSwarm.update();
+    mField.update();
+    //        i++;
+    //        if (i > max_ticks)
+    //        {
+    //            mAccumlator = mDT * -10;
+    //            mCurrentTime = getElapsedSeconds();
+    //        }
+  }
 }
 
 void bobbevyApp::handleOSC()
 {
-    while (mListener.hasWaitingMessages()) 
+  while (mListener.hasWaitingMessages())
+  {
+    osc::Message message;
+    mListener.getNextMessage(&message);
+    
+    if ((message.getAddress().compare("/bobbevy/key") == 0) && (message.getArgType(0) == osc::TYPE_STRING) && (message.getArgAsString(0).size() > 0))
     {
-        osc::Message message;
-        mListener.getNextMessage(&message);
-        
-        if ((message.getAddress().compare("/bobbevy/key") == 0) && (message.getArgType(0) == osc::TYPE_STRING) && (message.getArgAsString(0).size() > 0))
-        {
-            int code = message.getArgAsString(0).c_str()[0];
-            map<int,int>::iterator iter = mMessageMap.find( code );
-            if( iter != mMessageMap.end() )
-            {
-                KeyEvent ev(getWindow(), iter->second, iter->second, 0, 0);
-                keyDown(ev);
+      int code = message.getArgAsString(0).c_str()[0];
+      map<int,int>::iterator iter = mMessageMap.find( code );
+      if( iter != mMessageMap.end() )
+      {
+        KeyEvent ev(getWindow(), iter->second, iter->second, 0, 0);
+        keyDown(ev);
+      }
+    } else {
+      if ((message.getAddress().find("/multi/") != std::string::npos) &&
+          (message.getNumArgs() == 2) &&
+          (message.getArgType(0) == osc::TYPE_FLOAT) &&
+          (message.getArgType(1) == osc::TYPE_FLOAT))
+      {
+        char which = message.getAddress()[7];
+        int index = boost::lexical_cast<int>(which);
+        mKinect.updateFakeBlob(index-1, Vec2f(message.getArgAsFloat(0), message.getArgAsFloat(1)));
+      } else {
+        console() << "New message received" << std::endl;
+        console() << "Address: " << message.getAddress() << std::endl;
+        console() << "Num Arg: " << message.getNumArgs() << std::endl;
+        for (int i = 0; i < message.getNumArgs(); i++) {
+          console() << "-- Argument " << i << std::endl;
+          console() << "---- type: " << message.getArgTypeName(i) << std::endl;
+          if (message.getArgType(i) == osc::TYPE_INT32){
+            try {
+              console() << "------ value: "<< message.getArgAsInt32(i) << std::endl;
             }
-        } else {        
-            if ((message.getAddress().find("/multi/") != std::string::npos) && 
-                (message.getNumArgs() == 2) &&
-                (message.getArgType(0) == osc::TYPE_FLOAT) &&
-                (message.getArgType(1) == osc::TYPE_FLOAT))
-            {
-                char which = message.getAddress()[7];
-                int index = boost::lexical_cast<int>(which);
-                mKinect.updateFakeBlob(index-1, Vec2f(message.getArgAsFloat(0), message.getArgAsFloat(1)));
-            } else {
-                console() << "New message received" << std::endl;
-                console() << "Address: " << message.getAddress() << std::endl;
-                console() << "Num Arg: " << message.getNumArgs() << std::endl;
-                for (int i = 0; i < message.getNumArgs(); i++) {
-                    console() << "-- Argument " << i << std::endl;
-                    console() << "---- type: " << message.getArgTypeName(i) << std::endl;
-                    if (message.getArgType(i) == osc::TYPE_INT32){
-                        try {
-                            console() << "------ value: "<< message.getArgAsInt32(i) << std::endl;
-                        }
-                        catch (...) {
-                            console() << "Exception reading argument as int32" << std::endl;
-                        }
-                        
-                    }else if (message.getArgType(i) == osc::TYPE_FLOAT){
-                        try {
-                            console() << "------ value: " << message.getArgAsFloat(i) << std::endl;
-                        }
-                        catch (...) {
-                            console() << "Exception reading argument as float" << std::endl;
-                        }
-                    }else if (message.getArgType(i) == osc::TYPE_STRING){
-                        try {
-                            console() << "------ value: " << message.getArgAsString(i).c_str() << std::endl;
-                        }
-                        catch (...) {
-                            console() << "Exception reading argument as string" << std::endl;
-                        }
-                        
-                    }
-                }
+            catch (...) {
+              console() << "Exception reading argument as int32" << std::endl;
             }
+            
+          }else if (message.getArgType(i) == osc::TYPE_FLOAT){
+            try {
+              console() << "------ value: " << message.getArgAsFloat(i) << std::endl;
+            }
+            catch (...) {
+              console() << "Exception reading argument as float" << std::endl;
+            }
+          }else if (message.getArgType(i) == osc::TYPE_STRING){
+            try {
+              console() << "------ value: " << message.getArgAsString(i).c_str() << std::endl;
+            }
+            catch (...) {
+              console() << "Exception reading argument as string" << std::endl;
+            }
+            
+          }
         }
+      }
     }
+  }
 }
 
 void bobbevyApp::draw()
 {
 	// clear out the window with black
-	gl::clear( Color( 0, 0, 0 ) ); 
+	gl::clear( Color( 0, 0, 0 ) );
 	
 	mTreeLayer.draw();
 	mIntroLight.draw();
-
+  
 	if (mSceneState.mBlackoutAmount > 0.0)
 	{
-        gl::enableAlphaBlending();
-        ColorA b = mBlackoutColor;
-        b.a = mSceneState.mBlackoutAmount;
+    gl::enableAlphaBlending();
+    ColorA b = mBlackoutColor;
+    b.a = mSceneState.mBlackoutAmount;
 		gl::color( b );
-        gl::drawSolidRect(getWindowBounds());
+    gl::drawSolidRect(getWindowBounds());
 		gl::color( cinder::ColorA(1, 1, 1, 1) );
-        gl::disableAlphaBlending();
-	}    
-    
+    gl::disableAlphaBlending();
+	}
+  
 	if (mDebugDraw)
 		mKinect.draw();
-    
-    mFarSwarm.draw();
-	mCloseSwarm.draw(); 
-    mField.draw();
-
+  
+  mFarSwarm.draw();
+	mCloseSwarm.draw();
+  mField.draw();
+  
 	// Params
 	if (mShowParams)
 	{
-     //   showCursor();
+    //   showCursor();
 		gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
 		gl::disableDepthWrite();
 		gl::disableDepthRead();
 		params::InterfaceGl::draw();
-				
+    
 	} else {
 		// hideCursor();
 	}
 	
 	if (mShowFPS)
 	{
-        gl::enableAlphaBlending();
+    gl::enableAlphaBlending();
 		gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
 		std::string s = boost::lexical_cast<std::string>(getAverageFps());
 		gl::drawString(s, Vec2f(100,100));
-        gl::disableAlphaBlending();
+    gl::disableAlphaBlending();
 	}
 }
 

@@ -21,37 +21,37 @@ class ParticleField : public SceneLayer
 {
 public:
 	ParticleField();
-        
+  
 	// SceneLayer
-    virtual void setup(SceneState* manager);
+  virtual void setup(SceneState* manager);
 	virtual void keyDown( cinder::app::KeyEvent event );
 	virtual void update();
 	virtual void draw();
-    virtual void setEnabled(bool e);
+  virtual void setEnabled(bool e);
 private:
 	SceneState* mSceneState;
-    int mNumParticles;
-    std::vector<cinder::Vec3f> mParticlePos;
-    std::vector<cinder::Vec3f> mParticleVel;
-    std::vector<cinder::Vec3f> mParticleGoal;
-    cinder::Color mColor;
-    cinder::Rand mRand;
-    
-    cinder::gl::Texture texBrown;
-    cinder::gl::Texture texYellow;
-
-    float mGoalVel;
-    float mAvoidVel;
-    float mGlobalDecay;
-    float mTargetThreshold;
-    float mTargetDecay;
-    
-    bool mDropping;
-    cinder::Vec3f mDropAccel;
-    
-    void initField();
-    cinder::Vec3f randScreenVec();
-    void updateDrop();
+  int mNumParticles;
+  std::vector<cinder::Vec3f> mParticlePos;
+  std::vector<cinder::Vec3f> mParticleVel;
+  std::vector<cinder::Vec3f> mParticleGoal;
+  cinder::Color mColor;
+  cinder::Rand mRand;
+  
+  cinder::gl::Texture texBrown;
+  cinder::gl::Texture texYellow;
+  
+  float mGoalVel;
+  float mAvoidVel;
+  float mGlobalDecay;
+  float mTargetThreshold;
+  float mTargetDecay;
+  
+  bool mDropping;
+  cinder::Vec3f mDropAccel;
+  
+  void initField();
+  cinder::Vec3f randScreenVec();
+  void updateDrop();
 };
 
 

@@ -12,9 +12,9 @@
 
 -(void) publishService
 {
-    netService = [[NSNetService alloc] initWithDomain:@"" type:@"_osc._udp." name:@"bobbevy" port:23232];
-    [netService retain];
-    [netService publish];
+  netService = [[NSNetService alloc] initWithDomain:@"" type:@"_osc._udp." name:@"bobbevy" port:23232];
+  [netService retain];
+  [netService publish];
 }
 
 @end
@@ -23,7 +23,7 @@ BonjourPublisher* publisher;
 
 void publish_via_bonjour()
 {
-    publisher = [[BonjourPublisher alloc] init];
-    [publisher retain];
-    [publisher publishService];
+  publisher = [[BonjourPublisher alloc] init];
+  [publisher retain];
+  [publisher publishService];
 }

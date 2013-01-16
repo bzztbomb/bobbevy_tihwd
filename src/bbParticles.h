@@ -9,7 +9,7 @@
 
 #ifndef BBPARTICLES_H_
 #define BBPARTICLES_H_
- 
+
 #include "sceneLayer.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -23,33 +23,33 @@ class SkeletonParticles : public SceneLayer
 {
 public:
 	SkeletonParticles();
-
-    void setName(const std::string& name);
-    void followUser(KinectWrapper::UserToken ut);
-    void drop();
-    void moveSwarm(bool move);
-    void setZValue(float z);
-    
+  
+  void setName(const std::string& name);
+  void followUser(KinectWrapper::UserToken ut);
+  void drop();
+  void moveSwarm(bool move);
+  void setZValue(float z);
+  
 	// SceneLayer
-    virtual void setup(SceneState* manager);
+  virtual void setup(SceneState* manager);
 	virtual void keyDown( cinder::app::KeyEvent event );
 	virtual void update();
 	virtual void draw();
-    virtual void setEnabled(bool e);
-    
-    void mouseDown(cinder::app::MouseEvent event);
+  virtual void setEnabled(bool e);
+  
+  void mouseDown(cinder::app::MouseEvent event);
 private:
-    static const int smNumOffsets;
-    std::string mName;
+  static const int smNumOffsets;
+  std::string mName;
 	SceneState* mManager;
-    // User
-    KinectWrapper::UserToken mUserToken;
-    
-    cinder::gl::Texture texBrown;
-    cinder::gl::Texture texYellow;
-
-    int mNumParticles;
-    int mNumPositions;
+  // User
+  KinectWrapper::UserToken mUserToken;
+  
+  cinder::gl::Texture texBrown;
+  cinder::gl::Texture texYellow;
+  
+  int mNumParticles;
+  int mNumPositions;
 	cinder::Vec3f mTargetPoint;
 	std::vector<cinder::Vec3f> mParticlePos;
 	std::vector<cinder::Vec3f> mParticleVel;
@@ -60,24 +60,24 @@ private:
 	// Swarm
 	std::vector<int> mWhichNode;
 	std::vector<cinder::Vec3f> mRandOffset;
-    std::vector<cinder::Vec3f> mNodePos;
-    cinder::Rectf mBounds;
-    float mDrag;
-    float mTargetDrag;
-    float mDistanceThresh;
-    bool mDropping;
-    cinder::Vec3f mDropAccel;
-    
-    cinder::Color mColor;
-    
-    float mZValue;
-    cinder::Vec2f mParticleSize;
-    bool mMoveSwarm;
+  std::vector<cinder::Vec3f> mNodePos;
+  cinder::Rectf mBounds;
+  float mDrag;
+  float mTargetDrag;
+  float mDistanceThresh;
+  bool mDropping;
+  cinder::Vec3f mDropAccel;
+  
+  cinder::Color mColor;
+  
+  float mZValue;
+  cinder::Vec2f mParticleSize;
+  bool mMoveSwarm;
 	
 	void updateSwarm();
-    void updateDrop();
+  void updateDrop();
 	void updateHose();
-    void updateWaiting();
+  void updateWaiting();
 	void resetParticle(int index);
 };
 

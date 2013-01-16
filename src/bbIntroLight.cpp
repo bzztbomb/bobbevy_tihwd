@@ -19,15 +19,15 @@ const int IntroLight::smMedianFilterSize = 7;
 // IntroLight
 //
 IntroLight::IntroLight() :
-	mManager(NULL),
-	mLightColor(150.0f / 255.0, 130.0f / 255.0f, 130.0f / 255.0f, 1.0f),
-	mLightSize(0.0f),
-	mLightSizeOffset(0.0),
-	mSourcePoint(400, 0, 0),
-	mRevealOffset(0.0f),
-	mTargetLightSize(100.0f),
-	mState(lsStart),
-    mUserToken(KinectWrapper::utFurthest)
+mManager(NULL),
+mLightColor(150.0f / 255.0, 130.0f / 255.0f, 130.0f / 255.0f, 1.0f),
+mLightSize(0.0f),
+mLightSizeOffset(0.0),
+mSourcePoint(400, 0, 0),
+mRevealOffset(0.0f),
+mTargetLightSize(100.0f),
+mState(lsStart),
+mUserToken(KinectWrapper::utFurthest)
 {
 }
 
@@ -80,16 +80,16 @@ void IntroLight::update()
 {
 	Blob* user = mManager->mKinect->getUser(mUserToken);
 	if (user != NULL)
-	{        
-        mPointFilter.push_back(user->mCentroid.x);
-        while (mPointFilter.size() > smMedianFilterSize)
-            mPointFilter.erase(mPointFilter.begin());
-        std::vector<float> sorted;
-        for (list<float>::iterator i = mPointFilter.begin(); i != mPointFilter.end(); i++)
-            sorted.push_back(*i);
-        std::sort(sorted.begin(), sorted.end());
+	{
+    mPointFilter.push_back(user->mCentroid.x);
+    while (mPointFilter.size() > smMedianFilterSize)
+      mPointFilter.erase(mPointFilter.begin());
+    std::vector<float> sorted;
+    for (list<float>::iterator i = mPointFilter.begin(); i != mPointFilter.end(); i++)
+      sorted.push_back(*i);
+    std::sort(sorted.begin(), sorted.end());
 		mSourcePoint.x = lerp(mSourcePoint.x, sorted[sorted.size()/2], 0.75);
-		mSourcePoint.y = 0; //lerp(mSourcePoint.y, user->mCentroid.y, 0.1);        
+		mSourcePoint.y = 0; //lerp(mSourcePoint.y, user->mCentroid.y, 0.1);
 	}
 	if (mState == lsReveal)
 	{
@@ -130,5 +130,5 @@ void IntroLight::draw()
 
 void IntroLight::followUser(KinectWrapper::UserToken ut)
 {
-    mUserToken = ut;
+  mUserToken = ut;
 }

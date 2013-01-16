@@ -12,7 +12,7 @@
 
 @interface BonjourPublisher : NSObject
 {
-    NSNetService *netService;
+  NSNetService *netService;
 }
 
 @end
