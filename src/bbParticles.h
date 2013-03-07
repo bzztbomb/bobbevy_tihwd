@@ -22,7 +22,10 @@
 class SkeletonParticles : public SceneLayer
 {
 public:
+  static std::set<SkeletonParticles*> smCurrentSwarms;
+public:
 	SkeletonParticles();
+  ~SkeletonParticles();
   
   void setName(const std::string& name);
   void followUser(KinectWrapper::UserToken ut);

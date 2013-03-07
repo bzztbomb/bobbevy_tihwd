@@ -15,16 +15,17 @@ using namespace ci::app;
 using namespace std;
 
 ParticleField::ParticleField() :
-mSceneState(NULL),
-mNumParticles(200),
-mColor(1,1,1),
-mGoalVel(0.65f),
-mAvoidVel(10.0f),
-mGlobalDecay(0.90f),
-mTargetThreshold(10.0f),
-mTargetDecay(0.3f),
-mDropping(false),
-mDropAccel(0.0f, 1.5f, 0.0f)
+  SceneLayer("ParticleField"),
+  mSceneState(NULL),
+  mNumParticles(200),
+  mColor(1,1,1),
+  mGoalVel(0.65f),
+  mAvoidVel(10.0f),
+  mGlobalDecay(0.90f),
+  mTargetThreshold(10.0f),
+  mTargetDecay(0.3f),
+  mDropping(false),
+  mDropAccel(0.0f, 1.5f, 0.0f)
 {
 }
 

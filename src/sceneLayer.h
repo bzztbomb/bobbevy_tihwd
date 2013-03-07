@@ -13,20 +13,27 @@
 #include "cinder/params/Params.h"
 #include "cinder/Timeline.h"
 #include "cinder/app/AppBasic.h"
+#include "cinder/Color.h"
 #include "bbKinectWrapper.h"
+#include "QTimeline.h"
 
 struct SceneState
 {
 	cinder::params::InterfaceGl mParams;
 	cinder::TimelineRef	mTimeline;
+  cinder::ColorA mBlackoutColor;
 	cinder::Anim<float> mBlackoutAmount;
 	KinectWrapper* mKinect;        
 };
 
-class SceneLayer
+class SceneLayer : public QTimelineModule
 {
 public:
-	SceneLayer() { mEnabled = false; }
+	SceneLayer(const std::string& type) :
+    QTimelineModule(type),
+    mEnabled(false)
+  {    
+  }
 	
 	virtual void setup(SceneState* sceneState) {}
 	virtual void tick() {}
@@ -34,6 +41,12 @@ public:
 	virtual void keyDown( cinder::app::KeyEvent event ) {}
 	virtual void setEnabled(bool e) { mEnabled = e; }
 	virtual bool getEnabled() { return mEnabled; }
+
+  virtual void render() { draw(); }
+  virtual void activeChanged(bool active)
+  {
+    setEnabled(active);
+  }
 protected:
 	bool mEnabled;
 };

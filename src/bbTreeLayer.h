@@ -27,7 +27,6 @@ public:
   void setLeaves(bool l);
   bool getLeaves() { return mWithLeaves; }
 	void resetParams();
-  void setSwarms(SkeletonParticles* swarm0, SkeletonParticles* swarm1);
   
 	// SceneLayer
   virtual void setup(SceneState* manager);
@@ -35,6 +34,10 @@ public:
 	virtual void tick();
 	virtual void draw();
 	virtual void setEnabled(bool e);
+  
+  // QTimelineModule
+  virtual void init();
+  virtual void update();
 private:
 	SceneState* mManager;
 	// Trees
@@ -80,9 +83,6 @@ private:
   cinder::Anim<float> mFogDistance;
   cinder::Anim<float> mFogHeight;
   
-  static const int NUM_SWARMS;
-  SkeletonParticles* mSwarm[2];
-	
 	void drawTrees();
 	void initGroundMesh();
 	void initTreeMesh();

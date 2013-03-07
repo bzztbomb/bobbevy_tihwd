@@ -23,29 +23,28 @@ using namespace gl;
 #define WIDTH 800
 #define HEIGHT 600
 
-const int TreeLayer::NUM_SWARMS = 2;
-
 TreeLayer::TreeLayer() :
-mTreeCam(WIDTH, HEIGHT, 60.0f, 1.0f, 1000.0f ),
-mGroundColor(44.0f / 255.0f, 32.0f / 255.0f, 30.0f / 255.0f),
-mSunColor(255.0f / 255.0f, 225.0f / 255.0f, 225.0f / 255.0f),
-mUpdateTrees(false),
-mTreesEnabled(true),
-mNumTrees(50),
-mTreeRadius(1.0f),
-mTreeSizeVariance(2.0f),
-mZoomToBlack(false),
-mFadeAmount(1.0f),
-mWarpAmount(0.0f),
-mAlphaAmount(1.0f),
-mTime(0.0f),
-mTimeMult(1.0f),
-mYMult(1.0f),
-mFadeTransTime(20.0f),
-mFogDistance(40.0f),
-mFogHeight(200.0f),
-mZoomOffset(0.45f),
-mZoomTimeSec(18.0f)
+  SceneLayer("TreeLayer"),
+  mTreeCam(WIDTH, HEIGHT, 60.0f, 1.0f, 1000.0f ),
+  mGroundColor(44.0f / 255.0f, 32.0f / 255.0f, 30.0f / 255.0f),
+  mSunColor(255.0f / 255.0f, 225.0f / 255.0f, 225.0f / 255.0f),
+  mUpdateTrees(false),
+  mTreesEnabled(true),
+  mNumTrees(50),
+  mTreeRadius(1.0f),
+  mTreeSizeVariance(2.0f),
+  mZoomToBlack(false),
+  mFadeAmount(1.0f),
+  mWarpAmount(0.0f),
+  mAlphaAmount(1.0f),
+  mTime(0.0f),
+  mTimeMult(1.0f),
+  mYMult(1.0f),
+  mFadeTransTime(20.0f),
+  mFogDistance(40.0f),
+  mFogHeight(200.0f),
+  mZoomOffset(0.45f),
+  mZoomTimeSec(18.0f)
 {
 	resetParams();
   mFogColor = Color(30.0f / 255.0f, 10.0f / 255.0f, 10.0f / 255.0f);
@@ -174,10 +173,9 @@ void TreeLayer::toggleZoomToBlack()
 	{
 		mZoomTarget = Vec3f(0.0f, 0.0f, -((travelBounds.z-mTreeRadius) + mTreePan.z));
 		mTreePanSpeed = mZoomTarget / (mZoomTimeSec*30.0f);
-    for (int i = 0; i < NUM_SWARMS; i++)
+    for (auto i : SkeletonParticles::smCurrentSwarms)
     {
-      //            mSwarm[i]->setEnabled(true);
-      mSwarm[i]->setZValue(mTreePan.z + mZoomTarget.z);
+      i->setZValue(mTreePan.z + mZoomTarget.z);
     }
 	}
 }
@@ -203,13 +201,13 @@ void TreeLayer::tick()
     {
 			mZoomTarget.z = dist;
       mTreePanSpeed = Vec3f(0.0f, 0.0f, 0.0f);
-      for (int i = 0; i < NUM_SWARMS; i++)
+      for (auto i : SkeletonParticles::smCurrentSwarms)
       {
-        mSwarm[i]->setEnabled(true);
-        mSwarm[i]->moveSwarm(false);
-        mSwarm[i]->setZValue(0.0f);
-        mManager->mTimeline->apply(&mFogDistance, 12.0f, 2.0f);
+        i->setEnabled(true);
+        i->moveSwarm(false);
+        i->setZValue(0.0f);
       }
+      mManager->mTimeline->apply(&mFogDistance, 12.0f, 2.0f);
     }
 	}
 	
@@ -324,6 +322,17 @@ void TreeLayer::draw()
   gl::setMatricesWindowPersp(renderArea.x2, renderArea.y2);
   gl::draw(texOverlay, renderArea);
   gl::disableAlphaBlending();
+  
+  if (mManager->mBlackoutAmount > 0.0)
+	{
+    gl::enableAlphaBlending();
+    ColorA b = mManager->mBlackoutColor;
+    b.a = mManager->mBlackoutAmount;
+		gl::color( b );
+    gl::drawSolidRect(getWindowBounds());
+		gl::color( cinder::ColorA(1, 1, 1, 1) );
+    gl::disableAlphaBlending();
+	}
 }
 
 void TreeLayer::initGroundMesh()
@@ -467,8 +476,21 @@ void TreeLayer::setLeaves(bool l)
     mTreePanSpeed = Vec3f(0,0,0);
 }
 
-void TreeLayer::setSwarms(SkeletonParticles* swarm0, SkeletonParticles* swarm1)
+void TreeLayer::init()
 {
-  mSwarm[0] = swarm0;
-  mSwarm[1] = swarm1;
+  registerParam("leaves");
+  registerParam("panSpeed.x", &mTreePanSpeed.value().x, -1.0f, 1.0f);
+  registerParam("panSpeed.y", &mTreePanSpeed.value().y, -1.0f, 1.0f);
+  registerParam("panSpeed.z", &mTreePanSpeed.value().z, -1.0f, 1.0f);
+  registerParam("fogDistance", &mFogDistance.value(), 0, 40);
+  registerParam("blackout", &mManager->mBlackoutAmount.value());
+}
+
+void TreeLayer::update()
+{
+  bool newLeaves = getParamValue("leaves") > 0.5f;
+  if (getLeaves() != newLeaves)
+  {
+    setLeaves(newLeaves);
+  }
 }

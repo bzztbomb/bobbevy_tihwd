@@ -19,15 +19,16 @@ const int IntroLight::smMedianFilterSize = 7;
 // IntroLight
 //
 IntroLight::IntroLight() :
-mManager(NULL),
-mLightColor(150.0f / 255.0, 130.0f / 255.0f, 130.0f / 255.0f, 1.0f),
-mLightSize(0.0f),
-mLightSizeOffset(0.0),
-mSourcePoint(400, 0, 0),
-mRevealOffset(0.0f),
-mTargetLightSize(100.0f),
-mState(lsStart),
-mUserToken(KinectWrapper::utFurthest)
+  SceneLayer("IntroLight"),
+  mManager(NULL),
+  mLightColor(150.0f / 255.0, 130.0f / 255.0f, 130.0f / 255.0f, 1.0f),
+  mLightSize(0.0f),
+  mLightSizeOffset(0.0),
+  mSourcePoint(400, 0, 0),
+  mRevealOffset(0.0f),
+  mTargetLightSize(100.0f),
+  mState(lsStart),
+  mUserToken(KinectWrapper::utFurthest)
 {
 }
 

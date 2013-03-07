@@ -72,34 +72,6 @@ private:
   SceneLayer* mLayer;
 };
 
-class TreeLayerModule : public SceneLayerModule
-{
-public:
-  TreeLayerModule(const std::string& type, SceneLayer* layer) :
-    SceneLayerModule(type, layer),
-    mTreeLayer(static_cast<TreeLayer*>(layer))   
-  {
-  }
-  
-  void init()
-  {
-    registerParam("leaves");
-    
-    mTreeLayer->setLeaves(false);
-  }
-  
-  void update()
-  {
-    bool newLeaves = getParamValue("leaves") > 0.5f;
-    if (mTreeLayer->getLeaves() != newLeaves)
-    {
-      mTreeLayer->setLeaves(newLeaves);
-    }
-  }
-private:
-  TreeLayer* mTreeLayer;
-};
-
 class bobbevyApp : public AppBasic {
 public:
 	void prepareSettings( Settings* settings );
@@ -136,7 +108,6 @@ private:
 	SkeletonParticles mFarSwarm;
   ParticleField mField;
   
-  ColorA mBlackoutColor;
   float mFadeInSlow;
   float mFadeInNormal;
   
@@ -195,7 +166,7 @@ void bobbevyApp::setup()
 	mDebugDraw = false;
 	mShowFPS = false;
 	mShowParams = false;
-  mBlackoutColor = ColorA(0.0f, 0.0f, 0.0f, 1.0f);
+  mSceneState.mBlackoutColor = ColorA(0.0f, 0.0f, 0.0f, 1.0f);
   
   mListener.setup(23232);
   publish_via_bonjour();
@@ -214,7 +185,6 @@ void bobbevyApp::setup()
 	
 	// Blackout overlay
 	mTreeLayer.setup(&mSceneState);
-	mTreeLayer.setSwarms(&mCloseSwarm, &mFarSwarm);
   
 	mIntroLight.setup(&mSceneState);
   
@@ -307,10 +277,10 @@ void bobbevyApp::keyDown( KeyEvent event )
       break;
       // Fade in/out
     case KeyEvent::KEY_c:
-      mBlackoutColor = ColorA(1.0, 0.85f, 0.85f, 1.0f);
+      mSceneState.mBlackoutColor = ColorA(1.0, 0.85f, 0.85f, 1.0f);
       break;
     case KeyEvent::KEY_d:
-      mBlackoutColor = ColorA(0.0, 0.0f, 0.0f, 1.0f);
+      mSceneState.mBlackoutColor = ColorA(0.0, 0.0f, 0.0f, 1.0f);
       break;
 		case KeyEvent::KEY_o:
 			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 1.0f, 5.0f);
@@ -352,6 +322,17 @@ void bobbevyApp::keyDown( KeyEvent event )
 	mCloseSwarm.keyDown(event);
   mFarSwarm.keyDown(event);
   mField.keyDown(event);
+
+  auto tracks = mTimeline->getTracks();
+  for (auto i = tracks.rbegin(); i != tracks.rend(); i++)
+  {
+    auto item = (*i)->getActiveItem();
+    if (item)
+    {
+      SceneLayer* sl = static_cast<SceneLayer*>(item->getTargetModule().get());
+      sl->keyDown(event);
+    }
+  }
 }
 
 void bobbevyApp::mouseDown( MouseEvent event )
@@ -380,6 +361,18 @@ void bobbevyApp::update()
     mCloseSwarm.tick();
     mFarSwarm.tick();
     mField.tick();
+    
+    auto tracks = mTimeline->getTracks();
+    for (auto i = tracks.rbegin(); i != tracks.rend(); i++)
+    {
+      auto item = (*i)->getActiveItem();
+      if (item)
+      {
+        SceneLayer* sl = static_cast<SceneLayer*>(item->getTargetModule().get());
+        sl->tick();
+      }
+    }
+    
     //        i++;
     //        if (i > max_ticks)
     //        {
@@ -507,7 +500,10 @@ void bobbevyApp::draw()
 #endif
     }
   }
-  
+
+  mFarSwarm.draw();
+	mCloseSwarm.draw();
+
   if (wd->mDisplayTimeline)
   {
     gl::enableAlphaBlending();
@@ -542,9 +538,13 @@ void bobbevyApp::createModuleCallback( QTimeline::CreateModuleCallbackArgs args 
 {
   QTimelineModuleRef  mod;
   QTimelineItemRef    item = args.itemRef;
-
+  
   if( args.type == "TreeLayer" )
-    mod = QTimelineModuleRef( new TreeLayerModule("TreeLayer", &mTreeLayer));
+  {
+    TreeLayer* tl = new TreeLayer();
+    tl->setup(&mSceneState);
+    mod = QTimelineModuleRef( tl );
+  }
   if (args.type == "IntroLight")
     mod = QTimelineModuleRef( new SceneLayerModule("IntroLight", &mIntroLight));
   if (args.type == "CloseSwarm")

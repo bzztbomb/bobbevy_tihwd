@@ -14,6 +14,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+std::set<SkeletonParticles*> SkeletonParticles::smCurrentSwarms;
 
 Vec3f dumbRand()
 {
@@ -27,25 +28,27 @@ Vec3f dumbRand()
 // SkeletonParticles
 //
 SkeletonParticles::SkeletonParticles() :
-mManager(NULL),
-mTargetPoint(300.0f, 300.0f, 0.0f),
-mMaxVel(1.6f),
-mAfterTargetAccel(2.0f),
-mSwarm(true),
-mUserToken(KinectWrapper::utClosest),
-mColor(1,1,1),
-mDrag(0.9f),
-mTargetDrag(1.0f),
-mDistanceThresh(3.0f),
-mDropping(false),
-mDropAccel(0.0f, 1.0f, 0.0f),
-mNumParticles(200),
-mNumPositions(100),
-mBounds(100,100,600,600),
-mZValue(0.0f),
-mParticleSize(16.0f, 16.0f),
-mMoveSwarm(true)
+  SceneLayer("Particles"),
+  mManager(NULL),
+  mTargetPoint(300.0f, 300.0f, 0.0f),
+  mMaxVel(1.6f),
+  mAfterTargetAccel(2.0f),
+  mSwarm(true),
+  mUserToken(KinectWrapper::utClosest),
+  mColor(1,1,1),
+  mDrag(0.9f),
+  mTargetDrag(1.0f),
+  mDistanceThresh(3.0f),
+  mDropping(false),
+  mDropAccel(0.0f, 1.0f, 0.0f),
+  mNumParticles(200),
+  mNumPositions(100),
+  mBounds(100,100,600,600),
+  mZValue(0.0f),
+  mParticleSize(16.0f, 16.0f),
+  mMoveSwarm(true)
 {
+  smCurrentSwarms.insert(this);
 	Vec3f zero(0.0f, 0.0f, 0.0f);
 	for (int i = 0; i < mNumParticles; i++)
 	{
@@ -61,6 +64,11 @@ mMoveSwarm(true)
   {
     mNodePos.push_back(Vec3f(randFloat(), randFloat(), 0.0f));
   }
+}
+
+SkeletonParticles::~SkeletonParticles()
+{
+  smCurrentSwarms.erase(this);
 }
 
 void SkeletonParticles::followUser(KinectWrapper::UserToken ut)
