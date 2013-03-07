@@ -22,29 +22,30 @@ class TreeLayer : public SceneLayer
 {
 public:
 	TreeLayer();
-
-    void setBlurred();
-    void setLeaves(bool l);    
+  
+  void setBlurred();
+  void setLeaves(bool l);
+  bool getLeaves() { return mWithLeaves; }
 	void resetParams();
-    void setSwarms(SkeletonParticles* swarm0, SkeletonParticles* swarm1);
-    
+  void setSwarms(SkeletonParticles* swarm0, SkeletonParticles* swarm1);
+  
 	// SceneLayer
-    virtual void setup(SceneState* manager);
+  virtual void setup(SceneState* manager);
 	virtual void keyDown( cinder::app::KeyEvent event );
-	virtual void update();
-	virtual void draw();	
-	virtual void setEnabled(bool e);	
+	virtual void tick();
+	virtual void draw();
+	virtual void setEnabled(bool e);
 private:
-	SceneState* mManager;	
+	SceneState* mManager;
 	// Trees
 	cinder::gl::Texture texSun;
 	cinder::gl::Texture texGround;
-    cinder::gl::Texture texClip;
+  cinder::gl::Texture texClip;
 	cinder::gl::Texture texTree;
-	cinder::gl::Texture texTreeWithLeaves;    
+	cinder::gl::Texture texTreeWithLeaves;
 	cinder::gl::Texture texOverlay;
 	bool mTreesEnabled;
-    bool mWithLeaves;
+  bool mWithLeaves;
 	int mNumTrees;
 	float mTreeRadius;
 	float mTreeSizeVariance;
@@ -61,33 +62,33 @@ private:
 	bool mZoomToBlack;
 	cinder::Vec3f mZoomTarget;
 	cinder::gl::Texture texBlack;
-    // Fade in
-    
-    cinder::gl::GlslProg mTreeShader;    
-    cinder::Anim<float> mBlurAmount;
-    cinder::Anim<float> mFadeAmount;
-    cinder::Anim<float> mWarpAmount;
-    cinder::Anim<float> mAlphaAmount;
-    float mTimeMult;
-    float mTime;
-    float mYMult;
-    float mFadeTransTime;
-    float mZoomOffset;
-    float mZoomTimeSec;
-    
-    cinder::Anim<cinder::Color> mFogColor;
-    cinder::Anim<float> mFogDistance;
-    cinder::Anim<float> mFogHeight;
-    
-    static const int NUM_SWARMS;
-    SkeletonParticles* mSwarm[2];
+  // Fade in
+  
+  cinder::gl::GlslProg mTreeShader;
+  cinder::Anim<float> mBlurAmount;
+  cinder::Anim<float> mFadeAmount;
+  cinder::Anim<float> mWarpAmount;
+  cinder::Anim<float> mAlphaAmount;
+  float mTimeMult;
+  float mTime;
+  float mYMult;
+  float mFadeTransTime;
+  float mZoomOffset;
+  float mZoomTimeSec;
+  
+  cinder::Anim<cinder::Color> mFogColor;
+  cinder::Anim<float> mFogDistance;
+  cinder::Anim<float> mFogHeight;
+  
+  static const int NUM_SWARMS;
+  SkeletonParticles* mSwarm[2];
 	
 	void drawTrees();
 	void initGroundMesh();
 	void initTreeMesh();
-	void addTree(const cinder::Vec3f& treePos, const cinder::Vec2f& treeScale, const cinder::Vec2f& texOffset, bool flipX);	
+	void addTree(const cinder::Vec3f& treePos, const cinder::Vec2f& treeScale, const cinder::Vec2f& texOffset, bool flipX);
 	void toggleZoomToBlack();
-    void allocFBO();
+  void allocFBO();
 };
 
 

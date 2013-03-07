@@ -1,3 +1,6 @@
+// TODO:
+// Get OSC working again
+
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -9,6 +12,7 @@
 #include "CinderOpenCV.h"
 #include "Kinect.h"
 #include "OscListener.h"
+#include "QTimeline.h"
 
 #include "bbKinectWrapper.h"
 #include "sceneLayer.h"
@@ -24,6 +28,77 @@ using namespace std;
 
 static const int WIDTH = 800;
 static const int HEIGHT = 600;
+
+struct WindowData
+{
+  WindowData()
+  {
+    mDisplayTimeline = true;
+    mDisplayScene = true;
+  }
+  
+  bool mDisplayTimeline;
+  bool mDisplayScene;
+};
+
+class SceneLayerModule : public QTimelineModule
+{
+  
+public:
+  SceneLayerModule(const std::string& type, SceneLayer* layer) :
+    QTimelineModule( type ),
+    mLayer(layer)
+  {
+  }
+  
+  void init()
+  {
+  }
+  
+  void update()
+  {
+  }
+
+  virtual void render()
+  {
+    mLayer->draw();
+  }
+  
+  virtual void activeChanged(bool active)
+  {
+    mLayer->setEnabled(true);
+  }
+private:
+  SceneLayer* mLayer;
+};
+
+class TreeLayerModule : public SceneLayerModule
+{
+public:
+  TreeLayerModule(const std::string& type, SceneLayer* layer) :
+    SceneLayerModule(type, layer),
+    mTreeLayer(static_cast<TreeLayer*>(layer))   
+  {
+  }
+  
+  void init()
+  {
+    registerParam("leaves");
+    
+    mTreeLayer->setLeaves(false);
+  }
+  
+  void update()
+  {
+    bool newLeaves = getParamValue("leaves") > 0.5f;
+    if (mTreeLayer->getLeaves() != newLeaves)
+    {
+      mTreeLayer->setLeaves(newLeaves);
+    }
+  }
+private:
+  TreeLayer* mTreeLayer;
+};
 
 class bobbevyApp : public AppBasic {
 public:
@@ -45,6 +120,9 @@ private:
   osc::Listener mListener;
   map<int, int> mMessageMap;
   
+  QTimelineRef mTimeline;
+  vector<QTimelineModuleRef> mModules;
+  
   // Simulation
   double mCurrentTime;
   double mAccumlator;
@@ -64,6 +142,11 @@ private:
   
   void handleOSC();
   void initMsgMap();
+  
+  void createModuleCallback( QTimeline::CreateModuleCallbackArgs args );
+  void deleteModuleCallback( QTimeline::DeleteModuleCallbackArgs args );
+  
+  void createNewWindow();
 };
 
 void bobbevyApp::prepareSettings( Settings* settings )
@@ -78,6 +161,27 @@ extern void publish_via_bonjour();
 
 void bobbevyApp::setup()
 {
+  getWindow()->setUserData( new WindowData );
+  
+  mTimeline = QTimelineRef( new QTimeline() );
+  mTimeline->init();
+  
+  mTimeline->registerModule("TreeLayer", this,
+                            &bobbevyApp::createModuleCallback,
+                            &bobbevyApp::deleteModuleCallback);
+  mTimeline->registerModule("IntroLight", this,
+                            &bobbevyApp::createModuleCallback,
+                            &bobbevyApp::deleteModuleCallback);
+  mTimeline->registerModule("CloseSwarm", this,
+                            &bobbevyApp::createModuleCallback,
+                            &bobbevyApp::deleteModuleCallback);
+  mTimeline->registerModule("FarSwarm", this,
+                            &bobbevyApp::createModuleCallback,
+                            &bobbevyApp::deleteModuleCallback);
+  mTimeline->registerModule("Field", this,
+                            &bobbevyApp::createModuleCallback,
+                            &bobbevyApp::deleteModuleCallback);
+  
 	mSceneState.mParams = params::InterfaceGl("bobbevy", Vec2i(225, 200));
 	mSceneState.mParams.addParam("DebugDraw", &mDebugDraw, "keyIncr=d");
 	mSceneState.mParams.addParam("ShowParams", &mShowParams, "keyIncr=p");
@@ -172,7 +276,7 @@ void bobbevyApp::initMsgMap()
 
 void bobbevyApp::keyDown( KeyEvent event )
 {
-	switch( event.getChar() )
+	switch( event.getCode() )
 	{
 		case KeyEvent::KEY_ESCAPE:
 			this->quit();
@@ -220,6 +324,27 @@ void bobbevyApp::keyDown( KeyEvent event )
     case KeyEvent::KEY_h:
       mSceneState.mTimeline->clear();
       break;
+    case KeyEvent::KEY_SPACE:
+      mTimeline->play( !mTimeline->isPlaying(), QTimeline::FREE_RUN );
+      break;
+    case KeyEvent::KEY_RETURN:
+      mTimeline->playCue();
+      break;
+    case KeyEvent::KEY_w:
+      createNewWindow();
+      break;
+    case KeyEvent::KEY_F1:
+      {
+        WindowData* wd = getWindowIndex(0)->getUserData<WindowData>();
+        wd->mDisplayTimeline = !wd->mDisplayTimeline;
+      };
+      break;
+    case KeyEvent::KEY_F2:
+      {
+        WindowData* wd = getWindowIndex(0)->getUserData<WindowData>();
+        wd->mDisplayScene = !wd->mDisplayScene;
+      };
+      break;
 	}
 	mTreeLayer.keyDown(event);
 	mIntroLight.keyDown(event);
@@ -237,6 +362,7 @@ void bobbevyApp::mouseDown( MouseEvent event )
 void bobbevyApp::update()
 {
   handleOSC();
+  mTimeline->update();
   double newTime = getElapsedSeconds();
   double frameTime = newTime - mCurrentTime;
   mCurrentTime = newTime;
@@ -249,11 +375,11 @@ void bobbevyApp::update()
     
     mSceneState.mTimeline->step(0.05);
     mKinect.update();
-    mTreeLayer.update();
-    mIntroLight.update();
-    mCloseSwarm.update();
-    mFarSwarm.update();
-    mField.update();
+    mTreeLayer.tick();
+    mIntroLight.tick();
+    mCloseSwarm.tick();
+    mFarSwarm.tick();
+    mField.tick();
     //        i++;
     //        if (i > max_ticks)
     //        {
@@ -276,8 +402,8 @@ void bobbevyApp::handleOSC()
       map<int,int>::iterator iter = mMessageMap.find( code );
       if( iter != mMessageMap.end() )
       {
-        KeyEvent ev(getWindow(), iter->second, iter->second, 0, 0);
-        keyDown(ev);
+//        KeyEvent ev(getWindow(), iter->second, iter->second, 0, 0);
+//        keyDown(ev);
       }
     } else {
       if ((message.getAddress().find("/multi/") != std::string::npos) &&
@@ -329,7 +455,10 @@ void bobbevyApp::draw()
 {
 	// clear out the window with black
 	gl::clear( Color( 0, 0, 0 ) );
-	
+
+  WindowData* wd = getWindow()->getUserData<WindowData>();
+  
+#if 0
 	mTreeLayer.draw();
 	mIntroLight.draw();
   
@@ -350,6 +479,41 @@ void bobbevyApp::draw()
   mFarSwarm.draw();
 	mCloseSwarm.draw();
   mField.draw();
+  
+  for( size_t k=0; k < mModules.size(); k ++ )
+    if ( mModules[k]->isPlaying() )
+      mModules[k]->render();  
+#endif
+
+	if (mDebugDraw)
+		mKinect.draw();
+  
+  if (wd->mDisplayScene)
+  {
+    auto tracks = mTimeline->getTracks();
+    for (auto i = tracks.rbegin(); i != tracks.rend(); i++)
+    {
+      auto item = (*i)->getActiveItem();
+      if (item)
+        item->getTargetModule()->render();
+#if 0
+      auto mods = (*i)->getItems();
+      for (auto module : mods)
+      {
+        QTimelineModuleRef mod = module->getTargetModule();
+        if ((mod->getItemRef() != NULL) && (mod->isPlaying()))
+          mod->render();
+      }
+#endif
+    }
+  }
+  
+  if (wd->mDisplayTimeline)
+  {
+    gl::enableAlphaBlending();
+    mTimeline->render();
+    gl::disableAlphaBlending();
+  }
   
 	// Params
 	if (mShowParams)
@@ -372,6 +536,56 @@ void bobbevyApp::draw()
 		gl::drawString(s, Vec2f(100,100));
     gl::disableAlphaBlending();
 	}
+}
+
+void bobbevyApp::createModuleCallback( QTimeline::CreateModuleCallbackArgs args )
+{
+  QTimelineModuleRef  mod;
+  QTimelineItemRef    item = args.itemRef;
+
+  if( args.type == "TreeLayer" )
+    mod = QTimelineModuleRef( new TreeLayerModule("TreeLayer", &mTreeLayer));
+  if (args.type == "IntroLight")
+    mod = QTimelineModuleRef( new SceneLayerModule("IntroLight", &mIntroLight));
+  if (args.type == "CloseSwarm")
+    mod = QTimelineModuleRef( new SceneLayerModule("CloseSwarm", &mCloseSwarm));
+  if (args.type == "FarSwarm")
+    mod = QTimelineModuleRef( new SceneLayerModule("FarSwarm", &mFarSwarm));
+  if (args.type == "Field")
+    mod = QTimelineModuleRef( new SceneLayerModule("Field", &mField));
+  
+  if ( !mod )
+    return;
+  
+  mod->setItemRef(item);
+  item->setTargetModule( mod );
+  mod->init();
+  mModules.push_back( mod );
+}
+
+
+void bobbevyApp::deleteModuleCallback( QTimeline::DeleteModuleCallbackArgs args )
+{
+  for( size_t k=0; k < mModules.size(); k++ )
+    if ( mModules[k] == args.itemRef->getTargetModule() )
+    {
+      mModules.erase( mModules.begin() + k );
+      return;
+    }
+}
+
+void bobbevyApp::createNewWindow()
+{
+  app::WindowRef newWindow = createWindow( Window::Format().size( 400, 400 ) );
+  WindowData* wd = new WindowData;
+  wd->mDisplayTimeline = false;
+  newWindow->setUserData( wd );
+  
+  // for demonstration purposes, we'll connect a lambda unique to this window which fires on close
+  int uniqueId = getNumWindows();
+  newWindow->getSignalClose().connect(
+                                      [uniqueId,this] { this->console() << "You closed window #" << uniqueId << std::endl; }
+                                      );
 }
 
 CINDER_APP_BASIC( bobbevyApp, RendererGl )

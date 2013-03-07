@@ -250,7 +250,7 @@ void KinectWrapper::findBlobs()
       gray = cv::abs(gray);
     } else {
       gray -= mInitial;
-      mColorTexture = fromOcv(gray);
+//      mColorTexture = fromOcv(gray);
     }
     cv::threshold( gray, thresh, mStepFrom, 255, CV_THRESH_BINARY );
   } else {
@@ -305,7 +305,7 @@ void KinectWrapper::findBlobs()
       push_heap(mBlobs.begin(), mBlobs.end(), SortDescendingArea());
       if (mBlobs.size() > KinectWrapper::smMAX_BLOBS)
       {
-        mBlobs.erase(mBlobs.end());
+        mBlobs.erase(mBlobs.end()-1);
         largest = mBlobs.rbegin()->mContourArea;
       }
     }

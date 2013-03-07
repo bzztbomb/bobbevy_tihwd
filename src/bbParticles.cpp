@@ -169,7 +169,7 @@ void SkeletonParticles::updateDrop()
     setEnabled(false);
 }
 
-void SkeletonParticles::update()
+void SkeletonParticles::tick()
 {
 	if (!mEnabled)
 		return;

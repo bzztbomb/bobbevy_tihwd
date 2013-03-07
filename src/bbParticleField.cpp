@@ -91,11 +91,11 @@ void ParticleField::keyDown( cinder::app::KeyEvent event )
   }
 }
 
-void ParticleField::update()
+void ParticleField::tick()
 {
   if (!mEnabled)
 		return;
-  
+    
   if (mNumParticles != mParticlePos.size())
     initField();
   
@@ -192,6 +192,7 @@ void ParticleField::draw()
 		return;
 	gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
 	gl::enableAlphaBlending();
+    
   Vec3f bbUp(0.0f, -1.0f, 0.0f);
   Vec3f bbRight(-1.0f, 0.0f, 0.0f);
   Rand r;

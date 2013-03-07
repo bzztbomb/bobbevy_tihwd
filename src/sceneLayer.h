@@ -29,7 +29,7 @@ public:
 	SceneLayer() { mEnabled = false; }
 	
 	virtual void setup(SceneState* sceneState) {}
-	virtual void update() {}
+	virtual void tick() {}
 	virtual void draw() {}
 	virtual void keyDown( cinder::app::KeyEvent event ) {}
 	virtual void setEnabled(bool e) { mEnabled = e; }

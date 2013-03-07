@@ -182,7 +182,7 @@ void TreeLayer::toggleZoomToBlack()
 	}
 }
 
-void TreeLayer::update()
+void TreeLayer::tick()
 {
 	if (!mEnabled)
 		return;

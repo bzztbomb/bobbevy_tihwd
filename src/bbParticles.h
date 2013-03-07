@@ -33,7 +33,7 @@ public:
 	// SceneLayer
   virtual void setup(SceneState* manager);
 	virtual void keyDown( cinder::app::KeyEvent event );
-	virtual void update();
+	virtual void tick();
 	virtual void draw();
   virtual void setEnabled(bool e);
   

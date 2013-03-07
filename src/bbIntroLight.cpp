@@ -76,7 +76,7 @@ float lerp(float a, float b, float t)
 	return a + t*(b-a);
 }
 
-void IntroLight::update()
+void IntroLight::tick()
 {
 	Blob* user = mManager->mKinect->getUser(mUserToken);
 	if (user != NULL)

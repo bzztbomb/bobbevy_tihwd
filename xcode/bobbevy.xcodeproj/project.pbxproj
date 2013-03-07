@@ -55,6 +55,7 @@
 		C85BFCA616A686F200EFB14F /* QTimelineModuleItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85BFC9716A686F200EFB14F /* QTimelineModuleItem.cpp */; };
 		C85BFCA716A686F200EFB14F /* QTimelineParam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85BFC9A16A686F200EFB14F /* QTimelineParam.cpp */; };
 		C85BFCA816A686F200EFB14F /* QTimelineTrack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85BFC9C16A686F200EFB14F /* QTimelineTrack.cpp */; };
+		C85BFCB416A7C9D200EFB14F /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = C85BFC8716A686F200EFB14F /* libbass.dylib */; };
 		C865A6E9159FE47D00C98D5C /* bbIntroLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C865A6E7159FE47D00C98D5C /* bbIntroLight.cpp */; };
 		C8CE8EAD15B21C8B0076054E /* TreeFrag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAB15B21C8B0076054E /* TreeFrag.glsl */; };
 		C8CE8EAE15B21C8B0076054E /* TreeVert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAC15B21C8B0076054E /* TreeVert.glsl */; };
@@ -65,6 +66,19 @@
 		C8F3E25815AD48C0005A336F /* particle_brown.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3E25615AD48C0005A336F /* particle_brown.png */; };
 		C8F3E25915AD48C0005A336F /* particle_yellow.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3E25715AD48C0005A336F /* particle_yellow.png */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C85BFCB316A7C9B000EFB14F /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				C85BFCB416A7C9D200EFB14F /* libbass.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -1006,6 +1020,7 @@
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
+				C85BFCB316A7C9B000EFB14F /* CopyFiles */,
 			);
 			buildRules = (
 			);
