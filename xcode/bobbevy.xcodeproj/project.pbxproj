@@ -349,12 +349,12 @@
 		C85BFC9216A686F200EFB14F /* QTimelineItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTimelineItem.cpp; sourceTree = "<group>"; };
 		C85BFC9316A686F200EFB14F /* QTimelineItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineItem.h; sourceTree = "<group>"; };
 		C85BFC9416A686F200EFB14F /* QTimelineKeyframe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineKeyframe.h; sourceTree = "<group>"; };
-		C85BFC9516A686F200EFB14F /* QTimelineMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineMenu.h; sourceTree = "<group>"; };
+		C85BFC9516A686F200EFB14F /* QTimelineMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineMenu.h; sourceTree = "<group>"; tabWidth = 4; };
 		C85BFC9616A686F200EFB14F /* QTimelineModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineModule.h; sourceTree = "<group>"; };
 		C85BFC9716A686F200EFB14F /* QTimelineModuleItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTimelineModuleItem.cpp; sourceTree = "<group>"; };
 		C85BFC9816A686F200EFB14F /* QTimelineModuleItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineModuleItem.h; sourceTree = "<group>"; };
 		C85BFC9916A686F200EFB14F /* QTimelineOscController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineOscController.h; sourceTree = "<group>"; };
-		C85BFC9A16A686F200EFB14F /* QTimelineParam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTimelineParam.cpp; sourceTree = "<group>"; };
+		C85BFC9A16A686F200EFB14F /* QTimelineParam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTimelineParam.cpp; sourceTree = "<group>"; tabWidth = 4; };
 		C85BFC9B16A686F200EFB14F /* QTimelineParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineParam.h; sourceTree = "<group>"; };
 		C85BFC9C16A686F200EFB14F /* QTimelineTrack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTimelineTrack.cpp; sourceTree = "<group>"; };
 		C85BFC9D16A686F200EFB14F /* QTimelineTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineTrack.h; sourceTree = "<group>"; };

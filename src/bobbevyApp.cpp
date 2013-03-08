@@ -246,12 +246,25 @@ void bobbevyApp::initMsgMap()
 
 void bobbevyApp::keyDown( KeyEvent event )
 {
+  if (event.isMetaDown())
+  {
+    switch (event.getCode())
+    {
+      case KeyEvent::KEY_l:
+        mTimeline->load("/Users/bzztbomb/projects/bobbevy/timeline.xml");
+        break;
+      case KeyEvent::KEY_s:
+        mTimeline->save("/Users/bzztbomb/projects/bobbevy/timeline.xml");
+        break;
+    }
+  }
 	switch( event.getCode() )
 	{
 		case KeyEvent::KEY_ESCAPE:
 			this->quit();
 			this->shutdown();
 			break;
+#if 0
 		case KeyEvent::KEY_f:
 			setFullScreen( !isFullScreen() );
 			break;
@@ -291,6 +304,7 @@ void bobbevyApp::keyDown( KeyEvent event )
 		case KeyEvent::KEY_g:
 			mSceneState.mTimeline->apply(&mSceneState.mBlackoutAmount, 0.0f, mFadeInSlow);
 			break;
+#endif
     case KeyEvent::KEY_h:
       mSceneState.mTimeline->clear();
       break;
@@ -316,13 +330,15 @@ void bobbevyApp::keyDown( KeyEvent event )
       };
       break;
 	}
+	mKinect.keyDown(event);
+
+#if 0
 	mTreeLayer.keyDown(event);
 	mIntroLight.keyDown(event);
-	mKinect.keyDown(event);
 	mCloseSwarm.keyDown(event);
   mFarSwarm.keyDown(event);
   mField.keyDown(event);
-
+#endif
   auto tracks = mTimeline->getTracks();
   for (auto i = tracks.rbegin(); i != tracks.rend(); i++)
   {
@@ -330,7 +346,7 @@ void bobbevyApp::keyDown( KeyEvent event )
     if (item)
     {
       SceneLayer* sl = static_cast<SceneLayer*>(item->getTargetModule().get());
-      sl->keyDown(event);
+      //sl->keyDown(event);
     }
   }
 }

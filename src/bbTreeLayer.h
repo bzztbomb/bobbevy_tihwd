@@ -54,6 +54,7 @@ private:
 	float mTreeSizeVariance;
 	cinder::Vec3f mTreePan;
 	cinder::Anim<cinder::Vec3f> mTreePanSpeed;
+  cinder::Vec3f mTreePanSpeedTimeline;
 	cinder::CameraPersp mTreeCam;
 	cinder::TriMesh mGroundMesh;
 	cinder::TriMesh mTreeMesh;
@@ -78,6 +79,7 @@ private:
   float mFadeTransTime;
   float mZoomOffset;
   float mZoomTimeSec;
+  bool mOldResetZ;
   
   cinder::Anim<cinder::Color> mFogColor;
   cinder::Anim<float> mFogDistance;

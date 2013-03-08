@@ -45,7 +45,8 @@ public:
   virtual void render() { draw(); }
   virtual void activeChanged(bool active)
   {
-    setEnabled(active);
+    if (!active)
+      setEnabled(active);
   }
 protected:
 	bool mEnabled;

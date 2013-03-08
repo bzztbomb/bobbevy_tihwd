@@ -44,7 +44,8 @@ TreeLayer::TreeLayer() :
   mFogDistance(40.0f),
   mFogHeight(200.0f),
   mZoomOffset(0.45f),
-  mZoomTimeSec(18.0f)
+  mZoomTimeSec(18.0f),
+  mOldResetZ(false)
 {
 	resetParams();
   mFogColor = Color(30.0f / 255.0f, 10.0f / 255.0f, 10.0f / 255.0f);
@@ -478,19 +479,48 @@ void TreeLayer::setLeaves(bool l)
 
 void TreeLayer::init()
 {
+  registerParam("enabled");
   registerParam("leaves");
-  registerParam("panSpeed.x", &mTreePanSpeed.value().x, -1.0f, 1.0f);
-  registerParam("panSpeed.y", &mTreePanSpeed.value().y, -1.0f, 1.0f);
-  registerParam("panSpeed.z", &mTreePanSpeed.value().z, -1.0f, 1.0f);
+  registerParam("panSpeed.x", &mTreePanSpeedTimeline.x, -1.0f, 1.0f);
+  registerParam("panSpeed.y", &mTreePanSpeedTimeline.y, -1.0f, 1.0f);
+  registerParam("panSpeed.z", &mTreePanSpeedTimeline.z, -10.0f, 1.0f);
   registerParam("fogDistance", &mFogDistance.value(), 0, 40);
   registerParam("blackout", &mManager->mBlackoutAmount.value());
+  registerParam("resetZ");
+  registerParam("zoomToBlack");
 }
 
 void TreeLayer::update()
 {
+  bool newEnabled = getParamValue("enabled") > 0.5f;
+  if (newEnabled != getEnabled())
+    setEnabled(newEnabled);
   bool newLeaves = getParamValue("leaves") > 0.5f;
   if (getLeaves() != newLeaves)
   {
     setLeaves(newLeaves);
   }
+  bool newResetZ = getParamValue("resetZ") > 0.5f;
+  if ((newResetZ != mOldResetZ) && (newResetZ))
+  {
+    mTreePan.z = 0;
+  }
+  mOldResetZ = newResetZ;
+  bool newZoomToBlack = getParamValue("zoomToBlack");
+  if (newZoomToBlack != mZoomToBlack)
+  {
+    mZoomToBlack = newZoomToBlack;
+    if (mZoomToBlack)
+    {
+      mZoomTarget = Vec3f(0.0f, 0.0f, -((travelBounds.z-mTreeRadius) + mTreePan.z));
+      mTreePanSpeed = mZoomTarget / (mZoomTimeSec*30.0f);
+
+//      for (auto i : SkeletonParticles::smCurrentSwarms)
+//      {
+//        i->setZValue(mTreePan.z + mZoomTarget.z);
+//      }
+    }
+  }
+  if (!mZoomToBlack)
+    mTreePanSpeed = mTreePanSpeedTimeline;
 }

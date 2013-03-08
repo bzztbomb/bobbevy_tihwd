@@ -19,7 +19,7 @@ pages = [ [
         "x" : .1, "y" : .1,
         "width" : .1, "height" : .1,
         "label" : "TreesLeaves",
-        "ontouchstart" : "oscManager.sendOSC(\"/bobbevy/key\", \"s\", \"fE\");",
+        "ontouchstart" : "oscManager.sendOSC(\"/bobbevy/key\", \"s\", \"E\");",
 	"isLocal": true,
     },
     {
