@@ -56,7 +56,6 @@
 		C85BFCA716A686F200EFB14F /* QTimelineParam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85BFC9A16A686F200EFB14F /* QTimelineParam.cpp */; };
 		C85BFCA816A686F200EFB14F /* QTimelineTrack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85BFC9C16A686F200EFB14F /* QTimelineTrack.cpp */; };
 		C85BFCB416A7C9D200EFB14F /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = C85BFC8716A686F200EFB14F /* libbass.dylib */; };
-		C865A6E9159FE47D00C98D5C /* bbIntroLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C865A6E7159FE47D00C98D5C /* bbIntroLight.cpp */; };
 		C8CE8EAD15B21C8B0076054E /* TreeFrag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAB15B21C8B0076054E /* TreeFrag.glsl */; };
 		C8CE8EAE15B21C8B0076054E /* TreeVert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAC15B21C8B0076054E /* TreeVert.glsl */; };
 		C8CE8EB015B2257A0076054E /* groundTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAF15B2257A0076054E /* groundTexture.png */; };
@@ -360,8 +359,6 @@
 		C85BFC9D16A686F200EFB14F /* QTimelineTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineTrack.h; sourceTree = "<group>"; };
 		C85BFC9E16A686F200EFB14F /* QTimelineWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineWidget.h; sourceTree = "<group>"; };
 		C85BFC9F16A686F200EFB14F /* QTimelineWidgetWithHandles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineWidgetWithHandles.h; sourceTree = "<group>"; };
-		C865A6E7159FE47D00C98D5C /* bbIntroLight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bbIntroLight.cpp; path = ../src/bbIntroLight.cpp; sourceTree = SOURCE_ROOT; };
-		C865A6E8159FE47D00C98D5C /* bbIntroLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bbIntroLight.h; path = ../src/bbIntroLight.h; sourceTree = SOURCE_ROOT; };
 		C8CE8EAB15B21C8B0076054E /* TreeFrag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TreeFrag.glsl; path = ../resources/TreeFrag.glsl; sourceTree = "<group>"; };
 		C8CE8EAC15B21C8B0076054E /* TreeVert.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TreeVert.glsl; path = ../resources/TreeVert.glsl; sourceTree = "<group>"; };
 		C8CE8EAF15B2257A0076054E /* groundTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = groundTexture.png; path = ../resources/groundTexture.png; sourceTree = "<group>"; };
@@ -399,8 +396,6 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				C865A6E7159FE47D00C98D5C /* bbIntroLight.cpp */,
-				C865A6E8159FE47D00C98D5C /* bbIntroLight.h */,
 				00BAE6590E7ED9C10018A608 /* bobbevyApp.cpp */,
 				C82C97A3159FB3A900AAEDE0 /* bbKinectWrapper.cpp */,
 				C82C98C5159FD14400AAEDE0 /* bbTreeLayer.cpp */,
@@ -1094,7 +1089,6 @@
 				C82C97A4159FB3A900AAEDE0 /* bbKinectWrapper.cpp in Sources */,
 				C82C98C6159FD14400AAEDE0 /* bbTreeLayer.cpp in Sources */,
 				C82C9A41159FE14B00AAEDE0 /* bbParticles.cpp in Sources */,
-				C865A6E9159FE47D00C98D5C /* bbIntroLight.cpp in Sources */,
 				C811FBCC15A4F41700D036A6 /* bbParticleField.cpp in Sources */,
 				C8D04B9815F9C4B100232A1C /* BonjourPublisher.mm in Sources */,
 				C82E6B041689598E000BF266 /* IpEndpointName.cpp in Sources */,

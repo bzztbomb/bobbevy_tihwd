@@ -48,6 +48,19 @@ public:
     if (!active)
       setEnabled(active);
   }
+  
+  // QTimelineModule
+  virtual void init()
+  {
+    registerParam("enabled");    
+  }
+  
+  virtual void update()
+  {
+    bool newEnabled = getParamValue("enabled") > 0.5f;
+    if (newEnabled != getEnabled())
+      setEnabled(newEnabled);    
+  }
 protected:
 	bool mEnabled;
 };

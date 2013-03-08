@@ -102,11 +102,6 @@ private:
   
 	// Layers
 	SceneState mSceneState;
-	TreeLayer mTreeLayer;
-	IntroLight mIntroLight;
-	SkeletonParticles mCloseSwarm;
-	SkeletonParticles mFarSwarm;
-  ParticleField mField;
   
   float mFadeInSlow;
   float mFadeInNormal;
@@ -182,19 +177,6 @@ void bobbevyApp::setup()
 	hiQFormat.enableMipmapping();
 	hiQFormat.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	hiQFormat.setMagFilter(GL_LINEAR_MIPMAP_LINEAR);
-	
-	// Blackout overlay
-	mTreeLayer.setup(&mSceneState);
-  
-	mIntroLight.setup(&mSceneState);
-  
-  mCloseSwarm.setName("near");
-  mCloseSwarm.setup(&mSceneState);
-  mCloseSwarm.followUser(KinectWrapper::utClosest);
-  mFarSwarm.setName("far");
-  mFarSwarm.setup(&mSceneState);
-  mFarSwarm.followUser(KinectWrapper::utFurthest);
-  mField.setup(&mSceneState);
   
   mCurrentTime = getElapsedSeconds();
   mAccumlator = 0.0;
@@ -345,7 +327,7 @@ void bobbevyApp::keyDown( KeyEvent event )
     auto item = (*i)->getActiveItem();
     if (item)
     {
-      SceneLayer* sl = static_cast<SceneLayer*>(item->getTargetModule().get());
+//      SceneLayer* sl = static_cast<SceneLayer*>(item->getTargetModule().get());
       //sl->keyDown(event);
     }
   }
@@ -353,7 +335,7 @@ void bobbevyApp::keyDown( KeyEvent event )
 
 void bobbevyApp::mouseDown( MouseEvent event )
 {
-  mFarSwarm.mouseDown(event);
+//  mFarSwarm.mouseDown(event);
 }
 
 void bobbevyApp::update()
@@ -372,11 +354,6 @@ void bobbevyApp::update()
     
     mSceneState.mTimeline->step(0.05);
     mKinect.update();
-    mTreeLayer.tick();
-    mIntroLight.tick();
-    mCloseSwarm.tick();
-    mFarSwarm.tick();
-    mField.tick();
     
     auto tracks = mTimeline->getTracks();
     for (auto i = tracks.rbegin(); i != tracks.rend(); i++)
@@ -467,33 +444,6 @@ void bobbevyApp::draw()
 
   WindowData* wd = getWindow()->getUserData<WindowData>();
   
-#if 0
-	mTreeLayer.draw();
-	mIntroLight.draw();
-  
-	if (mSceneState.mBlackoutAmount > 0.0)
-	{
-    gl::enableAlphaBlending();
-    ColorA b = mBlackoutColor;
-    b.a = mSceneState.mBlackoutAmount;
-		gl::color( b );
-    gl::drawSolidRect(getWindowBounds());
-		gl::color( cinder::ColorA(1, 1, 1, 1) );
-    gl::disableAlphaBlending();
-	}
-  
-	if (mDebugDraw)
-		mKinect.draw();
-  
-  mFarSwarm.draw();
-	mCloseSwarm.draw();
-  mField.draw();
-  
-  for( size_t k=0; k < mModules.size(); k ++ )
-    if ( mModules[k]->isPlaying() )
-      mModules[k]->render();  
-#endif
-
 	if (mDebugDraw)
 		mKinect.draw();
   
@@ -505,20 +455,8 @@ void bobbevyApp::draw()
       auto item = (*i)->getActiveItem();
       if (item)
         item->getTargetModule()->render();
-#if 0
-      auto mods = (*i)->getItems();
-      for (auto module : mods)
-      {
-        QTimelineModuleRef mod = module->getTargetModule();
-        if ((mod->getItemRef() != NULL) && (mod->isPlaying()))
-          mod->render();
-      }
-#endif
     }
   }
-
-  mFarSwarm.draw();
-	mCloseSwarm.draw();
 
   if (wd->mDisplayTimeline)
   {
@@ -561,14 +499,28 @@ void bobbevyApp::createModuleCallback( QTimeline::CreateModuleCallbackArgs args 
     tl->setup(&mSceneState);
     mod = QTimelineModuleRef( tl );
   }
-  if (args.type == "IntroLight")
-    mod = QTimelineModuleRef( new SceneLayerModule("IntroLight", &mIntroLight));
   if (args.type == "CloseSwarm")
-    mod = QTimelineModuleRef( new SceneLayerModule("CloseSwarm", &mCloseSwarm));
+  {
+    SkeletonParticles* sp = new SkeletonParticles("CloseSwarm");
+    sp->setName("CloseSwarm");
+    sp->setup(&mSceneState);
+    sp->followUser(KinectWrapper::utClosest);
+    mod = QTimelineModuleRef(sp);
+  }
   if (args.type == "FarSwarm")
-    mod = QTimelineModuleRef( new SceneLayerModule("FarSwarm", &mFarSwarm));
+  {
+    SkeletonParticles* sp = new SkeletonParticles("FarSwarm");
+    sp->setName("FarSwarm");
+    sp->setup(&mSceneState);
+    sp->followUser(KinectWrapper::utFurthest);
+    mod = QTimelineModuleRef(sp);
+  }
   if (args.type == "Field")
-    mod = QTimelineModuleRef( new SceneLayerModule("Field", &mField));
+  {
+    ParticleField* pf = new ParticleField();
+    pf->setup(&mSceneState);
+    mod = QTimelineModuleRef(pf);
+  }
   
   if ( !mod )
     return;

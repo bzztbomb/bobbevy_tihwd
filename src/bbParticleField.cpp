@@ -15,7 +15,7 @@ using namespace ci::app;
 using namespace std;
 
 ParticleField::ParticleField() :
-  SceneLayer("ParticleField"),
+  SceneLayer("Field"),
   mSceneState(NULL),
   mNumParticles(200),
   mColor(1,1,1),
@@ -183,8 +183,6 @@ void ParticleField::updateDrop()
     mParticleVel[i] *= mGlobalDecay;
     particleIn |= (mParticlePos[i].y < getWindowHeight());
 	}
-  if (!particleIn)
-    setEnabled(false);
 }
 
 void ParticleField::draw()
@@ -224,4 +222,17 @@ void ParticleField::draw()
       texYellow.unbind();
   }
 	gl::disableAlphaBlending();
+}
+
+void ParticleField::init()
+{
+  SceneLayer::init();
+  
+  registerParam("drop");
+}
+
+void ParticleField::update()
+{
+  SceneLayer::update();
+  mDropping = getParamValue("drop") > 0.5f;
 }

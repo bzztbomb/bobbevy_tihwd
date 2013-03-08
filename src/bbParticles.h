@@ -24,7 +24,7 @@ class SkeletonParticles : public SceneLayer
 public:
   static std::set<SkeletonParticles*> smCurrentSwarms;
 public:
-	SkeletonParticles();
+	SkeletonParticles(const std::string& moduleName);
   ~SkeletonParticles();
   
   void setName(const std::string& name);
@@ -41,6 +41,10 @@ public:
   virtual void setEnabled(bool e);
   
   void mouseDown(cinder::app::MouseEvent event);
+  
+  // QTimelineModule
+  virtual void init();
+  virtual void update();
 private:
   static const int smNumOffsets;
   std::string mName;

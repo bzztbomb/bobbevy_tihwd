@@ -27,8 +27,8 @@ Vec3f dumbRand()
 //
 // SkeletonParticles
 //
-SkeletonParticles::SkeletonParticles() :
-  SceneLayer("Particles"),
+SkeletonParticles::SkeletonParticles(const std::string& moduleName) :
+  SceneLayer(moduleName),
   mManager(NULL),
   mTargetPoint(300.0f, 300.0f, 0.0f),
   mMaxVel(1.6f),
@@ -524,5 +524,25 @@ void SkeletonParticles::updateWaiting()
     mParticleVel[i] += dumbRand() * 1.0f;
     mParticleVel[i] += diff * 0.30;
     mParticleVel[i] *= mDrag;
+  }
+}
+
+void SkeletonParticles::init()
+{
+  SceneLayer::init();
+  
+  registerParam("move");
+  registerParam("drop");
+}
+
+void SkeletonParticles::update()
+{
+  if (getParamValue("enabled") > 0.5f && !mEnabled)
+    setEnabled(getParamValue("enabled") > 0.5f);
+  mDropping = getParamValue("drop") > 0.5f;
+  bool newMove = getParamValue("move") > 0.5f;
+  if (newMove != mMoveSwarm)
+  {
+    moveSwarm(newMove);
   }
 }

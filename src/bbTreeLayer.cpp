@@ -479,7 +479,8 @@ void TreeLayer::setLeaves(bool l)
 
 void TreeLayer::init()
 {
-  registerParam("enabled");
+  SceneLayer::init();
+  
   registerParam("leaves");
   registerParam("panSpeed.x", &mTreePanSpeedTimeline.x, -1.0f, 1.0f);
   registerParam("panSpeed.y", &mTreePanSpeedTimeline.y, -1.0f, 1.0f);
@@ -492,9 +493,8 @@ void TreeLayer::init()
 
 void TreeLayer::update()
 {
-  bool newEnabled = getParamValue("enabled") > 0.5f;
-  if (newEnabled != getEnabled())
-    setEnabled(newEnabled);
+  SceneLayer::update();
+  
   bool newLeaves = getParamValue("leaves") > 0.5f;
   if (getLeaves() != newLeaves)
   {
@@ -506,7 +506,7 @@ void TreeLayer::update()
     mTreePan.z = 0;
   }
   mOldResetZ = newResetZ;
-  bool newZoomToBlack = getParamValue("zoomToBlack");
+  bool newZoomToBlack = getParamValue("zoomToBlack") > 0.5f;
   if (newZoomToBlack != mZoomToBlack)
   {
     mZoomToBlack = newZoomToBlack;

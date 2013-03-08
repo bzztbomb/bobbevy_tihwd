@@ -28,6 +28,10 @@ public:
 	virtual void tick();
 	virtual void draw();
   virtual void setEnabled(bool e);
+  
+  // TimelineModule
+  virtual void init();
+  virtual void update();
 private:
 	SceneState* mSceneState;
   int mNumParticles;
