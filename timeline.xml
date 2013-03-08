@@ -39,7 +39,7 @@
 			</item>
 		</track>
 		<track name="track 0">
-			<item type="QTimelineModuleItem" name="Trees" startTime="0" duration="149.75" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="TreeLayer">
+			<item type="QTimelineModuleItem" name="Trees" startTime="0" duration="221.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="TreeLayer">
 				<param name="enabled" value="0.888888896" min="0" max="1">
 					<kf value="0.822222233" time="0" fn="EaseNone"/>
 					<kf value="0.800000012" time="89" fn="EaseStep"/>
@@ -50,19 +50,31 @@
 					<kf value="0.711111069" time="0" fn="EaseStep"/>
 					<kf value="0.0666666627" time="102" fn="EaseStep"/>
 				</param>
-				<param name="panSpeed.x" value="-0.00100000005" min="-1" max="1">
+				<param name="panSpeed.x" value="-0.0500000007" min="-1" max="1">
 					<kf value="0" time="0.5" fn="EaseStep"/>
 					<kf value="-0.00100000005" time="29" fn="EaseStep"/>
 					<kf value="0" time="49.25" fn="EaseInQuad"/>
 					<kf value="-0.00100000005" time="52.5" fn="EaseInQuad"/>
+					<kf value="-0.00100000005" time="134.25" fn="EaseNone"/>
+					<kf value="-0.0500000007" time="137.75" fn="EaseNone"/>
+					<kf value="-0.0500000007" time="144.25" fn="EaseNone"/>
+					<kf value="-0.00100000005" time="146.75" fn="EaseNone"/>
+					<kf value="-0.00100000005" time="156.25" fn="EaseNone"/>
+					<kf value="-0.0500000007" time="159.75" fn="EaseNone"/>
 				</param>
-				<param name="panSpeed.y" value="0" min="-1" max="1">
+				<param name="panSpeed.y" value="-0.0399999991" min="-1" max="1">
 					<kf value="0" time="0.5" fn="EaseNone"/>
+					<kf value="0" time="167" fn="EaseNone"/>
+					<kf value="-0.00200000009" time="169" fn="EaseNone"/>
+					<kf value="-0.00200000009" time="178.75" fn="EaseNone"/>
+					<kf value="-0.0399999991" time="180.75" fn="EaseNone"/>
 				</param>
-				<param name="panSpeed.z" value="0" min="-10" max="1">
+				<param name="panSpeed.z" value="-0.0299999993" min="-10" max="1">
 					<kf value="0" time="3" fn="EaseNone"/>
 					<kf value="-10" time="39.5" fn="EaseStep"/>
 					<kf value="0" time="49.25" fn="EaseStep"/>
+					<kf value="0" time="156" fn="EaseNone"/>
+					<kf value="-0.0299999993" time="159.75" fn="EaseNone"/>
 				</param>
 				<param name="fogDistance" value="40" min="0" max="40">
 					<kf value="2.66666651" time="1" fn="EaseNone"/>
@@ -70,13 +82,15 @@
 					<kf value="12" time="26.5" fn="EaseInQuad"/>
 					<kf value="40" time="38.5" fn="EaseInQuad"/>
 				</param>
-				<param name="blackout" value="0.0222222209" min="0" max="1">
+				<param name="blackout" value="1" min="0" max="1">
 					<kf value="1" time="0" fn="EaseNone"/>
 					<kf value="0" time="16.25" fn="EaseNone"/>
 					<kf value="0" time="78.5" fn="EaseNone"/>
 					<kf value="1" time="86.25" fn="EaseNone"/>
 					<kf value="1" time="102.25" fn="EaseNone"/>
 					<kf value="0.0222222209" time="113.75" fn="EaseNone"/>
+					<kf value="0" time="178.5" fn="EaseNone"/>
+					<kf value="1" time="183.5" fn="EaseNone"/>
 				</param>
 				<param name="resetZ" value="1" min="0" max="1">
 					<kf value="0.0222222209" time="0" fn="EaseStep"/>
@@ -103,6 +117,11 @@
 		<cue name="Field" startTime="93.5" duration="7.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
 		<cue name="FadeIn" startTime="102.25" duration="12" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
 		<cue name="Drop field" startTime="116.5" duration="14.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="Speedup" startTime="134" duration="8.25" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="slow" startTime="143.75" duration="10" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="Into" startTime="155.75" duration="8.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="up" startTime="166.75" duration="8.25" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="Finish" startTime="178.25" duration="21.75" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
 	</cueList>
 </QTimeline>
 
