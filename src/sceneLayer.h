@@ -43,7 +43,7 @@ public:
 	virtual bool getEnabled() { return mEnabled; }
 
   virtual void render() { draw(); }
-  virtual void activeChanged(bool active)
+  virtual void stateChanged(bool active)
   {
     if (!active)
       setEnabled(active);

@@ -34,13 +34,6 @@ TreeLayer::TreeLayer() :
   mTreeRadius(1.0f),
   mTreeSizeVariance(2.0f),
   mZoomToBlack(false),
-  mFadeAmount(1.0f),
-  mWarpAmount(0.0f),
-  mAlphaAmount(1.0f),
-  mTime(0.0f),
-  mTimeMult(1.0f),
-  mYMult(1.0f),
-  mFadeTransTime(20.0f),
   mFogDistance(40.0f),
   mFogHeight(200.0f),
   mZoomOffset(0.45f),
@@ -65,12 +58,6 @@ void TreeLayer::setup(SceneState* manager)
 	manager->mParams.addParam("GroundColor", &mGroundColor);
 	manager->mParams.addParam("SunColor", &mSunColor);
 	manager->mParams.addParam("ZoomTarget", &mZoomTarget);
-  manager->mParams.addParam("FadeAmount", &mFadeAmount.value(), "min=0.0 max=1.0 step=0.01");
-  manager->mParams.addParam("WarpAmount", &mWarpAmount.value(), "min=0.0 max=100.0 step=0.001");
-  manager->mParams.addParam("AlphaAmount", &mAlphaAmount.value(), "min=0.0 max=1.0 step=0.01");
-  manager->mParams.addParam("TimeMult", &mTimeMult, "min=0.0 max=100.0 step=0.01");
-  manager->mParams.addParam("yMult", &mYMult, "min=0.0 max=10.0 step=0.01");
-  manager->mParams.addParam("FadeTransTime", &mFadeTransTime, "min=0");
   manager->mParams.addParam("FogColor", &mFogColor.value());
   manager->mParams.addParam("FogDistance", &mFogDistance.value(), "step=1.0");
   manager->mParams.addParam("FogHeight", &mFogHeight.value());
@@ -98,87 +85,12 @@ void TreeLayer::setup(SceneState* manager)
   
 	initGroundMesh();
 	initTreeMesh();
-  
-  mTime = getElapsedSeconds();
 }
 
 void TreeLayer::setEnabled(bool e)
 {
 	SceneLayer::setEnabled(e);
 	resetParams();
-}
-
-void TreeLayer::keyDown( cinder::app::KeyEvent event )
-{
-	if (!mEnabled)
-		return;
-	
-	float fastTween = 1.0f;
-	float slowTween = 10.0f;
-	
-	switch (event.getCode())
-	{
-		case KeyEvent::KEY_1:
-			mManager->mTimeline->apply(&mTreePanSpeed, Vec3f(-0.001f, 0.0f, 0.0f), slowTween);
-			break;
-		case KeyEvent::KEY_2:
-			mManager->mTimeline->apply(&mTreePanSpeed, Vec3f(-0.05f, 0.0f, 0.0f), fastTween);
-			break;
-		case KeyEvent::KEY_3:
-			mManager->mTimeline->apply(&mTreePanSpeed, Vec3f(-0.05f, 0.0f, -0.03f), fastTween);
-			break;
-		case KeyEvent::KEY_4:
-			mManager->mTimeline->apply(&mTreePanSpeed, Vec3f(-0.05f, -0.04f, -0.03f), fastTween);
-			mManager->mTimeline->apply(&mManager->mBlackoutAmount, 1.0f, 5.0f);
-			break;
-		case KeyEvent::KEY_5:
-			mManager->mTimeline->apply(&mTreePanSpeed, Vec3f(-0.05f, -0.002f, -0.03f), fastTween);
-			break;
-    case KeyEvent::KEY_6:
-			mManager->mTimeline->apply(&mTreePanSpeed, Vec3f(0.0f, 0.0f, -9.5f), fastTween);
-      break;
-		case KeyEvent::KEY_9:
-			mTreePanSpeed = Vec3f(0,0,0);
-			break;
-		case KeyEvent::KEY_0:
-			resetParams();
-			break;
-		case KeyEvent::KEY_8:
-			toggleZoomToBlack();
-			break;
-    case KeyEvent::KEY_w:
-      mFogColor = Color(30.0 / 255.0, 10.0 / 255.0, 10.0 / 255.0);
-      mFogDistance = 1;
-      break;
-    case KeyEvent::KEY_r:
-      mManager->mTimeline->apply(&mFogDistance, 12.0f, slowTween);
-      break;
-    case KeyEvent::KEY_u:
-      mManager->mTimeline->apply(&mFogDistance, 40.0f, slowTween);
-      break;
-    case KeyEvent::KEY_s:
-    {
-      float currX = mTreePan.x;
-      resetParams();
-      mTreePan.x = currX;
-      mWithLeaves = true;
-    }
-      break;
-	}
-}
-
-void TreeLayer::toggleZoomToBlack()
-{
-	mZoomToBlack = !mZoomToBlack;
-	if (mZoomToBlack)
-	{
-		mZoomTarget = Vec3f(0.0f, 0.0f, -((travelBounds.z-mTreeRadius) + mTreePan.z));
-		mTreePanSpeed = mZoomTarget / (mZoomTimeSec*30.0f);
-    for (auto i : SkeletonParticles::smCurrentSwarms)
-    {
-      i->setZValue(mTreePan.z + mZoomTarget.z);
-    }
-	}
 }
 
 void TreeLayer::tick()
@@ -218,11 +130,6 @@ void TreeLayer::tick()
 		initTreeMesh();
 		initGroundMesh();
 	}
-  
-  mTime = getElapsedSeconds();
-  //    float chunk = M_PI * 2.0f * 10.0f;
-  //    while (mTime > chunk)
-  //        mTime -= chunk;
 }
 
 void TreeLayer::draw()
@@ -456,18 +363,8 @@ void TreeLayer::resetParams()
 	mTreePan = Vec3f(0.0f, -1.1f, 0.0f);
 	mTreePanSpeed = Vec3f(-0.001f, 0.0f, 0.0f);
 	mZoomToBlack = false;
-  mFadeAmount = 1.0f;
-  mWarpAmount = 0.0f;
-  mAlphaAmount = 0.15f;
   mWithLeaves = false;
   mFogDistance = 40.0f;
-}
-
-void TreeLayer::setBlurred()
-{
-  mFadeAmount = 0.27f;
-  mWarpAmount = 0.006f;
-  mAlphaAmount = 0.77f;
 }
 
 void TreeLayer::setLeaves(bool l)

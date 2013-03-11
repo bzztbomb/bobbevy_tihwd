@@ -166,9 +166,6 @@ void bobbevyApp::keyDown( KeyEvent event )
       case KeyEvent::KEY_h:
         mSceneState.mTimeline->clear();
         break;
-      case KeyEvent::KEY_SPACE:
-        mTimeline->play( !mTimeline->isPlaying(), QTimeline::FREE_RUN );
-        break;
       case KeyEvent::KEY_RETURN:
         mTimeline->playCue();
         break;
@@ -193,6 +190,11 @@ void bobbevyApp::keyDown( KeyEvent event )
       {
         WindowData* wd = getWindowIndex(0)->getUserData<WindowData>();
         wd->mDisplayScene = !wd->mDisplayScene;
+      };
+      break;
+    case KeyEvent::KEY_F5:
+      {
+        mTimeline->play( !mTimeline->isPlaying(), QTimeline::FREE_RUN );
       };
       break;
 	}

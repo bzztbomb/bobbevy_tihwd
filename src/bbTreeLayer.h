@@ -23,14 +23,12 @@ class TreeLayer : public SceneLayer
 public:
 	TreeLayer();
   
-  void setBlurred();
   void setLeaves(bool l);
   bool getLeaves() { return mWithLeaves; }
 	void resetParams();
   
 	// SceneLayer
   virtual void setup(SceneState* manager);
-	virtual void keyDown( cinder::app::KeyEvent event );
 	virtual void tick();
 	virtual void draw();
 	virtual void setEnabled(bool e);
@@ -69,14 +67,6 @@ private:
   // Fade in
   
   cinder::gl::GlslProg mTreeShader;
-  cinder::Anim<float> mBlurAmount;
-  cinder::Anim<float> mFadeAmount;
-  cinder::Anim<float> mWarpAmount;
-  cinder::Anim<float> mAlphaAmount;
-  float mTimeMult;
-  float mTime;
-  float mYMult;
-  float mFadeTransTime;
   float mZoomOffset;
   float mZoomTimeSec;
   bool mOldResetZ;
@@ -89,7 +79,6 @@ private:
 	void initGroundMesh();
 	void initTreeMesh();
 	void addTree(const cinder::Vec3f& treePos, const cinder::Vec2f& treeScale, const cinder::Vec2f& texOffset, bool flipX);
-	void toggleZoomToBlack();
   void allocFBO();
 };
 
