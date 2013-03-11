@@ -100,7 +100,7 @@
 				<param name="zoomToBlack" value="0.800000012" min="0" max="1">
 					<kf value="0" time="0.25" fn="EaseStep"/>
 					<kf value="0.800000012" time="57.5" fn="EaseStep"/>
-					<kf value="0.111111104" time="102" fn="EaseStep"/>
+					<kf value="0" time="102" fn="EaseStep"/>
 				</param>
 			</item>
 		</track>

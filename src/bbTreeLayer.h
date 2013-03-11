@@ -60,15 +60,14 @@ private:
 	cinder::Vec3f travelBounds;
 	cinder::Color mGroundColor;
 	cinder::Color mSunColor;
-	// Zoom to black
-	bool mZoomToBlack;
-	cinder::Vec3f mZoomTarget;
+	// Zoom to trees
+	float mZoomToBlack;
 	cinder::gl::Texture texBlack;
   // Fade in
   
   cinder::gl::GlslProg mTreeShader;
+
   float mZoomOffset;
-  float mZoomTimeSec;
   bool mOldResetZ;
   
   cinder::Anim<cinder::Color> mFogColor;

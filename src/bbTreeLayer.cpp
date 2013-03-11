@@ -23,6 +23,8 @@ using namespace gl;
 #define WIDTH 800
 #define HEIGHT 600
 
+const float zoomHackZ = -49.0166;
+
 TreeLayer::TreeLayer() :
   SceneLayer("TreeLayer"),
   mTreeCam(WIDTH, HEIGHT, 60.0f, 1.0f, 1000.0f ),
@@ -33,15 +35,14 @@ TreeLayer::TreeLayer() :
   mNumTrees(50),
   mTreeRadius(1.0f),
   mTreeSizeVariance(2.0f),
-  mZoomToBlack(false),
+  mZoomToBlack(0.0f),
   mFogDistance(40.0f),
   mFogHeight(200.0f),
   mZoomOffset(0.45f),
-  mZoomTimeSec(18.0f),
   mOldResetZ(false)
 {
-	resetParams();
   mFogColor = Color(30.0f / 255.0f, 10.0f / 255.0f, 10.0f / 255.0f);
+	resetParams();
 }
 
 void TreeLayer::setup(SceneState* manager)
@@ -57,12 +58,10 @@ void TreeLayer::setup(SceneState* manager)
 	manager->mParams.addParam("TreeSizeVariance", &mTreeSizeVariance, "min=0.0f max=4.0f step=0.1");
 	manager->mParams.addParam("GroundColor", &mGroundColor);
 	manager->mParams.addParam("SunColor", &mSunColor);
-	manager->mParams.addParam("ZoomTarget", &mZoomTarget);
   manager->mParams.addParam("FogColor", &mFogColor.value());
   manager->mParams.addParam("FogDistance", &mFogDistance.value(), "step=1.0");
   manager->mParams.addParam("FogHeight", &mFogHeight.value());
   manager->mParams.addParam("ZoomOffset", &mZoomOffset, "step=0.1");
-  manager->mParams.addParam("ZoomTimeSec", &mZoomTimeSec, "step=0.1");
   
 	mTreeCam.lookAt(Vec3f(0,0,0), mTreeCam.getViewDirection(), -mTreeCam.getWorldUp());
 	
@@ -97,31 +96,36 @@ void TreeLayer::tick()
 {
 	if (!mEnabled)
 		return;
-	mTreePan += mTreePanSpeed;
-	
-	while (mTreePan.z < -travelBounds.z)
-		mTreePan.z += travelBounds.z;
-	while (mTreePan.x < -travelBounds.x)
-		mTreePan.x += travelBounds.x;
-	while (mTreePan.x > travelBounds.x)
-		mTreePan.x -= travelBounds.x;
-	
-	if (mZoomToBlack)
+
+  if (mZoomToBlack == 0.0f)
 	{
-		mZoomTarget -= mTreePanSpeed;
-    float dist = -2.0f;
-		if (mZoomTarget.z > dist)
-    {
-			mZoomTarget.z = dist;
-      mTreePanSpeed = Vec3f(0.0f, 0.0f, 0.0f);
-      for (auto i : SkeletonParticles::smCurrentSwarms)
-      {
-        i->setEnabled(true);
-        i->moveSwarm(false);
-        i->setZValue(0.0f);
-      }
-      mManager->mTimeline->apply(&mFogDistance, 12.0f, 2.0f);
-    }
+    mTreePan += mTreePanSpeed;
+    
+    while (mTreePan.z < -travelBounds.z)
+      mTreePan.z += travelBounds.z;
+    while (mTreePan.x < -travelBounds.x)
+      mTreePan.x += travelBounds.x;
+    while (mTreePan.x > travelBounds.x)
+      mTreePan.x -= travelBounds.x;
+  }
+  
+	if (mZoomToBlack > 0.0f)
+	{
+    mTreePan.z = mZoomToBlack * zoomHackZ;
+//		mZoomTarget -= mTreePanSpeed;
+//    float dist = -2.0f;
+//		if (mZoomTarget.z > dist)
+//    {
+//			mZoomTarget.z = dist;
+//      mTreePanSpeed = Vec3f(0.0f, 0.0f, 0.0f);
+//      for (auto i : SkeletonParticles::smCurrentSwarms)
+//      {
+//        i->setEnabled(true);
+//        i->moveSwarm(false);
+//        i->setZValue(0.0f);
+//      }
+//      mManager->mTimeline->apply(&mFogDistance, 12.0f, 2.0f);
+//    }
 	}
 	
 	if (mUpdateTrees)
@@ -205,15 +209,16 @@ void TreeLayer::draw()
   else
     texTreeWithLeaves.unbind();
   
-  if (mZoomToBlack)
+  if (mZoomToBlack > 0.0f)
   {
     texBlack.enableAndBind();
     Vec3f bbRight, bbUp;
     mTreeCam.getBillboardVectors(&bbRight, &bbUp);
     Vec2f scale = Vec2f(1070.0f / 2311.0f, 1.0f);
     scale *= 2.0f;
-    Vec3f middlePos = mTreePan + mZoomTarget;
-    middlePos.y = -scale.y * 0.5f;
+    Vec3f middlePos(mTreePan.x,
+                    -scale.y * 0.5f,
+                    zoomHackZ - 2.0f);
     gl::drawBillboard(middlePos + Vec3f(mZoomOffset, 0.0f, 0.0f), scale, 0.0f, bbRight, bbUp);
     gl::drawBillboard(middlePos - Vec3f(mZoomOffset, 0.0f, 0.0f), scale, 0.0f, bbRight, bbUp);
     texBlack.unbind();
@@ -403,21 +408,7 @@ void TreeLayer::update()
     mTreePan.z = 0;
   }
   mOldResetZ = newResetZ;
-  bool newZoomToBlack = getParamValue("zoomToBlack") > 0.5f;
-  if (newZoomToBlack != mZoomToBlack)
-  {
-    mZoomToBlack = newZoomToBlack;
-    if (mZoomToBlack)
-    {
-      mZoomTarget = Vec3f(0.0f, 0.0f, -((travelBounds.z-mTreeRadius) + mTreePan.z));
-      mTreePanSpeed = mZoomTarget / (mZoomTimeSec*30.0f);
-
-//      for (auto i : SkeletonParticles::smCurrentSwarms)
-//      {
-//        i->setZValue(mTreePan.z + mZoomTarget.z);
-//      }
-    }
-  }
-  if (!mZoomToBlack)
+  mZoomToBlack = getParamValue("zoomToBlack");
+  if (mZoomToBlack == 0.0f)
     mTreePanSpeed = mTreePanSpeedTimeline;
 }
