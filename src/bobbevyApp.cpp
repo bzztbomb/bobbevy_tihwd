@@ -150,6 +150,7 @@ void bobbevyApp::setup()
 
 void bobbevyApp::keyDown( KeyEvent event )
 {
+  float zoomInc = 0.25f;
   if (event.isMetaDown())
   {
     switch (event.getCode())
@@ -171,6 +172,12 @@ void bobbevyApp::keyDown( KeyEvent event )
         break;
       case KeyEvent::KEY_w:
         createNewWindow();
+        break;
+      case KeyEvent::KEY_EQUALS:
+        mTimeline->setZoom(mTimeline->getZoom() + zoomInc);
+        break;
+      case KeyEvent::KEY_KP_MINUS:
+        mTimeline->setZoom(mTimeline->getZoom() - zoomInc);
         break;
     }
   }

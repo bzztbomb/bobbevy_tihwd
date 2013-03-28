@@ -15,7 +15,7 @@
 		<track name="track untitled">
 			<item type="QTimelineModuleItem" name="close swarm" startTime="61.25" duration="46" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="CloseSwarm">
 				<param name="enabled" value="0" min="0" max="1"/>
-				<param name="move" value="0.733333349" min="0" max="1">
+				<param name="move" value="0.0222222209" min="0" max="1">
 					<kf value="0.0222222209" time="61.5" fn="EaseStep"/>
 					<kf value="0.733333349" time="65.5" fn="EaseStep"/>
 				</param>
@@ -28,7 +28,7 @@
 		<track name="track untitled">
 			<item type="QTimelineModuleItem" name="Far swarm" startTime="61.25" duration="46.25" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="FarSwarm">
 				<param name="enabled" value="0" min="0" max="1"/>
-				<param name="move" value="0.75555557" min="0" max="1">
+				<param name="move" value="0.0444444418" min="0" max="1">
 					<kf value="0.0444444418" time="61.5" fn="EaseStep"/>
 					<kf value="0.75555557" time="65.5" fn="EaseStep"/>
 				</param>
@@ -50,7 +50,7 @@
 					<kf value="0.711111069" time="0" fn="EaseStep"/>
 					<kf value="0.0666666627" time="102" fn="EaseStep"/>
 				</param>
-				<param name="panSpeed.x" value="-0.00100000005" min="-1" max="1">
+				<param name="panSpeed.x" value="0" min="-1" max="1">
 					<kf value="0" time="0.5" fn="EaseStep"/>
 					<kf value="-0.00100000005" time="29" fn="EaseStep"/>
 					<kf value="0" time="49.25" fn="EaseInQuad"/>
@@ -76,13 +76,13 @@
 					<kf value="0" time="156" fn="EaseNone"/>
 					<kf value="-0.0299999993" time="159.75" fn="EaseNone"/>
 				</param>
-				<param name="fogDistance" value="40" min="0" max="40">
+				<param name="fogDistance" value="2.66666651" min="0" max="40">
 					<kf value="2.66666651" time="1" fn="EaseNone"/>
 					<kf value="2.66666651" time="18" fn="EaseInQuad"/>
 					<kf value="12" time="26.5" fn="EaseInQuad"/>
 					<kf value="40" time="38.5" fn="EaseInQuad"/>
 				</param>
-				<param name="blackout" value="0" min="0" max="1">
+				<param name="blackout" value="0.430769205" min="0" max="1">
 					<kf value="1" time="0" fn="EaseNone"/>
 					<kf value="0" time="16.25" fn="EaseNone"/>
 					<kf value="0" time="78.5" fn="EaseNone"/>
@@ -92,12 +92,12 @@
 					<kf value="0" time="178.5" fn="EaseNone"/>
 					<kf value="1" time="183.5" fn="EaseNone"/>
 				</param>
-				<param name="resetZ" value="0.970056534" min="0" max="1">
+				<param name="resetZ" value="0.0222222209" min="0" max="1">
 					<kf value="0.0222222209" time="0" fn="EaseStep"/>
 					<kf value="0.933333337" time="49.25" fn="EaseStep"/>
 					<kf value="1" time="78.75" fn="EaseNone"/>
 				</param>
-				<param name="zoomToBlack" value="0.800000012" min="0" max="1">
+				<param name="zoomToBlack" value="0" min="0" max="1">
 					<kf value="0" time="0.25" fn="EaseStep"/>
 					<kf value="0.800000012" time="57.5" fn="EaseStep"/>
 					<kf value="0" time="102" fn="EaseStep"/>
