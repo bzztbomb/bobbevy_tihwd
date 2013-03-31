@@ -2,105 +2,116 @@
 <QTimeline>
 	<tracks>
 		<track name="track untitled">
-			<item type="QTimelineModuleItem" name="Field" startTime="92.75" duration="38.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="Field">
+			<item type="QTimelineModuleItem" name="Field" startTime="170.25" duration="58" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="Field">
 				<param name="enabled" value="0.75555557" min="0" max="1">
-					<kf value="0.75555557" time="93.25" fn="EaseNone"/>
+					<kf value="0.75555557" time="170.75" fn="EaseNone"/>
 				</param>
-				<param name="drop" value="0.0666666627" min="0" max="1">
-					<kf value="0.0666666627" time="93.5" fn="EaseStep"/>
-					<kf value="0.888888896" time="116.5" fn="EaseStep"/>
-				</param>
-			</item>
-		</track>
-		<track name="track untitled">
-			<item type="QTimelineModuleItem" name="close swarm" startTime="61.25" duration="46" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="CloseSwarm">
-				<param name="enabled" value="0" min="0" max="1"/>
-				<param name="move" value="0.0222222209" min="0" max="1">
-					<kf value="0.0222222209" time="61.5" fn="EaseStep"/>
-					<kf value="0.733333349" time="65.5" fn="EaseStep"/>
-				</param>
-				<param name="drop" value="0.0222222209" min="0" max="1">
-					<kf value="0.0222222209" time="61.5" fn="EaseStep"/>
-					<kf value="0.711111069" time="93.5" fn="EaseStep"/>
+				<param name="drop" value="1" min="0" max="1">
+					<kf value="0.0666666627" time="171" fn="EaseStep"/>
+					<kf value="1" time="217.5" fn="EaseStep"/>
 				</param>
 			</item>
 		</track>
 		<track name="track untitled">
-			<item type="QTimelineModuleItem" name="Far swarm" startTime="61.25" duration="46.25" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="FarSwarm">
-				<param name="enabled" value="0" min="0" max="1"/>
-				<param name="move" value="0.0444444418" min="0" max="1">
-					<kf value="0.0444444418" time="61.5" fn="EaseStep"/>
-					<kf value="0.75555557" time="65.5" fn="EaseStep"/>
+			<item type="QTimelineModuleItem" name="close swarm" startTime="74.25" duration="115.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="CloseSwarm">
+				<param name="enabled" value="1" min="0" max="1">
+					<kf value="0" time="74.5" fn="EaseStep"/>
+					<kf value="1" time="75.75" fn="EaseStep"/>
 				</param>
-				<param name="drop" value="0" min="0" max="1">
-					<kf value="0" time="61.5" fn="EaseStep"/>
-					<kf value="0.866666675" time="93.5" fn="EaseStep"/>
+				<param name="move" value="0.933333337" min="0" max="1">
+					<kf value="0.0222222209" time="74.5" fn="EaseStep"/>
+					<kf value="0.933333337" time="87.75" fn="EaseStep"/>
+				</param>
+				<param name="drop" value="1" min="0" max="1">
+					<kf value="0.0222222209" time="74.5" fn="EaseStep"/>
+					<kf value="1" time="170" fn="EaseStep"/>
+				</param>
+			</item>
+		</track>
+		<track name="track untitled">
+			<item type="QTimelineModuleItem" name="Far swarm" startTime="74.25" duration="115.75" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="FarSwarm">
+				<param name="enabled" value="1" min="0" max="1">
+					<kf value="0" time="74.5" fn="EaseStep"/>
+					<kf value="1" time="75.75" fn="EaseStep"/>
+				</param>
+				<param name="move" value="1" min="0" max="1">
+					<kf value="0.0444444418" time="73.75" fn="EaseStep"/>
+					<kf value="1" time="87.75" fn="EaseStep"/>
+				</param>
+				<param name="drop" value="1" min="0" max="1">
+					<kf value="0" time="73.75" fn="EaseStep"/>
+					<kf value="1" time="168" fn="EaseStep"/>
 				</param>
 			</item>
 		</track>
 		<track name="track 0">
-			<item type="QTimelineModuleItem" name="Trees" startTime="0" duration="221.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="TreeLayer">
+			<item type="QTimelineModuleItem" name="Trees" startTime="0" duration="321.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="TreeLayer">
 				<param name="enabled" value="0.822222233" min="0" max="1">
 					<kf value="0.822222233" time="0" fn="EaseNone"/>
-					<kf value="0.800000012" time="89" fn="EaseStep"/>
-					<kf value="0" time="89.75" fn="EaseStep"/>
-					<kf value="0.888888896" time="102.25" fn="EaseStep"/>
+					<kf value="0.800000012" time="189" fn="EaseStep"/>
+					<kf value="0" time="189.75" fn="EaseStep"/>
+					<kf value="0.888888896" time="202.25" fn="EaseStep"/>
 				</param>
 				<param name="leaves" value="0.711111069" min="0" max="1">
 					<kf value="0.711111069" time="0" fn="EaseStep"/>
-					<kf value="0.0666666627" time="102" fn="EaseStep"/>
+					<kf value="0.0666666627" time="202" fn="EaseStep"/>
 				</param>
 				<param name="panSpeed.x" value="0" min="-1" max="1">
 					<kf value="0" time="0.5" fn="EaseStep"/>
 					<kf value="-0.00100000005" time="29" fn="EaseStep"/>
 					<kf value="0" time="49.25" fn="EaseInQuad"/>
 					<kf value="-0.00100000005" time="52.5" fn="EaseInQuad"/>
-					<kf value="-0.00100000005" time="134.25" fn="EaseNone"/>
-					<kf value="-0.0500000007" time="137.75" fn="EaseNone"/>
-					<kf value="-0.0500000007" time="144.25" fn="EaseNone"/>
-					<kf value="-0.00100000005" time="146.75" fn="EaseNone"/>
-					<kf value="-0.00100000005" time="156.25" fn="EaseNone"/>
-					<kf value="-0.0500000007" time="159.75" fn="EaseNone"/>
+					<kf value="-0.00100000005" time="234.25" fn="EaseNone"/>
+					<kf value="-0.0500000007" time="237.75" fn="EaseNone"/>
+					<kf value="-0.0500000007" time="244.25" fn="EaseNone"/>
+					<kf value="-0.00100000005" time="246.75" fn="EaseNone"/>
+					<kf value="-0.00100000005" time="256.25" fn="EaseNone"/>
+					<kf value="-0.0500000007" time="259.75" fn="EaseNone"/>
 				</param>
 				<param name="panSpeed.y" value="0" min="-1" max="1">
 					<kf value="0" time="0.5" fn="EaseNone"/>
-					<kf value="0" time="167" fn="EaseNone"/>
-					<kf value="-0.00200000009" time="169" fn="EaseNone"/>
-					<kf value="-0.00200000009" time="178.75" fn="EaseNone"/>
-					<kf value="-0.0399999991" time="180.75" fn="EaseNone"/>
+					<kf value="0" time="267" fn="EaseNone"/>
+					<kf value="-0.00200000009" time="269" fn="EaseNone"/>
+					<kf value="-0.00200000009" time="278.75" fn="EaseNone"/>
+					<kf value="-0.0399999991" time="280.75" fn="EaseNone"/>
 				</param>
 				<param name="panSpeed.z" value="0" min="-10" max="1">
 					<kf value="0" time="3" fn="EaseNone"/>
 					<kf value="-10" time="39.5" fn="EaseStep"/>
 					<kf value="0" time="49.25" fn="EaseStep"/>
-					<kf value="0" time="156" fn="EaseNone"/>
-					<kf value="-0.0299999993" time="159.75" fn="EaseNone"/>
+					<kf value="0" time="256" fn="EaseNone"/>
+					<kf value="-0.0299999993" time="259.75" fn="EaseNone"/>
 				</param>
 				<param name="fogDistance" value="2.66666651" min="0" max="40">
 					<kf value="2.66666651" time="1" fn="EaseNone"/>
 					<kf value="2.66666651" time="18" fn="EaseInQuad"/>
 					<kf value="12" time="26.5" fn="EaseInQuad"/>
 					<kf value="40" time="38.5" fn="EaseInQuad"/>
+					<kf value="40" time="75.75" fn="EaseNone"/>
+					<kf value="12" time="80" fn="EaseNone"/>
 				</param>
-				<param name="blackout" value="0.430769205" min="0" max="1">
+				<param name="blackout" value="0.824577212" min="0" max="1">
 					<kf value="1" time="0" fn="EaseNone"/>
 					<kf value="0" time="16.25" fn="EaseNone"/>
-					<kf value="0" time="78.5" fn="EaseNone"/>
-					<kf value="1" time="86.25" fn="EaseNone"/>
-					<kf value="1" time="102.25" fn="EaseNone"/>
-					<kf value="0.0222222209" time="113.75" fn="EaseNone"/>
-					<kf value="0" time="178.5" fn="EaseNone"/>
-					<kf value="1" time="183.5" fn="EaseNone"/>
+					<kf value="0" time="128.25" fn="EaseNone"/>
+					<kf value="1" time="154" fn="EaseNone"/>
+					<kf value="1" time="202.75" fn="EaseNone"/>
+					<kf value="0" time="213.75" fn="EaseNone"/>
+					<kf value="0" time="278.5" fn="EaseNone"/>
+					<kf value="0" time="278.5" fn="EaseNone"/>
+					<kf value="1" time="283.5" fn="EaseNone"/>
+					<kf value="1" time="286.25" fn="EaseNone"/>
 				</param>
 				<param name="resetZ" value="0.0222222209" min="0" max="1">
 					<kf value="0.0222222209" time="0" fn="EaseStep"/>
 					<kf value="0.933333337" time="49.25" fn="EaseStep"/>
-					<kf value="1" time="78.75" fn="EaseNone"/>
+					<kf value="1" time="178.75" fn="EaseNone"/>
 				</param>
 				<param name="zoomToBlack" value="0" min="0" max="1">
 					<kf value="0" time="0.25" fn="EaseStep"/>
-					<kf value="0.800000012" time="57.5" fn="EaseStep"/>
-					<kf value="0" time="102" fn="EaseStep"/>
+					<kf value="0" time="57.75" fn="EaseStep"/>
+					<kf value="1" time="75.75" fn="EaseNone"/>
+					<kf value="0" time="202" fn="EaseStep"/>
 				</param>
 			</item>
 		</track>
@@ -111,17 +122,17 @@
 		<cue name="Start move" startTime="28.75" duration="9.625" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
 		<cue name="Fast Z" startTime="39.5" duration="6.1500015258789062" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
 		<cue name="Stop" startTime="49.25" duration="7" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
-		<cue name="ZoomIn" startTime="57.5" duration="5.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
-		<cue name="Enable swarms" startTime="65" duration="10.400001525878906" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
-		<cue name="Fade trees" startTime="78.5" duration="11.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
-		<cue name="Field" startTime="93.5" duration="7.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
-		<cue name="FadeIn" startTime="102.25" duration="12" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
-		<cue name="Drop field" startTime="116.5" duration="14.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
-		<cue name="Speedup" startTime="134" duration="8.25" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
-		<cue name="slow" startTime="143.75" duration="10" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
-		<cue name="Into" startTime="155.75" duration="8.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
-		<cue name="up" startTime="166.75" duration="8.25" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
-		<cue name="Finish" startTime="178.25" duration="21.75" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="ZoomIn" startTime="57.5" duration="22.75" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="Enable swarms" startTime="88" duration="32.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="Fade trees" startTime="128.25" duration="26.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="Field" startTime="170" duration="23.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="FadeIn" startTime="202.25" duration="12" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="Drop field" startTime="216.5" duration="12" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="Speedup" startTime="234" duration="8.25" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="slow" startTime="243.75" duration="10" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="Into" startTime="255.75" duration="8.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="up" startTime="266.75" duration="8.25" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
+		<cue name="Finish" startTime="278.25" duration="21.75" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1"/>
 	</cueList>
 </QTimeline>
 
