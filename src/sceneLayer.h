@@ -20,10 +20,7 @@
 struct SceneState
 {
 	cinder::params::InterfaceGl mParams;
-	cinder::TimelineRef	mTimeline;
-  cinder::ColorA mBlackoutColor;
-	cinder::Anim<float> mBlackoutAmount;
-	KinectWrapper* mKinect;        
+	KinectWrapper* mKinect;
 };
 
 class SceneLayer : public QTimelineModule

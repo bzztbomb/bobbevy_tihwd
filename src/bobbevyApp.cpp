@@ -20,7 +20,7 @@
 #include "bbIntroLight.h"
 #include "bbParticles.h"
 #include "bbParticleField.h"
-
+#include "BlackoutLayer.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -111,6 +111,9 @@ void bobbevyApp::setup()
   mTimeline->registerModule("Field", this,
                             &bobbevyApp::createModuleCallback,
                             &bobbevyApp::deleteModuleCallback);
+  mTimeline->registerModule("BlackoutLayer", this,
+                            &bobbevyApp::createModuleCallback,
+                            &bobbevyApp::deleteModuleCallback);
   
 	mSceneState.mParams = params::InterfaceGl("bobbevy", Vec2i(225, 200));
 	mSceneState.mParams.addParam("DebugDraw", &mDebugDraw, "keyIncr=d");
@@ -118,14 +121,10 @@ void bobbevyApp::setup()
 	mSceneState.mParams.addParam("ShowFPS", &mShowFPS);
 	mSceneState.mParams.addParam("FadeInNormal", &mFadeInNormal);
 	mSceneState.mParams.addParam("FadeInSlow", &mFadeInSlow);
-	
-	mSceneState.mTimeline = Timeline::create();
-	mSceneState.mTimeline->setDefaultAutoRemove(true);
-  
+	  
 	mDebugDraw = false;
 	mShowFPS = false;
 	mShowParams = false;
-  mSceneState.mBlackoutColor = ColorA(0.0f, 0.0f, 0.0f, 1.0f);
   
   mListener.setup(23232);
   publish_via_bonjour();
@@ -134,7 +133,6 @@ void bobbevyApp::setup()
 	
 	mSceneState.mKinect = &mKinect;
 	
-	mSceneState.mBlackoutAmount = 0.0f;
 	gl::Texture::Format hiQFormat;
 	hiQFormat.enableMipmapping();
 	hiQFormat.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
@@ -163,9 +161,6 @@ void bobbevyApp::keyDown( KeyEvent event )
         break;
       case KeyEvent::KEY_f:
         setFullScreen( !isFullScreen() );
-        break;
-      case KeyEvent::KEY_h:
-        mSceneState.mTimeline->clear();
         break;
       case KeyEvent::KEY_RETURN:
         mTimeline->playCue();
@@ -238,7 +233,6 @@ void bobbevyApp::update()
   {
     mAccumlator -= mDT;
     
-    mSceneState.mTimeline->step(0.05);
     mKinect.update();
     
     auto tracks = mTimeline->getTracks();
@@ -395,6 +389,12 @@ void bobbevyApp::createModuleCallback( QTimeline::CreateModuleCallbackArgs args 
     ParticleField* pf = new ParticleField();
     pf->setup(&mSceneState);
     mod = QTimelineModuleRef(pf);
+  }
+  if (args.type == "BlackoutLayer")
+  {
+    BlackoutLayer* bl = new BlackoutLayer();
+    bl->setup(&mSceneState);
+    mod = QTimelineModuleRef(bl);
   }
   
   if ( !mod )

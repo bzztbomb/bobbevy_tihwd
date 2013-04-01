@@ -1,7 +1,6 @@
 uniform sampler2D tex;
 uniform float farClip;
 uniform vec4 fogColor;
-uniform float fogHeight;
 
 varying vec4 viewSpacePos;
 

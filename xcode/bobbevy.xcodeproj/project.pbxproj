@@ -60,6 +60,7 @@
 		C8CE8EAE15B21C8B0076054E /* TreeVert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAC15B21C8B0076054E /* TreeVert.glsl */; };
 		C8CE8EB015B2257A0076054E /* groundTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAF15B2257A0076054E /* groundTexture.png */; };
 		C8D04B9815F9C4B100232A1C /* BonjourPublisher.mm in Sources */ = {isa = PBXBuildFile; fileRef = C8D04B9715F9C4B100232A1C /* BonjourPublisher.mm */; };
+		C8D8C80D1708F67800B8E4A5 /* blackoutLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8D8C80B1708F67800B8E4A5 /* blackoutLayer.cpp */; };
 		C8F3035215AD049A00993674 /* trees-with-leaves-aligned-scaled.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3035115AD049A00993674 /* trees-with-leaves-aligned-scaled.png */; };
 		C8F3E25515AD401F005A336F /* particles.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3E25415AD401F005A336F /* particles.png */; };
 		C8F3E25815AD48C0005A336F /* particle_brown.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3E25615AD48C0005A336F /* particle_brown.png */; };
@@ -364,6 +365,8 @@
 		C8CE8EAF15B2257A0076054E /* groundTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = groundTexture.png; path = ../resources/groundTexture.png; sourceTree = "<group>"; };
 		C8D04B9615F9C4B100232A1C /* BonjourPublisher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BonjourPublisher.h; path = ../src/BonjourPublisher.h; sourceTree = "<group>"; };
 		C8D04B9715F9C4B100232A1C /* BonjourPublisher.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BonjourPublisher.mm; path = ../src/BonjourPublisher.mm; sourceTree = "<group>"; };
+		C8D8C80B1708F67800B8E4A5 /* blackoutLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = blackoutLayer.cpp; path = ../src/blackoutLayer.cpp; sourceTree = "<group>"; };
+		C8D8C80C1708F67800B8E4A5 /* blackoutLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = blackoutLayer.h; path = ../src/blackoutLayer.h; sourceTree = "<group>"; };
 		C8F3035115AD049A00993674 /* trees-with-leaves-aligned-scaled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "trees-with-leaves-aligned-scaled.png"; path = "../resources/trees-with-leaves-aligned-scaled.png"; sourceTree = "<group>"; };
 		C8F3E25415AD401F005A336F /* particles.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = particles.png; path = ../resources/particles.png; sourceTree = "<group>"; };
 		C8F3E25615AD48C0005A336F /* particle_brown.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = particle_brown.png; path = ../resources/particle_brown.png; sourceTree = "<group>"; };
@@ -405,6 +408,8 @@
 				C811FBCD15A4F44800D036A6 /* bbParticleField.h */,
 				C8D04B9615F9C4B100232A1C /* BonjourPublisher.h */,
 				C8D04B9715F9C4B100232A1C /* BonjourPublisher.mm */,
+				C8D8C80B1708F67800B8E4A5 /* blackoutLayer.cpp */,
+				C8D8C80C1708F67800B8E4A5 /* blackoutLayer.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -1110,6 +1115,7 @@
 				C85BFCA616A686F200EFB14F /* QTimelineModuleItem.cpp in Sources */,
 				C85BFCA716A686F200EFB14F /* QTimelineParam.cpp in Sources */,
 				C85BFCA816A686F200EFB14F /* QTimelineTrack.cpp in Sources */,
+				C8D8C80D1708F67800B8E4A5 /* blackoutLayer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

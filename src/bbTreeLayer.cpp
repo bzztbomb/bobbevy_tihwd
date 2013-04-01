@@ -37,7 +37,6 @@ TreeLayer::TreeLayer() :
   mTreeSizeVariance(2.0f),
   mZoomToBlack(0.0f),
   mFogDistance(40.0f),
-  mFogHeight(200.0f),
   mZoomOffset(0.45f),
   mOldResetZ(false)
 {
@@ -51,16 +50,11 @@ void TreeLayer::setup(SceneState* manager)
   manager->mParams.addSeparator();
 	manager->mParams.addParam("UpdateTrees", &mUpdateTrees);
 	manager->mParams.addParam("Num Trees", &mNumTrees, "min=0.0 max=1000.0 step=5");
-	manager->mParams.addParam("TreePanSpeedX", &mTreePanSpeed.value().x, "min=-10.0 max=10.0 step=0.0005 keyIncr=x keyDecr=X");
-	manager->mParams.addParam("TreePanSpeedY", &mTreePanSpeed.value().y, "min=-10.0 max=10.0 step=0.0002 keyIncr=y keyDecr=Y");
-	manager->mParams.addParam("TreePanSpeedZ", &mTreePanSpeed.value().z, "min=-10.0 max=10.0 step=0.0005 keyIncr=z keyDecr=Z");
 	manager->mParams.addParam("TreeRadius", &mTreeRadius, "min=0.0 max=100 step=0.1");
 	manager->mParams.addParam("TreeSizeVariance", &mTreeSizeVariance, "min=0.0f max=4.0f step=0.1");
 	manager->mParams.addParam("GroundColor", &mGroundColor);
 	manager->mParams.addParam("SunColor", &mSunColor);
   manager->mParams.addParam("FogColor", &mFogColor.value());
-  manager->mParams.addParam("FogDistance", &mFogDistance.value(), "step=1.0");
-  manager->mParams.addParam("FogHeight", &mFogHeight.value());
   manager->mParams.addParam("ZoomOffset", &mZoomOffset, "step=0.1");
   
 	mTreeCam.lookAt(Vec3f(0,0,0), mTreeCam.getViewDirection(), -mTreeCam.getWorldUp());
@@ -112,20 +106,6 @@ void TreeLayer::tick()
 	if (mZoomToBlack > 0.0f)
 	{
     mTreePan.z = mZoomToBlack * zoomHackZ;
-//		mZoomTarget -= mTreePanSpeed;
-//    float dist = -2.0f;
-//		if (mZoomTarget.z > dist)
-//    {
-//			mZoomTarget.z = dist;
-//      mTreePanSpeed = Vec3f(0.0f, 0.0f, 0.0f);
-//      for (auto i : SkeletonParticles::smCurrentSwarms)
-//      {
-//        i->setEnabled(true);
-//        i->moveSwarm(false);
-//        i->setZValue(0.0f);
-//      }
-//      mManager->mTimeline->apply(&mFogDistance, 12.0f, 2.0f);
-//    }
 	}
 	
 	if (mUpdateTrees)
@@ -164,7 +144,6 @@ void TreeLayer::draw()
   mTreeShader.bind();
   mTreeShader.uniform("farClip", mFogDistance);
   mTreeShader.uniform("fogColor", ColorA(mFogColor));
-  mTreeShader.uniform("fogHeight", mFogHeight);
   
   texClip.bind();
   gl::drawBillboard(mTreePan + Vec3f(0.0f, 0.0f, -(mTreeCam.getFarClip()-1.0f)), Vec2f( mTreeCam.getFarClip()*10, mTreeCam.getFarClip()*10), 0, bbRight, bbUp);
@@ -234,18 +213,7 @@ void TreeLayer::draw()
   gl::disableDepthWrite();
   gl::setMatricesWindowPersp(renderArea.x2, renderArea.y2);
   gl::draw(texOverlay, renderArea);
-  gl::disableAlphaBlending();
-  
-  if (mManager->mBlackoutAmount > 0.0)
-	{
-    gl::enableAlphaBlending();
-    ColorA b = mManager->mBlackoutColor;
-    b.a = mManager->mBlackoutAmount;
-		gl::color( b );
-    gl::drawSolidRect(getWindowBounds());
-		gl::color( cinder::ColorA(1, 1, 1, 1) );
-    gl::disableAlphaBlending();
-	}
+  gl::disableAlphaBlending();  
 }
 
 void TreeLayer::initGroundMesh()
@@ -388,7 +356,6 @@ void TreeLayer::init()
   registerParam("panSpeed.y", &mTreePanSpeedTimeline.y, -1.0f, 1.0f);
   registerParam("panSpeed.z", &mTreePanSpeedTimeline.z, -10.0f, 1.0f);
   registerParam("fogDistance", &mFogDistance.value(), 0, 40);
-  registerParam("blackout", &mManager->mBlackoutAmount.value());
   registerParam("resetZ");
   registerParam("zoomToBlack");
 }

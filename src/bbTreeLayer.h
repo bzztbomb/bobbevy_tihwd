@@ -72,7 +72,6 @@ private:
   
   cinder::Anim<cinder::Color> mFogColor;
   cinder::Anim<float> mFogDistance;
-  cinder::Anim<float> mFogHeight;
   
 	void drawTrees();
 	void initGroundMesh();
