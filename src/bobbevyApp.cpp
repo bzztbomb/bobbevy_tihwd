@@ -87,7 +87,6 @@ void bobbevyApp::prepareSettings( Settings* settings )
 	settings->setFrameRate( 60 );
 	settings->setWindowSize( WIDTH, HEIGHT );
 	settings->setTitle( "bobbevy" );
-	settings->enableSecondaryDisplayBlanking(false);
 }
 
 extern void publish_via_bonjour();
@@ -160,7 +159,11 @@ void bobbevyApp::keyDown( KeyEvent event )
         mTimeline->save("/Users/bzztbomb/projects/bobbevy/timeline.xml");
         break;
       case KeyEvent::KEY_f:
-        setFullScreen( !isFullScreen() );
+        {
+          FullScreenOptions fo;
+          fo.secondaryDisplayBlanking(false);
+          setFullScreen( !isFullScreen(), fo );
+        }
         break;
       case KeyEvent::KEY_RETURN:
         mTimeline->playCue();

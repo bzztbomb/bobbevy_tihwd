@@ -14,9 +14,9 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Fbo.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Camera.h"
-#include "bbParticles.h"
 
 class TreeLayer : public SceneLayer
 {
@@ -67,6 +67,10 @@ private:
   
   cinder::gl::GlslProg mTreeShader;
 
+  cinder::gl::GlslProg mTreeShadow;
+  cinder::gl::Fbo mLightRays;
+  cinder::gl::GlslProg mRayShader;
+
   float mZoomOffset;
   bool mOldResetZ;
   
@@ -77,7 +81,8 @@ private:
 	void initGroundMesh();
 	void initTreeMesh();
 	void addTree(const cinder::Vec3f& treePos, const cinder::Vec2f& treeScale, const cinder::Vec2f& texOffset, bool flipX);
-  void allocFBO();
+  void renderLightRays();
+  void drawScene(const cinder::Area& renderArea, cinder::gl::GlslProg& shader);
 };
 
 

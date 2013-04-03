@@ -60,6 +60,10 @@
 		C8CE8EAE15B21C8B0076054E /* TreeVert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAC15B21C8B0076054E /* TreeVert.glsl */; };
 		C8CE8EB015B2257A0076054E /* groundTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAF15B2257A0076054E /* groundTexture.png */; };
 		C8D04B9815F9C4B100232A1C /* BonjourPublisher.mm in Sources */ = {isa = PBXBuildFile; fileRef = C8D04B9715F9C4B100232A1C /* BonjourPublisher.mm */; };
+		C8D1627A170A753C00D13B14 /* TreeBlack.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8D16279170A753C00D13B14 /* TreeBlack.glsl */; };
+		C8D1627D170A77D800D13B14 /* PassThruVert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8D1627B170A77D800D13B14 /* PassThruVert.glsl */; };
+		C8D1627E170A77D800D13B14 /* SunRayFrag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8D1627C170A77D800D13B14 /* SunRayFrag.glsl */; };
+		C8D16282170A7B1300D13B14 /* LiveAssetManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8D16280170A7B1300D13B14 /* LiveAssetManager.cpp */; };
 		C8D8C80D1708F67800B8E4A5 /* blackoutLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8D8C80B1708F67800B8E4A5 /* blackoutLayer.cpp */; };
 		C8F3035215AD049A00993674 /* trees-with-leaves-aligned-scaled.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3035115AD049A00993674 /* trees-with-leaves-aligned-scaled.png */; };
 		C8F3E25515AD401F005A336F /* particles.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3E25415AD401F005A336F /* particles.png */; };
@@ -365,6 +369,12 @@
 		C8CE8EAF15B2257A0076054E /* groundTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = groundTexture.png; path = ../resources/groundTexture.png; sourceTree = "<group>"; };
 		C8D04B9615F9C4B100232A1C /* BonjourPublisher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BonjourPublisher.h; path = ../src/BonjourPublisher.h; sourceTree = "<group>"; };
 		C8D04B9715F9C4B100232A1C /* BonjourPublisher.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BonjourPublisher.mm; path = ../src/BonjourPublisher.mm; sourceTree = "<group>"; };
+		C8D16279170A753C00D13B14 /* TreeBlack.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TreeBlack.glsl; path = ../resources/TreeBlack.glsl; sourceTree = "<group>"; };
+		C8D1627B170A77D800D13B14 /* PassThruVert.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PassThruVert.glsl; path = ../resources/PassThruVert.glsl; sourceTree = "<group>"; };
+		C8D1627C170A77D800D13B14 /* SunRayFrag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = SunRayFrag.glsl; path = ../resources/SunRayFrag.glsl; sourceTree = "<group>"; };
+		C8D1627F170A7B1300D13B14 /* fullscreen_pass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fullscreen_pass.h; path = ../src/fullscreen_pass.h; sourceTree = "<group>"; };
+		C8D16280170A7B1300D13B14 /* LiveAssetManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveAssetManager.cpp; path = ../src/LiveAssetManager.cpp; sourceTree = "<group>"; };
+		C8D16281170A7B1300D13B14 /* LiveAssetManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveAssetManager.h; path = ../src/LiveAssetManager.h; sourceTree = "<group>"; };
 		C8D8C80B1708F67800B8E4A5 /* blackoutLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = blackoutLayer.cpp; path = ../src/blackoutLayer.cpp; sourceTree = "<group>"; };
 		C8D8C80C1708F67800B8E4A5 /* blackoutLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = blackoutLayer.h; path = ../src/blackoutLayer.h; sourceTree = "<group>"; };
 		C8F3035115AD049A00993674 /* trees-with-leaves-aligned-scaled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "trees-with-leaves-aligned-scaled.png"; path = "../resources/trees-with-leaves-aligned-scaled.png"; sourceTree = "<group>"; };
@@ -399,6 +409,9 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				C8D1627F170A7B1300D13B14 /* fullscreen_pass.h */,
+				C8D16280170A7B1300D13B14 /* LiveAssetManager.cpp */,
+				C8D16281170A7B1300D13B14 /* LiveAssetManager.h */,
 				00BAE6590E7ED9C10018A608 /* bobbevyApp.cpp */,
 				C82C97A3159FB3A900AAEDE0 /* bbKinectWrapper.cpp */,
 				C82C98C5159FD14400AAEDE0 /* bbTreeLayer.cpp */,
@@ -478,6 +491,9 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C8D1627B170A77D800D13B14 /* PassThruVert.glsl */,
+				C8D1627C170A77D800D13B14 /* SunRayFrag.glsl */,
+				C8D16279170A753C00D13B14 /* TreeBlack.glsl */,
 				C8CE8EAF15B2257A0076054E /* groundTexture.png */,
 				C8CE8EAB15B21C8B0076054E /* TreeFrag.glsl */,
 				C8CE8EAC15B21C8B0076054E /* TreeVert.glsl */,
@@ -1079,6 +1095,9 @@
 				C8CE8EAD15B21C8B0076054E /* TreeFrag.glsl in Resources */,
 				C8CE8EAE15B21C8B0076054E /* TreeVert.glsl in Resources */,
 				C8CE8EB015B2257A0076054E /* groundTexture.png in Resources */,
+				C8D1627A170A753C00D13B14 /* TreeBlack.glsl in Resources */,
+				C8D1627D170A77D800D13B14 /* PassThruVert.glsl in Resources */,
+				C8D1627E170A77D800D13B14 /* SunRayFrag.glsl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1116,6 +1135,7 @@
 				C85BFCA716A686F200EFB14F /* QTimelineParam.cpp in Sources */,
 				C85BFCA816A686F200EFB14F /* QTimelineTrack.cpp in Sources */,
 				C8D8C80D1708F67800B8E4A5 /* blackoutLayer.cpp in Sources */,
+				C8D16282170A7B1300D13B14 /* LiveAssetManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

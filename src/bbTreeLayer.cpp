@@ -10,6 +10,8 @@
 #include "bbTreeLayer.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Rand.h"
+#include "fullscreen_pass.h"
+#include "LiveAssetManager.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -75,6 +77,20 @@ void TreeLayer::setup(SceneState* manager)
 	texBlack = gl::Texture(loadImage(loadResource("zoomToBlack.png")), hiQFormat);
   
   mTreeShader = gl::GlslProg(loadResource("TreeVert.glsl"), loadResource("TreeFrag.glsl"));
+  mTreeShadow = gl::GlslProg(loadResource("TreeVert.glsl"), loadResource("TreeBlack.glsl"));
+  
+//  mRayShader = gl::GlslProg(loadResource("PassThruVert.glsl"), loadResource("SunRayFrag.glsl"));
+  LiveAssetManager::load("PassThruVert.glsl", "SunRayFrag.glsl",
+                         [this](ci::DataSourceRef vert,ci::DataSourceRef frag)
+                         {
+                           mRayShader = gl::GlslProg(vert, frag);
+                         });
+
+
+  int width = getWindowWidth();
+  int height = getWindowHeight();
+  gl::Fbo::Format format;
+  mLightRays = gl::Fbo(width, height, format);
   
 	initGroundMesh();
 	initTreeMesh();
@@ -91,6 +107,8 @@ void TreeLayer::tick()
 	if (!mEnabled)
 		return;
 
+  renderLightRays();
+  
   if (mZoomToBlack == 0.0f)
 	{
     mTreePan += mTreePanSpeed;
@@ -121,11 +139,26 @@ void TreeLayer::draw()
 	if (!mEnabled)
 		return;
   
+  drawScene(getWindowBounds(), mTreeShader);
+  
+  gl::enableAdditiveBlending();
+  mRayShader.bind();
+  mRayShader.uniform("tex0", 0);
+  mRayShader.uniform("tex1", 1);
+  mRayShader.uniform("tex2", 2);
+  mRayShader.uniform("ssLightPos", Vec2f(0.5f, 0.5f));
+  shader::fullscreenQuadPass({{0, mLightRays}});
+  mRayShader.unbind();
+  gl::disableAlphaBlending();
+}
+
+void TreeLayer::drawScene(const cinder::Area& renderArea, cinder::gl::GlslProg& shader)
+{
+  
   // Set up draw states
   gl::disableDepthWrite();
   gl::disableDepthRead();
   gl::color( cinder::ColorA(1, 1, 1, 1) );
-  Area renderArea = getWindowBounds();
   gl::setMatricesWindowPersp(renderArea.x2, renderArea.y2);
   
   // Draw sun
@@ -141,23 +174,23 @@ void TreeLayer::draw()
   Vec3f bbRight, bbUp;
   mTreeCam.getBillboardVectors(&bbRight, &bbUp);
   
-  mTreeShader.bind();
-  mTreeShader.uniform("farClip", mFogDistance);
-  mTreeShader.uniform("fogColor", ColorA(mFogColor));
+  shader.bind();
+  shader.uniform("farClip", mFogDistance);
+  shader.uniform("fogColor", ColorA(mFogColor));
   
   texClip.bind();
   gl::drawBillboard(mTreePan + Vec3f(0.0f, 0.0f, -(mTreeCam.getFarClip()-1.0f)), Vec2f( mTreeCam.getFarClip()*10, mTreeCam.getFarClip()*10), 0, bbRight, bbUp);
   texClip.unbind();
   
   // Draw sun
-  mTreeShader.unbind();
+  shader.unbind();
   gl::enableAlphaBlending();
   texSun.enableAndBind();
   gl::color(mSunColor);
   gl::drawBillboard(mTreePan + Vec3f(0.0f, 0.0f, -(mTreeCam.getFarClip()-1.0f)), Vec2f( mTreeCam.getFarClip(), mTreeCam.getFarClip()), 0, bbRight, bbUp);
   gl::disableAlphaBlending();
   texSun.unbind();
-  mTreeShader.bind();
+  shader.bind();
   
   gl::enableDepthWrite();
   gl::enableDepthRead();
@@ -203,8 +236,7 @@ void TreeLayer::draw()
     texBlack.unbind();
   }
   
-  
-  mTreeShader.unbind();
+  shader.unbind();
   
   gl::disableAlphaTest();
   gl::enableAlphaBlending();
@@ -378,4 +410,23 @@ void TreeLayer::update()
   mZoomToBlack = getParamValue("zoomToBlack");
   if (mZoomToBlack == 0.0f)
     mTreePanSpeed = mTreePanSpeedTimeline;
+}
+
+void TreeLayer::renderLightRays()
+{
+  gl::SaveFramebufferBinding bindingSaver;
+  gl::pushMatrices();
+  Area savedVP = gl::getViewport();
+  
+  mLightRays.bindFramebuffer();
+  // clear out the window with black
+  gl::clear( Color( 0, 0, 0 ) );
+  
+  gl::setViewport(mLightRays.getBounds());
+  gl::setMatricesWindow(mLightRays.getBounds().getWidth(), mLightRays.getBounds().getHeight());
+  
+  drawScene(mLightRays.getBounds(), mTreeShadow);
+  
+  gl::popMatrices();
+  gl::setViewport(savedVP);
 }
