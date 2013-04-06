@@ -1,0 +1,40 @@
+Hardware
+
+List of items:
+*Extension cord
+*Power strip
+*Laptop + Power Cable + Thunderbolt to VGA + Thunderbolt to HDMI
+*Kinect + Kinect cables
+*iPad + iPad usb cable
+*Projector + power cable + HDMI cable
+
+Plug everything in. ;)  Everything should be powered, and the iPad and Kinect usb cables should be plugged into the laptop.  The laptop should be plugged into the projector.
+
+Network
+
+On the laptop: 
+*Disable the firewall
+*Create a network called "mutant" with a 40 bit WEP security and a password of BEEFBEEF23.
+*Start the bobbevy app (do not enter fullscreen until the setup is complete, also while making warnings, do not unplug the Kinect while the app is running)
+On the iPad:
+*Connect to the mutant network.  The password should already be saved.
+*Disable auto-lock so that the iPad will not sleep and lose the network connection.
+*Start the Control app
+*Click on "Destinations", select the bobbevy item (make sure it highlights)
+*Click on "Interfaces", select bobbevy
+*You should see the "Raw" screen.  Click on Toggle trees, the trees should appear in the app.
+
+Kinect Calibration
+On the laptop
+*Make sure the bobbevy app has focus 
+*Type "d" to toggle debug kinect rendering
+*Type "p" to display the dev menu
+*Scroll down the menu until you see "show contour" and turn that on, you should see a color web cam image.  Ideally, you want to make this see only the outline of the projector.  
+*After you've done this, click on "show contour" again and see if you see large blocks on white on the screen.  If so, move the kinect forward until you don't see them anymore.
+*Type "a" when no one is in the view of the Kinect to get a base version of the depth information.  (You can also click "Reset Depth" on the iPad control app in either the Raw or Interactive screens)
+*Type "p" to get rid of the dev menu
+*Type "d" to get rid of the kinect debug screen
+*If the trees are still visible, type "t" to toggle them off.
+
+On the iPad
+* Hit the "Start" button, this sets the fade.  You're ready to perform!  I often would hit "FadeInSlowNoMove" to be paranoid and test things, then hit "Start" again.

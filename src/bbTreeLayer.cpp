@@ -70,6 +70,9 @@ void TreeLayer::setup(SceneState* manager)
 	mWithLeaves = true;
 	texTree = gl::Texture(loadImage(loadResource ("trees.png")), hiQFormat);
 	texTreeWithLeaves = gl::Texture(loadImage(loadResource ("trees-with-leaves-aligned-scaled.png")), hiQFormat);
+	texTreeBlurred = gl::Texture(loadImage(loadResource ("trees-blurred.png")), hiQFormat);
+	texTreeWithLeavesBlurred = gl::Texture(loadImage(loadResource ("trees-with-leaves-aligned-blurred.png")), hiQFormat);
+
   texClip = gl::Texture(loadImage(loadResource("blackout.png")), hiQFormat);
 	texSun = gl::Texture(loadImage(loadResource("sun.png")), hiQFormat);
   texGround = gl::Texture(loadImage(loadResource("groundTexture.png")), hiQFormat);
@@ -77,13 +80,33 @@ void TreeLayer::setup(SceneState* manager)
 	texBlack = gl::Texture(loadImage(loadResource("zoomToBlack.png")), hiQFormat);
   
   mTreeShader = gl::GlslProg(loadResource("TreeVert.glsl"), loadResource("TreeFrag.glsl"));
+  LiveAssetManager::load("TreeVert.glsl", "TreeFrag.glsl",
+                         [this](ci::DataSourceRef vert,ci::DataSourceRef frag)
+                         {
+                           try
+                           {
+                             mTreeShader = gl::GlslProg(vert, frag);
+                           }
+                           catch (...)
+                           {
+                             
+                           }
+                         });
+  
   mTreeShadow = gl::GlslProg(loadResource("TreeVert.glsl"), loadResource("TreeBlack.glsl"));
   
-//  mRayShader = gl::GlslProg(loadResource("PassThruVert.glsl"), loadResource("SunRayFrag.glsl"));
+  mRayShader = gl::GlslProg(loadResource("PassThruVert.glsl"), loadResource("SunRayFrag.glsl"));
   LiveAssetManager::load("PassThruVert.glsl", "SunRayFrag.glsl",
                          [this](ci::DataSourceRef vert,ci::DataSourceRef frag)
                          {
-                           mRayShader = gl::GlslProg(vert, frag);
+                           try
+                           {
+                             mRayShader = gl::GlslProg(vert, frag);
+                           }
+                           catch (...)
+                           {
+                             
+                           }
                          });
 
 
@@ -177,6 +200,8 @@ void TreeLayer::drawScene(const cinder::Area& renderArea, cinder::gl::GlslProg& 
   shader.bind();
   shader.uniform("farClip", mFogDistance);
   shader.uniform("fogColor", ColorA(mFogColor));
+  shader.uniform("tex", 0);
+  shader.uniform("texBlurred", 1);
   
   texClip.bind();
   gl::drawBillboard(mTreePan + Vec3f(0.0f, 0.0f, -(mTreeCam.getFarClip()-1.0f)), Vec2f( mTreeCam.getFarClip()*10, mTreeCam.getFarClip()*10), 0, bbRight, bbUp);
@@ -207,9 +232,13 @@ void TreeLayer::drawScene(const cinder::Area& renderArea, cinder::gl::GlslProg& 
   gl::color(Color::white());
   // Enable our tree texture
   if (!mWithLeaves)
+  {
     texTree.enableAndBind();
-  else
+    texTreeBlurred.bind(1);
+  } else {
     texTreeWithLeaves.enableAndBind();
+    texTreeWithLeavesBlurred.bind(1);
+  }
   
   glTranslatef(0, 0, -travelBounds.z);
   gl::draw(mTreeMesh);
@@ -217,9 +246,13 @@ void TreeLayer::drawScene(const cinder::Area& renderArea, cinder::gl::GlslProg& 
   gl::draw(mTreeMesh);
   
   if (!mWithLeaves)
+  {
     texTree.unbind();
-  else
+    texTreeBlurred.unbind();
+  } else {
     texTreeWithLeaves.unbind();
+    texTreeWithLeavesBlurred.unbind();
+  }
   
   if (mZoomToBlack > 0.0f)
   {

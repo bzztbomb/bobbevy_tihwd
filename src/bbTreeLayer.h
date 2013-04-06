@@ -44,6 +44,9 @@ private:
   cinder::gl::Texture texClip;
 	cinder::gl::Texture texTree;
 	cinder::gl::Texture texTreeWithLeaves;
+	cinder::gl::Texture texTreeBlurred;
+	cinder::gl::Texture texTreeWithLeavesBlurred;
+
 	cinder::gl::Texture texOverlay;
 	bool mTreesEnabled;
   bool mWithLeaves;

@@ -51,7 +51,7 @@ void LiveAssetPair::notify()
 {
     mCallback( ci::app::loadAsset( mRelativePath.first ), ci::app::loadAsset( mRelativePath.second ) );
 }
-
+  
 
 void LiveAssetManager::load( const ci::fs::path &relativePath, std::function<void(ci::DataSourceRef)> callback )
 {
