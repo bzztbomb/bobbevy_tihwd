@@ -361,7 +361,7 @@ void bobbevyApp::draw()
 		gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
 		gl::disableDepthWrite();
 		gl::disableDepthRead();
-		params::InterfaceGl::draw();
+//		params::InterfaceGl::draw();
     
 	} else {
 		// hideCursor();

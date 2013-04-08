@@ -257,6 +257,7 @@ void TreeLayer::drawScene(const cinder::Area& renderArea, cinder::gl::GlslProg& 
   if (mZoomToBlack > 0.0f)
   {
     texBlack.enableAndBind();
+    texBlack.bind(1);
     Vec3f bbRight, bbUp;
     mTreeCam.getBillboardVectors(&bbRight, &bbUp);
     Vec2f scale = Vec2f(1070.0f / 2311.0f, 1.0f);
