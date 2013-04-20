@@ -56,6 +56,7 @@
 		C85BFCA716A686F200EFB14F /* QTimelineParam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85BFC9A16A686F200EFB14F /* QTimelineParam.cpp */; };
 		C85BFCA816A686F200EFB14F /* QTimelineTrack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85BFC9C16A686F200EFB14F /* QTimelineTrack.cpp */; };
 		C85BFCB416A7C9D200EFB14F /* libbass.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = C85BFC8716A686F200EFB14F /* libbass.dylib */; };
+		C85D81C5172206B900BB1CF9 /* bbLines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C85D81C3172206B900BB1CF9 /* bbLines.cpp */; };
 		C8CE8EAD15B21C8B0076054E /* TreeFrag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAB15B21C8B0076054E /* TreeFrag.glsl */; };
 		C8CE8EAE15B21C8B0076054E /* TreeVert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAC15B21C8B0076054E /* TreeVert.glsl */; };
 		C8CE8EB015B2257A0076054E /* groundTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EAF15B2257A0076054E /* groundTexture.png */; };
@@ -366,6 +367,8 @@
 		C85BFC9D16A686F200EFB14F /* QTimelineTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineTrack.h; sourceTree = "<group>"; };
 		C85BFC9E16A686F200EFB14F /* QTimelineWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineWidget.h; sourceTree = "<group>"; };
 		C85BFC9F16A686F200EFB14F /* QTimelineWidgetWithHandles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTimelineWidgetWithHandles.h; sourceTree = "<group>"; };
+		C85D81C3172206B900BB1CF9 /* bbLines.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bbLines.cpp; path = ../src/bbLines.cpp; sourceTree = "<group>"; };
+		C85D81C4172206B900BB1CF9 /* bbLines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bbLines.h; path = ../src/bbLines.h; sourceTree = "<group>"; };
 		C8CE8EAB15B21C8B0076054E /* TreeFrag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TreeFrag.glsl; path = ../resources/TreeFrag.glsl; sourceTree = "<group>"; };
 		C8CE8EAC15B21C8B0076054E /* TreeVert.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TreeVert.glsl; path = ../resources/TreeVert.glsl; sourceTree = "<group>"; };
 		C8CE8EAF15B2257A0076054E /* groundTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = groundTexture.png; path = ../resources/groundTexture.png; sourceTree = "<group>"; };
@@ -427,6 +430,8 @@
 				C8D04B9715F9C4B100232A1C /* BonjourPublisher.mm */,
 				C8D8C80B1708F67800B8E4A5 /* blackoutLayer.cpp */,
 				C8D8C80C1708F67800B8E4A5 /* blackoutLayer.h */,
+				C85D81C3172206B900BB1CF9 /* bbLines.cpp */,
+				C85D81C4172206B900BB1CF9 /* bbLines.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -1144,6 +1149,7 @@
 				C85BFCA816A686F200EFB14F /* QTimelineTrack.cpp in Sources */,
 				C8D8C80D1708F67800B8E4A5 /* blackoutLayer.cpp in Sources */,
 				C8D16282170A7B1300D13B14 /* LiveAssetManager.cpp in Sources */,
+				C85D81C5172206B900BB1CF9 /* bbLines.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

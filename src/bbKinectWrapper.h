@@ -29,6 +29,8 @@ struct Blob {
 	cinder::Vec3f mRightMost;
 	cinder::Vec3f mTopMost;
 	cinder::Vec3f mBottomMost;
+  
+  
 };
 
 #define NUM_FAKE_BLOB_PTS 4

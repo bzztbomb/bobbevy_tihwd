@@ -21,6 +21,7 @@
 #include "bbParticles.h"
 #include "bbParticleField.h"
 #include "BlackoutLayer.h"
+#include "bbLines.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -130,6 +131,9 @@ void bobbevyApp::setup()
   mTimeline->registerModule("BlackoutLayer", this,
                             &bobbevyApp::createModuleCallback,
                             &bobbevyApp::deleteModuleCallback);
+  mTimeline->registerModule("LineLayer", this,
+                            &bobbevyApp::createModuleCallback,
+                            &bobbevyApp::deleteModuleCallback);
   
 	mSceneState.mParams = params::InterfaceGl("bobbevy", Vec2i(225, 200));
 	mSceneState.mParams.addParam("DebugDraw", &mDebugDraw, "keyIncr=d");
@@ -164,6 +168,8 @@ void bobbevyApp::setup()
 
 void bobbevyApp::keyDown( KeyEvent event )
 {
+  WindowData *wd = getWindow()->getUserData<WindowData>();
+
   float zoomInc = 0.25f;
   if (event.isMetaDown())
   {
@@ -204,13 +210,11 @@ void bobbevyApp::keyDown( KeyEvent event )
 			break;
     case KeyEvent::KEY_F1:
       {
-        WindowData* wd = getWindowIndex(0)->getUserData<WindowData>();
         wd->mDisplayTimeline = !wd->mDisplayTimeline;
       };
       break;
     case KeyEvent::KEY_F2:
       {
-        WindowData* wd = getWindowIndex(0)->getUserData<WindowData>();
         wd->mDisplayScene = !wd->mDisplayScene;
       };
       break;
@@ -415,6 +419,12 @@ void bobbevyApp::createModuleCallback( QTimeline::CreateModuleCallbackArgs args 
     BlackoutLayer* bl = new BlackoutLayer();
     bl->setup(&mSceneState);
     mod = QTimelineModuleRef(bl);
+  }
+  if (args.type == "LineLayer")
+  {
+    LineLayer* ll = new LineLayer();
+    ll->setup(&mSceneState);
+    mod = QTimelineModuleRef(ll);
   }
   
   if ( !mod )
