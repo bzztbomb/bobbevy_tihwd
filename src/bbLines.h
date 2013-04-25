@@ -30,6 +30,10 @@ private:
   SceneState* mSceneState;
   cinder::Vec2f mPos[2];
   float mFilterAmount;
+  float mTimeMult;
+  float mRays;
+  float mPeriodDivider;
+  float mInnerRadius;
 };
 
 

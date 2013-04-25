@@ -17,7 +17,11 @@ using namespace gl;
 
 LineLayer::LineLayer() :
   SceneLayer("LineLayer"),
-  mFilterAmount(0.25f)
+  mFilterAmount(0.25f),
+  mTimeMult(0.33f),
+  mRays(64.0f),
+  mPeriodDivider(1.3f),
+  mInnerRadius(0.004f)
 {
   
 }
@@ -29,6 +33,10 @@ void LineLayer::init()
   SceneLayer::init();
 
   registerParam("filterAmount", &mFilterAmount, 0.0, 1.0f);
+  registerParam("timeMult", &mTimeMult, 0.0, 2.0f);
+  registerParam("Rays", &mRays, 1.0f, 200.0f);
+  registerParam("PeriodDivider", &mPeriodDivider, 1.0f, 4.0f);
+  registerParam("InnerRadius", &mInnerRadius, 0.0, 0.75f);
 }
 
 // SceneLayer
@@ -83,8 +91,13 @@ void LineLayer::draw()
   Vec2i ws = app::getWindowSize();
   mShader.uniform("iResolution", Vec3f(ws.x, ws.y, 1));
   mShader.uniform("iGlobalTime", (float) getElapsedSeconds());
-  
   mShader.uniform("iMouse", Vec4f(mPos[0].x, mPos[0].y, mPos[1].x, mPos[1].y));
+  mShader.uniform("iTimeMult", mTimeMult);
+  mShader.uniform("iRays", mRays);
+  float period = (M_PI * 2.0f) / (mRays / 2.0f);
+  mShader.uniform("iPeriod", period);
+  mShader.uniform("iHalf_period", period / mPeriodDivider);
+  mShader.uniform("iInner_radius", mInnerRadius);
   
   gl::pushMatrices();
   gl::setMatricesWindow(app::getWindowSize(), false); //false: vertical flip

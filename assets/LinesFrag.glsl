@@ -1,11 +1,13 @@
 uniform vec3 iResolution;
 uniform vec4 iMouse;
 uniform float iGlobalTime;
+uniform float iTimeMult;
+uniform float iRays;
+uniform float iPeriod;
+uniform float iHalf_period;
+uniform float iInner_radius;
 
-const float rays = 64.0;
-const float period = 6.28 / (rays / 2.0);
-const float half_period = period / 1.3;
-const float inner_radius = 0.004;
+//#define GRAY_SCALE
 	
 float fmod(float numerator, float denominator)
 {
@@ -19,11 +21,14 @@ float on(vec2 origin_pt, vec2 test_pt, float m)
 	
  	float a = atan(test_pt.y,test_pt.x);
     float r = sqrt(dot(test_pt,test_pt));
-	a += 0.61 * sin(r+(iGlobalTime*0.5)+m);
-	a = fmod(a, period); // / period;		
-	a = a > half_period ? 0.0 : 1.0;
-	
-	return r < inner_radius ? 0.0 : a;
+	a += 0.61 * sin(r+(iGlobalTime*iTimeMult)+m);
+#ifndef GRAY_SCALE	
+	a = fmod(a, iPeriod); // / iPeriod;		
+	a = a > iHalf_period ? 0.0 : 1.0;
+#else	
+	a = fmod(a, iPeriod) / iPeriod;		
+#endif	
+	return r < iInner_radius ? 0.0 : a;
 }
 
 void main(void)
