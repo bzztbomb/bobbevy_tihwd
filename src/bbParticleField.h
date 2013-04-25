@@ -40,6 +40,7 @@ private:
   std::vector<cinder::Vec3f> mParticleGoal;
   cinder::Color mColor;
   cinder::Rand mRand;
+  cinder::Vec2f mCoordSpace;
   
   cinder::gl::Texture texBrown;
   cinder::gl::Texture texYellow;

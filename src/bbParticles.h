@@ -76,11 +76,12 @@ private:
   cinder::Vec3f mDropAccel;
   
   cinder::Color mColor;
-  
+
+  cinder::Vec2f mCoordSpace;
   float mZValue;
   cinder::Vec2f mParticleSize;
   bool mMoveSwarm;
-	
+	  
 	void updateSwarm();
   void updateDrop();
 	void updateHose();

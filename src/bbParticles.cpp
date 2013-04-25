@@ -46,7 +46,8 @@ SkeletonParticles::SkeletonParticles(const std::string& moduleName) :
   mBounds(100,100,600,600),
   mZValue(0.0f),
   mParticleSize(16.0f, 16.0f),
-  mMoveSwarm(true)
+  mMoveSwarm(true),
+  mCoordSpace(800.0f, 600.0f)
 {
   smCurrentSwarms.insert(this);
 	Vec3f zero(0.0f, 0.0f, 0.0f);
@@ -126,11 +127,11 @@ void SkeletonParticles::resetParticle(int index)
 	float radius = 200.0f;
 	mParticlePos[index] = randVec3f() * radius;
 	if (mSwarm)
-		mParticlePos[index] += Vec3f(getWindowWidth() + radius*2, getWindowHeight() + radius*2, 0.0f);
+		mParticlePos[index] += Vec3f(mCoordSpace.x + radius*2, mCoordSpace.y + radius*2, 0.0f);
 	else
 	{
 		mParticlePos[index].x = mTargetPoint.x;
-		mParticlePos[index].y = getWindowHeight()-1;
+		mParticlePos[index].y = mCoordSpace.y-1;
 	}
 	mParticleVel[index] = zero;
 	mReachedTarget[index] = false;
@@ -171,7 +172,7 @@ void SkeletonParticles::updateDrop()
 		mParticleVel[i] += mDropAccel;
 		mParticlePos[i] += mParticleVel[i];
     mParticleVel[i] *= mDrag;
-    particleIn |= (mParticlePos[i].y < getWindowHeight());
+    particleIn |= (mParticlePos[i].y < mCoordSpace.y);
 	}
   if (!particleIn)
     setEnabled(false);
@@ -211,6 +212,9 @@ void SkeletonParticles::draw()
   Vec3f bbUp(0.0f, -1.0f, 0.0f);
   Vec3f bbRight(-1.0f, 0.0f, 0.0f);
   
+  Vec2f scaleFactor2f = ((Vec2f)getWindowSize()) / mCoordSpace;
+  Vec3f scaleFactor3f(scaleFactor2f.x, scaleFactor2f.y, 1.0);
+  
   Rand r;
   for (int i = 0; i < 2; i++)
   {
@@ -232,6 +236,7 @@ void SkeletonParticles::draw()
       velNorm *= -1.0f;
       Vec2f polar = toPolar(velNorm);
       Vec3f drawPos(mParticlePos[i].x, mParticlePos[i].y, mZValue);
+      drawPos *= scaleFactor3f;
       gl::drawBillboard(drawPos,
                         mParticleSize, toDegrees(polar.y), bbRight, bbUp);
     }
@@ -470,8 +475,8 @@ void SkeletonParticles::moveSwarm(bool move)
   mMoveSwarm = move;
   if (!mMoveSwarm)
   {
-    float offset = (mUserToken == KinectWrapper::utClosest) ? (getWindowWidth() / 7.5f) : -(getWindowWidth() / 6.0f);
-    Vec3f center((getWindowWidth() / 2.0f) + offset, getWindowHeight() / 2.0f, 0.0f);
+    float offset = (mUserToken == KinectWrapper::utClosest) ? (mCoordSpace.x / 7.5f) : -(mCoordSpace.x / 6.0f);
+    Vec3f center((mCoordSpace.x / 2.0f) + offset, mCoordSpace.y / 2.0f, 0.0f);
     for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
     {
       mParticlePos[i].x = initial_positions[i][0];
@@ -481,8 +486,8 @@ void SkeletonParticles::moveSwarm(bool move)
         mParticleVel[i] = Vec3f(1.0f, 0.0f, 0.0f);
       else
         mParticleVel[i] = Vec3f(-1.0f, 0.0f, 0.0f);
-      mParticlePos[i].x *= getWindowWidth();
-      mParticlePos[i].y *= getWindowHeight();
+      mParticlePos[i].x *= mCoordSpace.x;
+      mParticlePos[i].y *= mCoordSpace.y;
       mParticlePos[i] += center;
     }
     mParticleSize = Vec2f(12.0f, 12.0f);
@@ -510,15 +515,15 @@ void SkeletonParticles::mouseDown(cinder::app::MouseEvent event)
 
 void SkeletonParticles::updateWaiting()
 {
-  float offset = (mUserToken == KinectWrapper::utClosest) ? (getWindowWidth() / 7.5f) : -(getWindowWidth() / 6.0f);
-  Vec3f center((getWindowWidth() / 2.0f) + offset, getWindowHeight() / 2.0f, 0.0f);
+  float offset = (mUserToken == KinectWrapper::utClosest) ? (mCoordSpace.x / 7.5f) : -(mCoordSpace.x / 6.0f);
+  Vec3f center((mCoordSpace.x / 2.0f) + offset, mCoordSpace.y / 2.0f, 0.0f);
   
  	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
 	{
 		mParticlePos[i] += mParticleVel[i];
     Vec3f targetPos = Vec3f(initial_positions[i][0], initial_positions[i][1], 0.0f);
-    targetPos.x *= getWindowWidth();
-    targetPos.y *= getWindowHeight();
+    targetPos.x *= mCoordSpace.x;
+    targetPos.y *= mCoordSpace.y;
     targetPos += center;
     Vec3f diff = targetPos - mParticlePos[i];
     mParticleVel[i] += dumbRand() * 1.0f;

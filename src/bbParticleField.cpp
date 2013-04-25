@@ -25,7 +25,8 @@ ParticleField::ParticleField() :
   mTargetThreshold(10.0f),
   mTargetDecay(0.3f),
   mDropping(false),
-  mDropAccel(0.0f, 1.5f, 0.0f)
+  mDropAccel(0.0f, 1.5f, 0.0f),
+  mCoordSpace(640.0f, 480.0f)
 {
 }
 
@@ -53,7 +54,7 @@ void ParticleField::setup(SceneState* manager)
 
 Vec3f ParticleField::randScreenVec()
 {
-  Vec3f res(mRand.nextFloat() * getWindowWidth(), mRand.nextFloat() * getWindowHeight(), 0.0f);
+  Vec3f res(mRand.nextFloat() * mCoordSpace.x, mRand.nextFloat() * mCoordSpace.y, 0.0f);
   return res;
 }
 
@@ -66,8 +67,7 @@ void ParticleField::initField()
   Vec3f zero(0.0f, 0.0f, 0.0f);
   for (int i = 0; i < mNumParticles; i++)
   {
-    //        mParticlePos.push_back(randScreenVec());
-    mParticlePos.push_back(Vec3f(mRand.nextFloat() * getWindowWidth(), 0.0f, 0.0f));
+    mParticlePos.push_back(Vec3f(mRand.nextFloat() * mCoordSpace.x, 0.0f, 0.0f));
     mParticleGoal.push_back(randScreenVec());
     mParticleVel.push_back(zero);
   }
@@ -111,8 +111,8 @@ void ParticleField::tick()
   cv::Mat* contour = mSceneState->mKinect->getContourMat();
   
   // BTRTODO: FIX THIS COORDINATE HACK!
-  float xs = (float) getWindowWidth() / 640.0f;
-  float ys = (float) getWindowHeight() / 480.0f;
+  float xs = 1.0f; 
+  float ys = 1.0f; 
   
 	for (int i = 0; i < mParticlePos.size(); i++)
 	{
@@ -156,8 +156,8 @@ void ParticleField::tick()
   for (int i = 0; i < mParticlePos.size(); i++)
 	{
     mParticlePos[i] += mParticleVel[i];
-    if ((mParticlePos[i].x > getWindowWidth() || mParticlePos[i].x < 0) ||
-        mParticlePos[i].y > getWindowHeight() || mParticlePos[i].y < 0)
+    if ((mParticlePos[i].x > mCoordSpace.x || mParticlePos[i].x < 0) ||
+        mParticlePos[i].y > mCoordSpace.y || mParticlePos[i].y < 0)
     {
       mParticlePos[i] = randScreenVec();
       mParticleGoal[i] = randScreenVec();
@@ -181,7 +181,7 @@ void ParticleField::updateDrop()
 		mParticleVel[i] += mDropAccel;
 		mParticlePos[i] += mParticleVel[i];
     mParticleVel[i] *= mGlobalDecay;
-    particleIn |= (mParticlePos[i].y < getWindowHeight());
+    particleIn |= (mParticlePos[i].y < mCoordSpace.y);
 	}
 }
 
@@ -191,6 +191,8 @@ void ParticleField::draw()
 		return;
 	gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
 	gl::enableAlphaBlending();
+  
+  Vec3f scaleFactor(getWindowWidth() / mCoordSpace.x, getWindowHeight() / mCoordSpace.y, 1.0f);
     
   Vec3f bbUp(0.0f, -1.0f, 0.0f);
   Vec3f bbRight(-1.0f, 0.0f, 0.0f);
@@ -214,7 +216,7 @@ void ParticleField::draw()
       velNorm.normalize();
       velNorm *= -1.0f;
       Vec2f polar = toPolar(velNorm);
-      gl::drawBillboard(mParticlePos[i], Vec2f(16.0f, 16.0f), toDegrees(polar.y), bbRight, bbUp);
+      gl::drawBillboard(mParticlePos[i] * scaleFactor, Vec2f(16.0f, 16.0f), toDegrees(polar.y), bbRight, bbUp);
     }
     if (i==0)
       texBrown.unbind();
