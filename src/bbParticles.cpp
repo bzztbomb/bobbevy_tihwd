@@ -47,7 +47,7 @@ SkeletonParticles::SkeletonParticles(const std::string& moduleName) :
   mZValue(0.0f),
   mParticleSize(16.0f, 16.0f),
   mMoveSwarm(true),
-  mCoordSpace(800.0f, 600.0f)
+  mCoordSpace(640.0, 480.0)
 {
   smCurrentSwarms.insert(this);
 	Vec3f zero(0.0f, 0.0f, 0.0f);

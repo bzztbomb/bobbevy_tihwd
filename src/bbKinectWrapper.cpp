@@ -311,9 +311,6 @@ void KinectWrapper::findBlobs()
     }
   }
   
-  float xs = (float) getWindowWidth() / 640.0f;
-  float ys = (float) getWindowHeight() / 480.0f;
-	
 	for (BlobVector::iterator i = mBlobs.begin(); i != mBlobs.end(); i++)
 	{
 		i->mCentroid.x = i->mCentroid.y = 0.0f;
@@ -328,7 +325,7 @@ void KinectWrapper::findBlobs()
 		{
 			i->mCentroid.x += pt->x;
 			i->mCentroid.y += pt->y;
-      i->mBounds.include(Vec2f(pt->x * xs, pt->y * ys));
+      i->mBounds.include(Vec2f(pt->x, pt->y));
 			if (i->mLeftMost.x > pt->x)
 			{
 				i->mLeftMost.x = pt->x;
@@ -438,7 +435,13 @@ void KinectWrapper::draw()
 			}
 			glEnd();
 			gl::drawSolidCircle(i->mCentroid, 10);
-      gl::drawStrokedRect(i->mBounds);
+      // TODO: FIX ME
+      Rectf scaledBounds(i->mBounds);
+      scaledBounds.x1 *= xs;
+      scaledBounds.y1 *= ys;
+      scaledBounds.x2 *= xs;
+      scaledBounds.y2 *= ys;
+      gl::drawStrokedRect(scaledBounds);
 			c++;
 		}
 	}

@@ -91,7 +91,12 @@ void LineLayer::draw()
   Vec2i ws = app::getWindowSize();
   mShader.uniform("iResolution", Vec3f(ws.x, ws.y, 1));
   mShader.uniform("iGlobalTime", (float) getElapsedSeconds());
-  mShader.uniform("iMouse", Vec4f(mPos[0].x, mPos[0].y, mPos[1].x, mPos[1].y));
+  
+  float xs = getWindowWidth() / 640.0f; // need a KinectCoord space constant
+  float ys = getWindowHeight() / 480.0f; // BTRTODO: ditto
+  
+  mShader.uniform("iMouse", Vec4f(mPos[0].x * xs, mPos[0].y * ys,
+                                  mPos[1].x * xs, mPos[1].y * ys));
   mShader.uniform("iTimeMult", mTimeMult);
   mShader.uniform("iRays", mRays);
   float period = (M_PI * 2.0f) / (mRays / 2.0f);
