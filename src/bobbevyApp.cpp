@@ -200,6 +200,9 @@ void bobbevyApp::keyDown( KeyEvent event )
       case KeyEvent::KEY_KP_MINUS:
         mTimeline->setZoom(mTimeline->getZoom() - zoomInc);
         break;
+      case KeyEvent::KEY_p:
+        mShowParams = !mShowParams;
+        break;
     }
   }
 	switch( event.getCode() )
@@ -365,6 +368,7 @@ void bobbevyApp::draw()
 		gl::setMatricesWindowPersp( getWindowWidth(), getWindowHeight());
 		gl::disableDepthWrite();
 		gl::disableDepthRead();
+    mSceneState.mParams.draw();
 //		params::InterfaceGl::draw();
     
 	} else {
