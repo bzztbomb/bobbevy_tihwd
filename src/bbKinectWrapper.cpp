@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <boost/filesystem.hpp>
 #include "cinder/qtime/MovieWriter.h"
+#include "cinder/ImageIo.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -87,9 +88,9 @@ void KinectWrapper::enableRecordIfNeeded()
     mColorWriter.finish();
   } else {
     // We should start recording
-    // Figure out asset paths
     fs::path depth_path;
     fs::path color_path;
+    fs::path bg_path;
     for (int i = 0; ; i++)
     {
       char buffer[32];
@@ -97,13 +98,18 @@ void KinectWrapper::enableRecordIfNeeded()
       depth_path = getAppPath() / buffer;
       sprintf(buffer, "../%.10d_color.mov", i);
       color_path = getAppPath() / buffer;
+      sprintf(buffer, "../%.10d_background.png", i);
+      bg_path = getAppPath() / buffer;
       if ((!boost::filesystem::exists(depth_path)) &&
-          (!boost::filesystem::exists(color_path)))
+          (!boost::filesystem::exists(color_path)) &&
+          (!boost::filesystem::exists(bg_path)))
         break;
     }
     qtime::MovieWriter::Format format('raw ', 1.0);
     mDepthWriter = qtime::MovieWriter(depth_path, 640, 480, format);
     mColorWriter = qtime::MovieWriter(color_path, 640, 480, format);
+    Surface8u init(fromOcv(mInitial));
+    cinder::writeImage(bg_path, init);
   }
   mRecord = mRecordRequested;
 }
@@ -435,7 +441,6 @@ void KinectWrapper::draw()
 			}
 			glEnd();
 			gl::drawSolidCircle(i->mCentroid, 10);
-      // TODO: FIX ME
       Rectf scaledBounds(i->mBounds);
       scaledBounds.x1 *= xs;
       scaledBounds.y1 *= ys;
