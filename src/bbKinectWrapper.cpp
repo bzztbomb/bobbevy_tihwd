@@ -21,9 +21,12 @@ using namespace std;
 int KinectWrapper::smMAX_BLOBS = 3;
 
 KinectWrapper::KinectWrapper() :
-mFakeSurface(640, 480, false, SurfaceChannelOrder::RGB),
-mRecordRequested(false),
-mRecord(false)
+  mFakeSurface(640, 480, false, SurfaceChannelOrder::RGB),
+  mRecordRequested(false),
+  mRecord(false),
+  mLastGray(480, 640, CV_32F),
+  mInitInitial(0),
+  mInitFrames(30) // TODO: PARAM ME
 {
   
 }
@@ -49,17 +52,7 @@ void KinectWrapper::setup(params::InterfaceGl& params)
   mEnableIR = false;
   mLowPass = 255;
   mDilate = false;
-  mLastBGMethod = mBGMethod = bgmSubtract;
-  mBgFg = NULL;
-  
-	params.addSeparator("CV Params");
-  std::vector<std::string> enumNames;
-  enumNames.push_back("bgmSubtract");
-  enumNames.push_back("bgmAbsDiff");
-  enumNames.push_back("bgmFGD");
-  enumNames.push_back("bgmMOG");
-  
-  params.addParam( "BG removal method", enumNames, &mBGMethod);
+
 	params.addParam( "Step from", &mStepFrom, "min=1 max=255" );
 	params.addParam( "Threshold Step Size", &mStepSize, "min=1 max=255" );
   params.addParam( "LowPass filter", &mLowPass, "min=0 max=255");
@@ -121,7 +114,7 @@ void KinectWrapper::keyDown( KeyEvent event )
   
 	switch( event.getCode() ){
 		case KeyEvent::KEY_a:
-			mInitInitial = true;
+      mInitInitial = 0;
 			break;
     case KeyEvent::KEY_7:
       mKinectEnabled = false;
@@ -142,17 +135,6 @@ void KinectWrapper::update()
   
   enableRecordIfNeeded();
   
-  if (mLastBGMethod != mBGMethod)
-  {
-    mLastBGMethod = mBGMethod;
-    mInitInitial = true;
-    if (mBgFg != NULL)
-    {
-      //            cvReleaseBGStatModel(&mBgFg);
-      mBgFg = NULL;
-    }
-  }
-	
   if ((mKinectEnabled) && (mEnableIR != mKinect.isVideoInfrared()))
     mKinect.setVideoInfrared(mEnableIR);
   
@@ -235,59 +217,27 @@ void KinectWrapper::findBlobs()
 	cv::Mat gray;
 	cv::Mat thresh;
 	
-  if ((mBGMethod == bgmSubtract || mBGMethod == bgmAbsDiff))
+  cv::cvtColor( input, gray, CV_RGB2GRAY );
+  
+  // TODO: PARAM 240
+  cv::threshold(gray, gray, 240, 0, CV_THRESH_TOZERO_INV);
+  
+  if (mInitInitial < mInitFrames)
   {
-    cv::cvtColor( input, gray, CV_RGB2GRAY );
-    if (mDilate)
-      cv::dilate(gray, gray, cv::Mat());
-    if (mBlurAmount > 3)
-      cv::blur( gray, gray, cv::Size( mBlurAmount, mBlurAmount ) );
-    else
-      cv::medianBlur(gray, gray, (mBlurAmount%2==0)?mBlurAmount+1:mBlurAmount);
-    
-    if (mInitInitial)
-    {
+    if (mInitFrames == 0)
       mInitial = gray.clone();
-      mInitInitial = false;
-    }
-    if (mBGMethod == bgmAbsDiff)
-    {
-      gray -= mInitial;
-      gray = cv::abs(gray);
-    } else {
-      gray -= mInitial;
-//      mColorTexture = fromOcv(gray);
-    }
-    cv::threshold( gray, thresh, mStepFrom, 255, CV_THRESH_BINARY );
-  } else {
-#if 0
-    if (mBGMethod == bgmMOG)
-    {
-      cv::cvtColor( input, gray, CV_RGB2GRAY );
-    } else {
-      cv::resize(input, gray, cv::Size(320, 200));
-    }
-    //        IplImage i(gray);
-    if (mInitInitial || mBgFg == NULL)
-    {
-      //            if (mBGMethod == bgmFGD)
-      //                mBgFg = cvCreateFGDStatModel(&i);
-      //            else
-      //                mBgFg = cvCreateGaussianBGModel(&i);
-      mInitInitial = false;
-    }
-    //        cvUpdateBGStatModel(&i, mBgFg);
-    if (mBGMethod == bgmMOG)
-    {
-      //            thresh = mBgFg->foreground;
-    } else {
-      //            cv::Mat in(mBgFg->foreground);
-      cv::Mat out;
-      //            cv::resize(in, out, cv::Size(640, 480));
-      thresh = out;
-    }
-#endif
+    else
+      mInitial = cv::max(gray, mInitial);
+    mInitInitial++;
+    return;
   }
+  
+  gray -= mInitial;
+
+  cv::accumulateWeighted(gray, mLastGray, 0.9);
+  mLastGray.convertTo(gray, CV_8U);
+  
+  cv::threshold( gray, thresh, mStepFrom, 255, CV_THRESH_BINARY );
   
 	mBlobs.clear();
 	float largest = mAreaThreshold;
@@ -360,6 +310,7 @@ void KinectWrapper::findBlobs()
 			i->mCentroid.y /= sz;
 		}
 		i->mZDist = *to8.getDataRed(i->mCentroid);
+    // TODO: LOOK AT THIS
 		i->mCentroid.x *= (float) getWindowWidth() / 640.0f;
 		i->mCentroid.y *= (float) getWindowHeight() / 480.0f;
 		// Loop through and do z calc

@@ -73,21 +73,15 @@ public:
 	int mStepFrom;
   int mStepSize;
   int mBlurAmount;
+  
 	cv::Mat mInitial;
-	bool mInitInitial;
+  cv::Mat mLastGray; // Accumlated grayscal image
+	int mInitInitial;
+  int mInitFrames;
+  
   int mLowPass;
   bool mDilate;
   bool mBlobsEnabled;
-  enum BGMethod
-  {
-    bgmSubtract = 0,
-    bgmAbsDiff = 1,
-    bgmFGD = 2,
-    bgmMOG = 3
-  };
-  int mLastBGMethod;
-  int mBGMethod; // Should be values from above.
-  CvStatModel* mBgFg;
   
 	// Debug
 	cinder::gl::Texture	mContourTexture;
