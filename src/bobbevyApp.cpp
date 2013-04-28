@@ -89,9 +89,6 @@ private:
 	// Layers
 	SceneState mSceneState;
   
-  float mFadeInSlow;
-  float mFadeInNormal;
-  
   void handleOSC();
   
   void createModuleCallback( QTimeline::CreateModuleCallbackArgs args );
@@ -139,8 +136,6 @@ void bobbevyApp::setup()
 	mSceneState.mParams.addParam("DebugDraw", &mDebugDraw, "keyIncr=d");
 	mSceneState.mParams.addParam("ShowParams", &mShowParams, "keyIncr=p");
 	mSceneState.mParams.addParam("ShowFPS", &mShowFPS);
-	mSceneState.mParams.addParam("FadeInNormal", &mFadeInNormal);
-	mSceneState.mParams.addParam("FadeInSlow", &mFadeInSlow);
 	  
 	mDebugDraw = false;
 	mShowFPS = false;
@@ -160,10 +155,7 @@ void bobbevyApp::setup()
   
   mCurrentTime = getElapsedSeconds();
   mAccumlator = 0.0;
-  mDT = 1.0/30.0;
-  
-  mFadeInNormal = 10.0f;
-  mFadeInSlow = 40.0f;
+  mDT = 1.0/30.0;  
 }
 
 void bobbevyApp::keyDown( KeyEvent event )
