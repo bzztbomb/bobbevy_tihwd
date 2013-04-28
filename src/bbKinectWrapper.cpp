@@ -26,7 +26,8 @@ KinectWrapper::KinectWrapper() :
   mRecord(false),
   mLastGray(480, 640, CV_32F),
   mInitInitial(0),
-  mInitFrames(30) // TODO: PARAM ME
+  mInitFrames(30),
+  mDepthLowPass(240)
 {
   
 }
@@ -38,25 +39,18 @@ void KinectWrapper::setup(params::InterfaceGl& params)
   if (mKinectEnabled)
   {
     mKinect = Kinect( Kinect::Device() ); // the default Device implies the first Kinect
-    //        mKinect.setVideoInfrared(true);
   }
 	mEnabled = true;
   mBlobsEnabled = true;
   
-  mStepSize = 255; // Just threshold from step from!
-  mBlurAmount = 3;
-	mStepFrom = 5;
+	mStepFrom = 1;
 	mAreaThreshold = 1000.0f;
-	mInitInitial = true;
   mDrawTex = dtDepth;
   mEnableIR = false;
-  mLowPass = 255;
-  mDilate = false;
 
+	params.addParam( "Init frame amount", &mInitFrames, "min=1 max=300" );
 	params.addParam( "Step from", &mStepFrom, "min=1 max=255" );
-	params.addParam( "Threshold Step Size", &mStepSize, "min=1 max=255" );
-  params.addParam( "LowPass filter", &mLowPass, "min=0 max=255");
-  params.addParam( "CV Blur amount", &mBlurAmount, "min=3 max=55" );
+  params.addParam( "Depth LowPass filter", &mDepthLowPass, "min=0 max=255");
 	params.addParam( "CV area threshold", &mAreaThreshold, "min=1");
   std::vector<std::string> enumDraw;
   enumDraw.push_back("Depth");
@@ -64,7 +58,6 @@ void KinectWrapper::setup(params::InterfaceGl& params)
   enumDraw.push_back("Contour");
   params.addParam( "Texture", enumDraw, &mDrawTex);
   params.addParam( "Toggle IR", &mEnableIR);
-  params.addParam( "Dilate", &mDilate);
   params.addParam( "KinectEnabled", &mEnabled);
   params.addParam( "BlobsEnabled", &mBlobsEnabled);
   params.addParam( "Record Kinect Data", &mRecordRequested);
@@ -219,8 +212,7 @@ void KinectWrapper::findBlobs()
 	
   cv::cvtColor( input, gray, CV_RGB2GRAY );
   
-  // TODO: PARAM 240
-  cv::threshold(gray, gray, 240, 0, CV_THRESH_TOZERO_INV);
+  cv::threshold(gray, gray, mDepthLowPass, 0, CV_THRESH_TOZERO_INV);
   
   if (mInitInitial < mInitFrames)
   {

@@ -69,18 +69,17 @@ public:
   bool mFakeDataAvail;
   cinder::Surface8u mFakeSurface;
   
-	// Image processing
-	int mStepFrom;
-  int mStepSize;
-  int mBlurAmount;
   
 	cv::Mat mInitial;
   cv::Mat mLastGray; // Accumlated grayscal image
 	int mInitInitial;
   int mInitFrames;
-  
-  int mLowPass;
-  bool mDilate;
+
+	// Image processing
+	int mStepFrom;
+  int mDepthLowPass;
+
+  //
   bool mBlobsEnabled;
   
 	// Debug
