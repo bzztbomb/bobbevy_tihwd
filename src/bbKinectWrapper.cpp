@@ -302,9 +302,6 @@ void KinectWrapper::findBlobs()
 			i->mCentroid.y /= sz;
 		}
 		i->mZDist = *to8.getDataRed(i->mCentroid);
-    // TODO: LOOK AT THIS
-		i->mCentroid.x *= (float) getWindowWidth() / 640.0f;
-		i->mCentroid.y *= (float) getWindowHeight() / 480.0f;
 		// Loop through and do z calc
 		float steps = 10.0f;
 		Vec3f step = (i->mBottomMost - i->mTopMost) / steps;
@@ -357,8 +354,7 @@ void KinectWrapper::draw()
 	
 	if (true)
 	{
-		float xs = (float) getWindowWidth() / 640.0f;
-		float ys = (float) getWindowHeight() / 480.0f;
+    Vec2f ws((float) getWindowWidth() / 640.0f, (float) getWindowHeight() / 480.0f);
     
 		// draw the contours
 		int c = 0;
@@ -380,15 +376,16 @@ void KinectWrapper::draw()
 						break;
 				}
 				
-				gl::vertex( Vec2f(pt->x * xs, pt->y * ys) );
+				gl::vertex( Vec2f(pt->x * ws.x, pt->y * ws.y) );
 			}
 			glEnd();
-			gl::drawSolidCircle(i->mCentroid, 10);
+      
+			gl::drawSolidCircle(i->mCentroid * ws, 10);
       Rectf scaledBounds(i->mBounds);
-      scaledBounds.x1 *= xs;
-      scaledBounds.y1 *= ys;
-      scaledBounds.x2 *= xs;
-      scaledBounds.y2 *= ys;
+      scaledBounds.x1 *= ws.x;
+      scaledBounds.y1 *= ws.y;
+      scaledBounds.x2 *= ws.x;
+      scaledBounds.y2 *= ws.y;
       gl::drawStrokedRect(scaledBounds);
 			c++;
 		}
