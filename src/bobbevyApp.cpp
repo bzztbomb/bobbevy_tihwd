@@ -1,6 +1,9 @@
 // TODO:
 // Get OSC working again
 
+#include <queue>
+#include <boost/thread.hpp>
+
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -22,6 +25,11 @@
 #include "bbParticleField.h"
 #include "BlackoutLayer.h"
 #include "bbLines.h"
+
+#include "LabMidi/LabMidiCommand.h"
+#include "LabMidi/LabMidiIn.h"
+#include "LabMidi/LabMidiOut.h"
+#include "LabMidi/LabMidiUtil.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -78,6 +86,15 @@ private:
   // Osc
   osc::Listener mListener;
   
+  // Midi
+  Lab::MidiIn*         midiIn;
+  Lab::MidiOut*        midiOut;
+  
+  // Command queue
+  std::queue<int> mCommandQueue;
+  boost::mutex mCommandMutex;
+  
+  // Timeline
   QTimelineRef mTimeline;
   vector<QTimelineModuleRef> mModules;
   
@@ -95,6 +112,8 @@ private:
   void deleteModuleCallback( QTimeline::DeleteModuleCallbackArgs args );
   
   void createNewWindow();
+  
+  static void midiCallback(void* userData, Lab::MidiCommand* m);
 };
 
 void bobbevyApp::prepareSettings( Settings* settings )
@@ -143,6 +162,12 @@ void bobbevyApp::setup()
   
   mListener.setup(23232);
   publish_via_bonjour();
+
+  midiIn = new Lab::MidiIn();
+  midiOut = new Lab::MidiOut();
+  midiIn->addCallback(bobbevyApp::midiCallback, this);
+  midiIn->openPort(1);
+  midiOut->openPort(1);
   
 	mKinect.setup(mSceneState.mParams);
 	
@@ -241,6 +266,22 @@ void bobbevyApp::mouseDown( MouseEvent event )
 void bobbevyApp::update()
 {
   handleOSC();
+  {
+    boost::mutex::scoped_lock lock(mCommandMutex);
+    int mCue = -1;
+    while (!mCommandQueue.empty())
+    {
+      mCue = mCommandQueue.front();
+      mCommandQueue.pop();
+    }
+    if (mCue != -1)
+    {
+      if (mTimeline->isPlaying())
+        mTimeline->play(false);
+      mTimeline->playCue(mCue);
+    }
+  }
+
   mTimeline->update();
   double newTime = getElapsedSeconds();
   double frameTime = newTime - mCurrentTime;
@@ -324,6 +365,37 @@ void bobbevyApp::handleOSC()
     }
   }
 }
+
+void bobbevyApp::midiCallback(void* userData, Lab::MidiCommand* m)
+{
+  if (!m)
+    return;
+  if (m->command == MIDI_NOTE_ON)
+  {
+    bobbevyApp* bb = static_cast<bobbevyApp*>(userData);
+    int offPos = m->byte1 - 36;
+    if ((offPos < 0) || (offPos > 15))
+      return;
+    
+    // Push it to the command queue.
+    {
+      boost::mutex::scoped_lock lock(bb->mCommandMutex);
+      bb->mCommandQueue.push(offPos);
+    }
+    
+    std::cout << "NOTE: " << (int) m->byte1 << " " << Lab::noteName(m->byte1) << " POS: " << offPos << std::endl;
+    int pos = (offPos + 1) * 2;
+    for (int i = pos; i < 32; i++)
+    {
+      bb->midiOut->sendNoteOn(0, i, 0);
+    }
+    for (int i = 0; i < pos; i++)
+    {
+      bb->midiOut->sendNoteOn(0, i, 127);
+    }
+  }
+}
+
 
 void bobbevyApp::draw()
 {

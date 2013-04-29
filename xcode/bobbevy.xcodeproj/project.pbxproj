@@ -65,6 +65,8 @@
 		C8D1627D170A77D800D13B14 /* PassThruVert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8D1627B170A77D800D13B14 /* PassThruVert.glsl */; };
 		C8D1627E170A77D800D13B14 /* SunRayFrag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C8D1627C170A77D800D13B14 /* SunRayFrag.glsl */; };
 		C8D16282170A7B1300D13B14 /* LiveAssetManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8D16280170A7B1300D13B14 /* LiveAssetManager.cpp */; };
+		C8D498BC172DF8080028E337 /* libLabMidi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C8D498B9172DF7EE0028E337 /* libLabMidi.a */; };
+		C8D498BF172DF9260028E337 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8D498BE172DF9260028E337 /* CoreMIDI.framework */; };
 		C8D8C80D1708F67800B8E4A5 /* blackoutLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8D8C80B1708F67800B8E4A5 /* blackoutLayer.cpp */; };
 		C8F169D71710C95100369FFB /* trees-blurred.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F169D51710C95100369FFB /* trees-blurred.png */; };
 		C8F169D81710C95100369FFB /* trees-with-leaves-aligned-blurred.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F169D61710C95100369FFB /* trees-with-leaves-aligned-blurred.png */; };
@@ -73,6 +75,23 @@
 		C8F3E25815AD48C0005A336F /* particle_brown.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3E25615AD48C0005A336F /* particle_brown.png */; };
 		C8F3E25915AD48C0005A336F /* particle_yellow.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F3E25715AD48C0005A336F /* particle_yellow.png */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C8D498B8172DF7EE0028E337 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C8D498B4172DF7EE0028E337 /* LabMidi.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0FD86E2D070B0AF105086437;
+			remoteInfo = LabMidi;
+		};
+		C8D498BA172DF7FE0028E337 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C8D498B4172DF7EE0028E337 /* LabMidi.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 6E2159F17F15557D2DD93C61;
+			remoteInfo = LabMidi;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		C85BFCB316A7C9B000EFB14F /* CopyFiles */ = {
@@ -380,6 +399,8 @@
 		C8D1627F170A7B1300D13B14 /* fullscreen_pass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fullscreen_pass.h; path = ../src/fullscreen_pass.h; sourceTree = "<group>"; };
 		C8D16280170A7B1300D13B14 /* LiveAssetManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveAssetManager.cpp; path = ../src/LiveAssetManager.cpp; sourceTree = "<group>"; };
 		C8D16281170A7B1300D13B14 /* LiveAssetManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveAssetManager.h; path = ../src/LiveAssetManager.h; sourceTree = "<group>"; };
+		C8D498B4172DF7EE0028E337 /* LabMidi.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LabMidi.xcodeproj; path = ../../external/LabMidi/src/LabMidi.xcodeproj; sourceTree = "<group>"; };
+		C8D498BE172DF9260028E337 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 		C8D8C80B1708F67800B8E4A5 /* blackoutLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = blackoutLayer.cpp; path = ../src/blackoutLayer.cpp; sourceTree = "<group>"; };
 		C8D8C80C1708F67800B8E4A5 /* blackoutLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = blackoutLayer.h; path = ../src/blackoutLayer.h; sourceTree = "<group>"; };
 		C8F169D51710C95100369FFB /* trees-blurred.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "trees-blurred.png"; path = "../resources/trees-blurred.png"; sourceTree = "<group>"; };
@@ -395,6 +416,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C8D498BF172DF9260028E337 /* CoreMIDI.framework in Frameworks */,
+				C8D498BC172DF8080028E337 /* libLabMidi.a in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */,
@@ -475,6 +498,8 @@
 		29B97314FDCFA39411CA2CEA /* bobbevy */ = {
 			isa = PBXGroup;
 			children = (
+				C8D498BE172DF9260028E337 /* CoreMIDI.framework */,
+				C8D498AD172DF74E0028E337 /* Projects */,
 				C82C9421159F845400AAEDE0 /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
@@ -1037,6 +1062,22 @@
 			name = osc;
 			sourceTree = "<group>";
 		};
+		C8D498AD172DF74E0028E337 /* Projects */ = {
+			isa = PBXGroup;
+			children = (
+				C8D498B4172DF7EE0028E337 /* LabMidi.xcodeproj */,
+			);
+			name = Projects;
+			sourceTree = "<group>";
+		};
+		C8D498B5172DF7EE0028E337 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C8D498B9172DF7EE0028E337 /* libLabMidi.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1052,6 +1093,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				C8D498BB172DF7FE0028E337 /* PBXTargetDependency */,
 			);
 			name = bobbevy;
 			productInstallPath = "$(HOME)/Applications";
@@ -1079,12 +1121,28 @@
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* bobbevy */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = C8D498B5172DF7EE0028E337 /* Products */;
+					ProjectRef = C8D498B4172DF7EE0028E337 /* LabMidi.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				8D1107260486CEB800E47090 /* bobbevy */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		C8D498B9172DF7EE0028E337 /* libLabMidi.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libLabMidi.a;
+			remoteRef = C8D498B8172DF7EE0028E337 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		8D1107290486CEB800E47090 /* Resources */ = {
@@ -1157,6 +1215,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C8D498BB172DF7FE0028E337 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LabMidi;
+			targetProxy = C8D498BA172DF7FE0028E337 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		C01FCF4B08A954540054247B /* Debug */ = {
@@ -1240,7 +1306,10 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
+				HEADER_SEARCH_PATHS = (
+					"\"$(CINDER_PATH)/boost\"",
+					"$(CINDER_PATH)/../LabMidi/src",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/blocks/Cinder-Kinect/include $(CINDER_PATH)/blocks/OpenCV/include \"$(CINDER_PATH)/include\" ../include $(CINDER_PATH)/blocks/osc/src";
@@ -1257,7 +1326,10 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
+				HEADER_SEARCH_PATHS = (
+					"\"$(CINDER_PATH)/boost\"",
+					"$(CINDER_PATH)/../LabMidi/src",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/blocks/Cinder-Kinect/include $(CINDER_PATH)/blocks/OpenCV/include \"$(CINDER_PATH)/include\" ../include $(CINDER_PATH)/blocks/osc/src";
