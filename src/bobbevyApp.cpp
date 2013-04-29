@@ -268,17 +268,26 @@ void bobbevyApp::update()
   handleOSC();
   {
     boost::mutex::scoped_lock lock(mCommandMutex);
-    int mCue = -1;
+    int mCue = -2;
     while (!mCommandQueue.empty())
     {
       mCue = mCommandQueue.front();
       mCommandQueue.pop();
     }
-    if (mCue != -1)
+    if (mCue != -2)
     {
-      if (mTimeline->isPlaying())
+      if (mCue != -1)
+      {
+        if (mTimeline->isPlaying())
+          mTimeline->play(false);
+        mTimeline->playCue(mCue);
+      } else {
         mTimeline->play(false);
-      mTimeline->playCue(mCue);
+        mTimeline->getTimelineRef()->stepTo(0.01f);
+        mTimeline->update();
+        mTimeline->getTimelineRef()->stepTo(0.0f);
+        mTimeline->update();
+      }
     }
   }
 
@@ -374,8 +383,16 @@ void bobbevyApp::midiCallback(void* userData, Lab::MidiCommand* m)
   {
     bobbevyApp* bb = static_cast<bobbevyApp*>(userData);
     int offPos = m->byte1 - 36;
-    if ((offPos < 0) || (offPos > 15))
-      return;
+    
+    switch (offPos)
+    {
+      case -12:
+        offPos = -1;
+        break;
+      default:
+        if ((offPos < 0) || (offPos > 15))
+          return;
+    }
     
     // Push it to the command queue.
     {
