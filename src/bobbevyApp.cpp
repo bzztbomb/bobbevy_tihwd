@@ -107,6 +107,7 @@ private:
 	SceneState mSceneState;
   
   void handleOSC();
+  void handleMidi();
   
   void createModuleCallback( QTimeline::CreateModuleCallbackArgs args );
   void deleteModuleCallback( QTimeline::DeleteModuleCallbackArgs args );
@@ -245,51 +246,11 @@ void bobbevyApp::keyDown( KeyEvent event )
       break;
 	}
 	mKinect.keyDown(event);
-
-//  auto tracks = mTimeline->getTracks();
-//  for (auto i = tracks.rbegin(); i != tracks.rend(); i++)
-//  {
-//    auto item = (*i)->getActiveItem();
-//    if (item)
-//    {
-//      SceneLayer* sl = static_cast<SceneLayer*>(item->getTargetModule().get());
-//      sl->keyDown(event);
-//    }
-//  }
-}
-
-void bobbevyApp::mouseDown( MouseEvent event )
-{
-//  mFarSwarm.mouseDown(event);
 }
 
 void bobbevyApp::update()
 {
   handleOSC();
-  {
-    boost::mutex::scoped_lock lock(mCommandMutex);
-    int mCue = -2;
-    while (!mCommandQueue.empty())
-    {
-      mCue = mCommandQueue.front();
-      mCommandQueue.pop();
-    }
-    if (mCue != -2)
-    {
-      if (mCue != -1)
-      {
-        if (mTimeline->isPlaying())
-          mTimeline->play(false);
-        mTimeline->playCue(mCue);
-      } else {
-        mTimeline->play(false);
-        mTimeline->getTimelineRef()->stepTo(0.01f);
-        mTimeline->update();
-        mTimeline->getTimelineRef()->stepTo(0.0f);
-        mTimeline->update();
-      }
-    }
-  }
 
   mTimeline->update();
   double newTime = getElapsedSeconds();
@@ -314,13 +275,6 @@ void bobbevyApp::update()
         sl->tick();
       }
     }
-    
-    //        i++;
-    //        if (i > max_ticks)
-    //        {
-    //            mAccumlator = mDT * -10;
-    //            mCurrentTime = getElapsedSeconds();
-    //        }
   }
 }
 
@@ -371,6 +325,32 @@ void bobbevyApp::handleOSC()
           
         }
       }
+    }
+  }
+}
+
+void bobbevyApp::handleMidi()
+{
+  boost::mutex::scoped_lock lock(mCommandMutex);
+  int mCue = -2;
+  while (!mCommandQueue.empty())
+  {
+    mCue = mCommandQueue.front();
+    mCommandQueue.pop();
+  }
+  if (mCue != -2)
+  {
+    if (mCue != -1)
+    {
+      if (mTimeline->isPlaying())
+        mTimeline->play(false);
+      mTimeline->playCue(mCue);
+    } else {
+      mTimeline->play(false);
+      mTimeline->getTimelineRef()->stepTo(0.01f);
+      mTimeline->update();
+      mTimeline->getTimelineRef()->stepTo(0.0f);
+      mTimeline->update();
     }
   }
 }
