@@ -20,6 +20,21 @@ using namespace std;
 
 int KinectWrapper::smMAX_BLOBS = 3;
 
+struct SortDescendingArea
+{
+  bool operator()(const Blob& t1, const Blob& t2) const
+  {
+    return t1.mContourArea < t2.mContourArea;
+  }
+};
+struct SortDescendingZ
+{
+  bool operator()(const Blob& t1, const Blob& t2) const
+  {
+    return t1.mZDist < t2.mZDist;
+  }
+};
+
 KinectWrapper::KinectWrapper() :
   mFakeSurface(640, 480, false, SurfaceChannelOrder::RGB),
   mRecordRequested(false),

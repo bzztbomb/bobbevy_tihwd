@@ -101,20 +101,6 @@ public:
   
 	// Blob detection and "user tracking"
 	static int smMAX_BLOBS;
-	struct SortDescendingArea
-	{
-		bool operator()(const Blob& t1, const Blob& t2) const
-		{
-			return t1.mContourArea < t2.mContourArea;
-    }
-  };
-  struct SortDescendingZ
-  {
-    bool operator()(const Blob& t1, const Blob& t2) const
-    {
-      return t1.mZDist < t2.mZDist;
-    }
-  };
   typedef std::vector<Blob> BlobVector;
   BlobVector mBlobs;
   float mAreaThreshold;
