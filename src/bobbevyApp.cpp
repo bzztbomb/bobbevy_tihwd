@@ -29,6 +29,7 @@
 #include "LabMidi/LabMidiCommand.h"
 #include "LabMidi/LabMidiIn.h"
 #include "LabMidi/LabMidiOut.h"
+#include "LabMidi/LabMidiPorts.h"
 #include "LabMidi/LabMidiUtil.h"
 
 using namespace ci;
@@ -72,7 +73,6 @@ public:
 	void prepareSettings( Settings* settings );
 	void setup();
 	void keyDown( KeyEvent event );
-	void mouseDown( MouseEvent event );
 	void update();
 	void draw();
 private:
@@ -161,14 +161,37 @@ void bobbevyApp::setup()
 	mShowFPS = false;
 	mShowParams = false;
   
+  // OSC init
   mListener.setup(23232);
   publish_via_bonjour();
 
+  // MIDI init
+  int inPort = 0;
+  int outPort = 0;
+  Lab::MidiPorts ports;
+  std::string searchFor("QUNEO");
+  for (int i = 0; i < ports.inPorts(); i++)
+  {
+    if (ports.inPort(i) == searchFor)
+    {
+      inPort = i;
+      cout << "QuNeo input found." << endl;
+    }
+  }
+  for (int i = 0; i < ports.outPorts(); i++)
+  {
+    if (ports.outPort(i) == searchFor)
+    {
+      outPort = i;
+      cout << "QuNeo output found." << endl;
+    }
+  }
+  
   midiIn = new Lab::MidiIn();
   midiOut = new Lab::MidiOut();
   midiIn->addCallback(bobbevyApp::midiCallback, this);
-  midiIn->openPort(1);
-  midiOut->openPort(1);
+  midiIn->openPort(inPort);
+  midiOut->openPort(outPort);
   
 	mKinect.setup(mSceneState.mParams);
 	
@@ -251,6 +274,7 @@ void bobbevyApp::keyDown( KeyEvent event )
 void bobbevyApp::update()
 {
   handleOSC();
+  handleMidi();
 
   mTimeline->update();
   double newTime = getElapsedSeconds();
