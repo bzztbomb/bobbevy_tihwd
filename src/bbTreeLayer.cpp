@@ -223,6 +223,7 @@ void TreeLayer::drawScene(const cinder::Area& renderArea, cinder::gl::GlslProg& 
   // Draw ground
   gl::color(mGroundColor);
   texGround.enableAndBind();
+  texGround.bind(1);
   gl::draw(mGroundMesh);
   texGround.unbind();
   
