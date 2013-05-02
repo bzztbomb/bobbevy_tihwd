@@ -34,10 +34,12 @@ private:
   Lab::MidiOut*        midiOut;
 
   // Command queue
-  std::queue<int> mCommandQueue;
+  std::queue<Lab::MidiCommand> mCommandQueue;
   boost::mutex mCommandMutex;
 
   QTimelineRef mTimeline;
+
+  bool getNextCommand(Lab::MidiCommand* dest);
 private:
   static void midiCallback(void* userData, Lab::MidiCommand* m);
 };

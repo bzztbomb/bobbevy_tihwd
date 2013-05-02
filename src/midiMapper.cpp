@@ -61,63 +61,70 @@ void MidiMapper::midiCallback(void* userData, Lab::MidiCommand* m)
 {
   if (!m)
     return;
-  if (m->command == MIDI_NOTE_ON)
-  {
-    MidiMapper* bb = static_cast<MidiMapper*>(userData);
-    int offPos = m->byte1 - 36;
-    
-    switch (offPos)
-    {
-      case -12:
-        offPos = -1;
-        break;
-      default:
-        if ((offPos < 0) || (offPos > 15))
-          return;
-    }
-    
-    // Push it to the command queue.
-    {
-      boost::mutex::scoped_lock lock(bb->mCommandMutex);
-      bb->mCommandQueue.push(offPos);
-    }
-    
-    std::cout << "NOTE: " << (int) m->byte1 << " " << Lab::noteName(m->byte1) << " POS: " << offPos << std::endl;
-    int pos = (offPos + 1) * 2;
-    for (int i = pos; i < 32; i++)
-    {
-      bb->midiOut->sendNoteOn(0, i, 0);
-    }
-    for (int i = 0; i < pos; i++)
-    {
-      bb->midiOut->sendNoteOn(0, i, 127);
-    }
-  }
+
+  MidiMapper* bb = static_cast<MidiMapper*>(userData);
+  boost::mutex::scoped_lock lock(bb->mCommandMutex);
+  bb->mCommandQueue.push(*m);
 }
 
 void MidiMapper::update()
 {
-  boost::mutex::scoped_lock lock(mCommandMutex);
-  int mCue = -2;
-  while (!mCommandQueue.empty())
+  Lab::MidiCommand cmd;
+  while (getNextCommand(&cmd))
   {
-    mCue = mCommandQueue.front();
-    mCommandQueue.pop();
-  }
-  if (mCue != -2)
-  {
-    if (mCue != -1)
+    if (cmd.command == MIDI_NOTE_ON)
     {
-      if (mTimeline->isPlaying())
-        mTimeline->play(false);
-      mTimeline->playCue(mCue);
-    } else {
-      mTimeline->play(false);
-      mTimeline->getTimelineRef()->stepTo(0.01f);
-      mTimeline->update();
-      mTimeline->getTimelineRef()->stepTo(0.0f);
-      mTimeline->update();
+      switch (cmd.byte1)
+      {
+        // Stop
+        case 24 :
+          {
+            mTimeline->play(false);
+            mTimeline->getTimelineRef()->stepTo(0.01f);
+            mTimeline->update();
+            mTimeline->getTimelineRef()->stepTo(0.0f);
+            mTimeline->update();
+            for (int i = 0; i < 32; i++)
+              midiOut->sendNoteOn(0, i, 0);
+          }
+          break;
+        default:
+          {
+            int offPos = cmd.byte1 - 36;
+            if ((offPos < 0) || (offPos > 15))
+              return;
+            // Play the cue
+            if (mTimeline->isPlaying())
+              mTimeline->play(false);
+            mTimeline->playCue(offPos);
+            
+            // Turn on the lights.
+            int pos = (offPos + 1) * 2;
+            for (int i = pos; i < 32; i++)
+            {
+              midiOut->sendNoteOn(0, i, 0);
+            }
+            for (int i = 0; i < pos; i++)
+            {
+              midiOut->sendNoteOn(0, i, 127);
+            }
+            
+          }
+          break;
+      }
     }
   }
 }
 
+bool MidiMapper::getNextCommand(Lab::MidiCommand* dest)
+{
+  boost::mutex::scoped_lock lock(mCommandMutex);
+  if (!mCommandQueue.empty())
+  {
+    *dest = mCommandQueue.front();
+    mCommandQueue.pop();
+    return true;
+  } else {
+    return false;
+  }
+}
