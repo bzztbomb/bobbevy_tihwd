@@ -67,6 +67,7 @@
 		C8D16282170A7B1300D13B14 /* LiveAssetManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8D16280170A7B1300D13B14 /* LiveAssetManager.cpp */; };
 		C8D498BC172DF8080028E337 /* libLabMidi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C8D498B9172DF7EE0028E337 /* libLabMidi.a */; };
 		C8D498BF172DF9260028E337 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8D498BE172DF9260028E337 /* CoreMIDI.framework */; };
+		C8D5B9841731F2D600E8439B /* midiMapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8D5B9821731F2D600E8439B /* midiMapper.cpp */; };
 		C8D8C80D1708F67800B8E4A5 /* blackoutLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8D8C80B1708F67800B8E4A5 /* blackoutLayer.cpp */; };
 		C8F169D71710C95100369FFB /* trees-blurred.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F169D51710C95100369FFB /* trees-blurred.png */; };
 		C8F169D81710C95100369FFB /* trees-with-leaves-aligned-blurred.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F169D61710C95100369FFB /* trees-with-leaves-aligned-blurred.png */; };
@@ -401,6 +402,8 @@
 		C8D16281170A7B1300D13B14 /* LiveAssetManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveAssetManager.h; path = ../src/LiveAssetManager.h; sourceTree = "<group>"; };
 		C8D498B4172DF7EE0028E337 /* LabMidi.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LabMidi.xcodeproj; path = ../../external/LabMidi/src/LabMidi.xcodeproj; sourceTree = "<group>"; };
 		C8D498BE172DF9260028E337 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
+		C8D5B9821731F2D600E8439B /* midiMapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = midiMapper.cpp; path = ../src/midiMapper.cpp; sourceTree = "<group>"; };
+		C8D5B9831731F2D600E8439B /* midiMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = midiMapper.h; path = ../src/midiMapper.h; sourceTree = "<group>"; };
 		C8D8C80B1708F67800B8E4A5 /* blackoutLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = blackoutLayer.cpp; path = ../src/blackoutLayer.cpp; sourceTree = "<group>"; };
 		C8D8C80C1708F67800B8E4A5 /* blackoutLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = blackoutLayer.h; path = ../src/blackoutLayer.h; sourceTree = "<group>"; };
 		C8F169D51710C95100369FFB /* trees-blurred.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "trees-blurred.png"; path = "../resources/trees-blurred.png"; sourceTree = "<group>"; };
@@ -455,6 +458,8 @@
 				C8D8C80C1708F67800B8E4A5 /* blackoutLayer.h */,
 				C85D81C3172206B900BB1CF9 /* bbLines.cpp */,
 				C85D81C4172206B900BB1CF9 /* bbLines.h */,
+				C8D5B9821731F2D600E8439B /* midiMapper.cpp */,
+				C8D5B9831731F2D600E8439B /* midiMapper.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -1211,6 +1216,7 @@
 				C8D8C80D1708F67800B8E4A5 /* blackoutLayer.cpp in Sources */,
 				C8D16282170A7B1300D13B14 /* LiveAssetManager.cpp in Sources */,
 				C85D81C5172206B900BB1CF9 /* bbLines.cpp in Sources */,
+				C8D5B9841731F2D600E8439B /* midiMapper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
