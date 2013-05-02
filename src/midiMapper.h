@@ -10,6 +10,8 @@
 #define __bobbevy__midiMapper__
 
 #include <queue>
+#include <unordered_map>
+
 #include <boost/thread.hpp>
 
 #include "LabMidi/LabMidiCommand.h"
@@ -20,6 +22,8 @@
 
 #include "QTimeline.h"
 
+typedef std::function<void (float, void*)> ValueUpdateFn;
+
 class MidiMapper
 {
 public:
@@ -28,6 +32,9 @@ public:
 
   void init(QTimelineRef timeline);
   void update();
+  
+  // This will associate fn with the next midi event.
+  void midiLearn(ValueUpdateFn fn);
 private:
   // Midi
   Lab::MidiIn*         midiIn;
@@ -37,9 +44,15 @@ private:
   std::queue<Lab::MidiCommand> mCommandQueue;
   boost::mutex mCommandMutex;
 
+  // Mapped midi events
+  std::unordered_map<int, ValueUpdateFn> mEventMap;
+  
+  // Timeline (bit of a hack right now)
   QTimelineRef mTimeline;
 
   bool getNextCommand(Lab::MidiCommand* dest);
+  
+  int hashE
 private:
   static void midiCallback(void* userData, Lab::MidiCommand* m);
 };

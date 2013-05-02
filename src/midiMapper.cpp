@@ -88,11 +88,25 @@ void MidiMapper::update()
               midiOut->sendNoteOn(0, i, 0);
           }
           break;
-        default:
+        // Play cue case
+        case 36:
+        case 37:
+        case 38:
+        case 39:
+        case 40:
+        case 41:
+        case 42:
+        case 43:
+        case 44:
+        case 45:
+        case 46:
+        case 47:
+        case 48:
+        case 49:
+        case 50:
+        case 51:
           {
             int offPos = cmd.byte1 - 36;
-            if ((offPos < 0) || (offPos > 15))
-              return;
             // Play the cue
             if (mTimeline->isPlaying())
               mTimeline->play(false);
@@ -108,8 +122,9 @@ void MidiMapper::update()
             {
               midiOut->sendNoteOn(0, i, 127);
             }
-            
           }
+          break;
+        default:
           break;
       }
     }
