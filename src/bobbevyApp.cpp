@@ -137,6 +137,11 @@ void bobbevyApp::setup()
 	mSceneState.mParams.addParam("DebugDraw", &mDebugDraw, "keyIncr=d");
 	mSceneState.mParams.addParam("ShowParams", &mShowParams, "keyIncr=p");
 	mSceneState.mParams.addParam("ShowFPS", &mShowFPS);
+  mSceneState.mParams.addButton("MidiLearn", [this]()
+                                {
+                                  mMidi.midiLearn([](float val)
+                                                  { printf("%f\n", val); });
+                                });
 	  
 	mDebugDraw = false;
 	mShowFPS = false;

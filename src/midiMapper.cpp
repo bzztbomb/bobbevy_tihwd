@@ -11,11 +11,15 @@
 
 using namespace std;
 
+// Totally sweet hack d00d
+MidiMapper* MidiMapper::smInstance = NULL;
+
 MidiMapper::MidiMapper()
 : midiIn(NULL)
 , midiOut(NULL)
 {
-  
+  smInstance = this;
+  mNextEventInfo.mHandle = 0;
 }
 
 MidiMapper::~MidiMapper()
@@ -72,21 +76,28 @@ void MidiMapper::update()
   Lab::MidiCommand cmd;
   while (getNextCommand(&cmd))
   {
+    // Convert note on to note off
+    if ((cmd.command & 0xF0) == MIDI_NOTE_OFF)
+    {
+      cmd.command = MIDI_NOTE_ON | (cmd.command & 0x0F);
+    }
+    // Check for midi learn
+    if (mNextEventInfo.mFn)
+    {
+      int key = hashCommand(&cmd);
+      mEventMap[key] = mNextEventInfo;
+      mNextEventInfo.mFn = NULL;
+      mNextEventInfo.mHandle++;
+      continue;
+    }
+    // Hardcoded note on stuff
     if (cmd.command == MIDI_NOTE_ON)
     {
       switch (cmd.byte1)
       {
         // Stop
         case 24 :
-          {
-            mTimeline->play(false);
-            mTimeline->getTimelineRef()->stepTo(0.01f);
-            mTimeline->update();
-            mTimeline->getTimelineRef()->stepTo(0.0f);
-            mTimeline->update();
-            for (int i = 0; i < 32; i++)
-              midiOut->sendNoteOn(0, i, 0);
-          }
+          stop();
           break;
         // Play cue case
         case 36:
@@ -105,28 +116,14 @@ void MidiMapper::update()
         case 49:
         case 50:
         case 51:
-          {
-            int offPos = cmd.byte1 - 36;
-            // Play the cue
-            if (mTimeline->isPlaying())
-              mTimeline->play(false);
-            mTimeline->playCue(offPos);
-            
-            // Turn on the lights.
-            int pos = (offPos + 1) * 2;
-            for (int i = pos; i < 32; i++)
-            {
-              midiOut->sendNoteOn(0, i, 0);
-            }
-            for (int i = 0; i < pos; i++)
-            {
-              midiOut->sendNoteOn(0, i, 127);
-            }
-          }
+          playCue(&cmd);
           break;
         default:
+          checkMapped(&cmd);
           break;
       }
+    } else {
+      checkMapped(&cmd);
     }
   }
 }
@@ -141,5 +138,71 @@ bool MidiMapper::getNextCommand(Lab::MidiCommand* dest)
     return true;
   } else {
     return false;
+  }
+}
+
+int MidiMapper::hashCommand(Lab::MidiCommand* c)
+{
+  return (c->command << 8) + c->byte1;
+}
+
+void MidiMapper::stop()
+{
+  mTimeline->play(false);
+  mTimeline->getTimelineRef()->stepTo(0.01f);
+  mTimeline->update();
+  mTimeline->getTimelineRef()->stepTo(0.0f);
+  mTimeline->update();
+  for (int i = 0; i < 32; i++)
+    midiOut->sendNoteOn(0, i, 0);  
+}
+
+void MidiMapper::playCue(Lab::MidiCommand* c)
+{
+  if (c->byte2 == 0)
+    return;
+  int offPos = c->byte1 - 36;
+  // Play the cue
+  if (mTimeline->isPlaying())
+    mTimeline->play(false);
+  mTimeline->playCue(offPos);
+  
+  // Turn on the lights.
+  int pos = (offPos + 1) * 2;
+  for (int i = pos; i < 32; i++)
+  {
+    midiOut->sendNoteOn(0, i, 0);
+  }
+  for (int i = 0; i < pos; i++)
+  {
+    midiOut->sendNoteOn(0, i, 127);
+  }
+}
+
+void MidiMapper::checkMapped(Lab::MidiCommand* c)
+{
+  int key = hashCommand(c);
+  auto i = mEventMap.find(key);
+  if (i != mEventMap.end())
+  {
+    i->second.mFn((float)c->byte2 / 127.0f);
+  }
+}
+
+int MidiMapper::midiLearn(ValueUpdateFn fn)
+{
+  mNextEventInfo.mFn = fn;
+  return mNextEventInfo.mHandle;
+}
+
+void MidiMapper::midiForget(int handle)
+{
+  for (auto i = mEventMap.begin(); i != mEventMap.end(); i++)
+  {
+    if (i->second.mHandle == handle)
+    {
+      mEventMap.erase(i);
+      return;
+    }
   }
 }

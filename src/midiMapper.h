@@ -22,7 +22,7 @@
 
 #include "QTimeline.h"
 
-typedef std::function<void (float, void*)> ValueUpdateFn;
+typedef std::function<void (float)> ValueUpdateFn;
 
 class MidiMapper
 {
@@ -33,8 +33,13 @@ public:
   void init(QTimelineRef timeline);
   void update();
   
-  // This will associate fn with the next midi event.
-  void midiLearn(ValueUpdateFn fn);
+  // This will associate fn with the next midi event.  Returns a handle
+  // that should be passed to midiforget
+  int midiLearn(ValueUpdateFn fn);
+
+  void midiForget(int handle);
+public:
+  static MidiMapper* instance() { return smInstance; }
 private:
   // Midi
   Lab::MidiIn*         midiIn;
@@ -45,16 +50,29 @@ private:
   boost::mutex mCommandMutex;
 
   // Mapped midi events
-  std::unordered_map<int, ValueUpdateFn> mEventMap;
+  struct EventInfo
+  {
+    ValueUpdateFn mFn;
+    int mHandle;
+  };
+  std::unordered_map<int, EventInfo> mEventMap;
+  EventInfo mNextEventInfo;
   
   // Timeline (bit of a hack right now)
   QTimelineRef mTimeline;
 
   bool getNextCommand(Lab::MidiCommand* dest);
   
-  int hashE
+  int hashCommand(Lab::MidiCommand* c);
+  void stop();
+  void playCue(Lab::MidiCommand* c);
+  void checkMapped(Lab::MidiCommand* c);
+
 private:
+  // Totally sweet hack d00d
+  static MidiMapper* smInstance;
   static void midiCallback(void* userData, Lab::MidiCommand* m);
+  
 };
 
 #endif /* defined(__bobbevy__midiMapper__) */
