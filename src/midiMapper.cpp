@@ -11,6 +11,21 @@
 
 using namespace std;
 
+void midiPrintCallback(void* userData, Lab::MidiCommand* c)
+{
+  if (c) {
+    std::cout << Lab::commandName(c->command) << " "
+    << Lab::noteName(c->byte1) << " ";
+    
+    if (c->command <= 0x9f)
+      std::cout << "vel: ";
+    
+    uint8_t ct = c->command >> 4;
+    if ((ct != 0xc) && (ct != 0xd))
+      std::cout << int(c->byte2) << std::endl;
+  }
+}
+
 // Totally sweet hack d00d
 MidiMapper* MidiMapper::smInstance = NULL;
 
@@ -57,6 +72,7 @@ void MidiMapper::init(QTimelineRef timeline)
   midiIn = new Lab::MidiIn();
   midiOut = new Lab::MidiOut();
   midiIn->addCallback(MidiMapper::midiCallback, this);
+  midiIn->addCallback(midiPrintCallback, NULL);
   midiIn->openPort(inPort);
   midiOut->openPort(outPort);
 }
@@ -80,6 +96,12 @@ void MidiMapper::update()
     if ((cmd.command & 0xF0) == MIDI_NOTE_OFF)
     {
       cmd.command = MIDI_NOTE_ON | (cmd.command & 0x0F);
+    }
+    // Filter out pressure for now.
+    if ((cmd.command & 0xF0) == MIDI_CONTROL_CHANGE)
+    {
+      if (cmd.byte1 >= 12)
+        continue;
     }
     // Check for midi learn
     if (mNextEventInfo.mFn)
