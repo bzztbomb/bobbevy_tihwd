@@ -72,7 +72,7 @@ void MidiMapper::init(QTimelineRef timeline)
   midiIn = new Lab::MidiIn();
   midiOut = new Lab::MidiOut();
   midiIn->addCallback(MidiMapper::midiCallback, this);
-  midiIn->addCallback(midiPrintCallback, NULL);
+//  midiIn->addCallback(midiPrintCallback, NULL);
   midiIn->openPort(inPort);
   midiOut->openPort(outPort);
 }

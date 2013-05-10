@@ -17,6 +17,7 @@
 #include "cinder/params/Params.h"
 #include "cinder/gl/Fbo.h"
 #include "cinder/qtime/MovieWriter.h"
+#include "cinder/Vector.h"
 
 struct Blob {
 	float mContourArea;
@@ -30,13 +31,14 @@ struct Blob {
 	cinder::Vec3f mTopMost;
 	cinder::Vec3f mBottomMost;
   
-  
 };
 
 #define NUM_FAKE_BLOB_PTS 4
 
 class KinectWrapper
 {
+public:
+  static cinder::Vec2i smSize;
 public:
   KinectWrapper();
   
@@ -89,7 +91,8 @@ public:
   {
     dtDepth = 0,
     dtColor = 1,
-    dtContour = 2
+    dtContour = 2,
+    dtBackground = 3
   };
   int mDrawTex;
   bool mEnableIR;

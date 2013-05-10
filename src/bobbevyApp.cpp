@@ -12,16 +12,18 @@
 #include "Kinect.h"
 #include "OscListener.h"
 #include "QTimeline.h"
-
+#include "midiMapper.h"
 #include "bbKinectWrapper.h"
+
 #include "sceneLayer.h"
 #include "bbTreeLayer.h"
 #include "bbIntroLight.h"
 #include "bbParticles.h"
 #include "bbParticleField.h"
+#include "bbAntiField.h"
 #include "BlackoutLayer.h"
 #include "bbLines.h"
-#include "midiMapper.h"
+#include "bbFeedback.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -126,10 +128,16 @@ void bobbevyApp::setup()
   mTimeline->registerModule("Field", this,
                             &bobbevyApp::createModuleCallback,
                             &bobbevyApp::deleteModuleCallback);
+  mTimeline->registerModule("AntiField", this,
+                            &bobbevyApp::createModuleCallback,
+                            &bobbevyApp::deleteModuleCallback);
   mTimeline->registerModule("BlackoutLayer", this,
                             &bobbevyApp::createModuleCallback,
                             &bobbevyApp::deleteModuleCallback);
   mTimeline->registerModule("LineLayer", this,
+                            &bobbevyApp::createModuleCallback,
+                            &bobbevyApp::deleteModuleCallback);
+  mTimeline->registerModule("FeedbackLayer", this,
                             &bobbevyApp::createModuleCallback,
                             &bobbevyApp::deleteModuleCallback);
   
@@ -163,7 +171,7 @@ void bobbevyApp::setup()
   
   mCurrentTime = getElapsedSeconds();
   mAccumlator = 0.0;
-  mDT = 1.0/30.0;  
+  mDT = 1.0/30.0;
 }
 
 void bobbevyApp::keyDown( KeyEvent event )
@@ -202,6 +210,20 @@ void bobbevyApp::keyDown( KeyEvent event )
         break;
       case KeyEvent::KEY_p:
         mShowParams = !mShowParams;
+        break;
+      case KeyEvent::KEY_b:
+        {
+          for (int j = 0; j < 30; j++)
+          {
+            for (int i = 0; i < 4; i++)
+              mKinect.updateFakeBlob(i, Vec2f(0.0, 0.0));
+            mKinect.update();
+          }
+          mKinect.updateFakeBlob(0, Vec2f(0.2, 0.5));
+          mKinect.updateFakeBlob(1, Vec2f(0.4, 1.0));
+          mKinect.updateFakeBlob(2, Vec2f(0.6, 0.5));
+          mKinect.updateFakeBlob(3, Vec2f(0.8, 1.0));
+        }
         break;
     }
   }
@@ -406,6 +428,18 @@ void bobbevyApp::createModuleCallback( QTimeline::CreateModuleCallbackArgs args 
     LineLayer* ll = new LineLayer();
     ll->setup(&mSceneState);
     mod = QTimelineModuleRef(ll);
+  }
+  if (args.type == "AntiField")
+  {
+    AntiParticleField* apf = new AntiParticleField();
+    apf->setup(&mSceneState);
+    mod = QTimelineModuleRef(apf);
+  }
+  if (args.type == "FeedbackLayer")
+  {
+    FeedbackLayer* fb = new FeedbackLayer();
+    fb->setup(&mSceneState);
+    mod = QTimelineModuleRef(fb);
   }
   
   if ( !mod )

@@ -19,6 +19,7 @@ using namespace ci::app;
 using namespace std;
 
 int KinectWrapper::smMAX_BLOBS = 3;
+Vec2i KinectWrapper::smSize(640, 480);
 
 struct SortDescendingArea
 {
@@ -71,6 +72,7 @@ void KinectWrapper::setup(params::InterfaceGl& params)
   enumDraw.push_back("Depth");
   enumDraw.push_back("Color");
   enumDraw.push_back("Contour");
+  enumDraw.push_back("Background");
   params.addParam( "Texture", enumDraw, &mDrawTex);
   params.addParam( "Toggle IR", &mEnableIR);
   params.addParam( "KinectEnabled", &mEnabled);
@@ -231,7 +233,7 @@ void KinectWrapper::findBlobs()
   
   if (mInitInitial < mInitFrames)
   {
-    if (mInitFrames == 0)
+    if (mInitInitial == 0)
       mInitial = gray.clone();
     else
       mInitial = cv::max(gray, mInitial);
@@ -364,6 +366,12 @@ void KinectWrapper::draw()
     case dtContour :
       if (mContourTexture)
         gl::draw(mContourTexture, getWindowBounds());
+      break;
+    case dtBackground :
+      {
+        cinder::gl::Texture tex(fromOcv(mInitial));
+        gl::draw(tex, getWindowBounds());
+      }
       break;
   }
 	
