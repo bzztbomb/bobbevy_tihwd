@@ -9,10 +9,12 @@
 #include "bbFeedback.h"
 #include "cinder/gl/gl.h"
 #include "bbKinectWrapper.h"
+#include "LiveAssetManager.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+using namespace gl;
 
 FeedbackLayer::FeedbackLayer()
 : SceneLayer("FeedbackLayer")
@@ -25,6 +27,18 @@ FeedbackLayer::FeedbackLayer()
 void FeedbackLayer::setup(SceneState* sceneState)
 {
   mSceneState = sceneState;
+  LiveAssetManager::load("PassThruVert.glsl", "FeedbackFrag.glsl",
+                         [this](ci::DataSourceRef vert,ci::DataSourceRef frag)
+                         {
+                           try
+                           {
+                             mShader = gl::GlslProg(vert, frag);
+                           }
+                           catch (GlslProgCompileExc e)
+                           {
+                             printf("%s\n", e.what());
+                           }
+                         });
 }
 
 void FeedbackLayer::tick()
@@ -47,15 +61,20 @@ void FeedbackLayer::tick()
     gl::translate(0.0f, -h);
     gl::clear(Color(0.0f, 0.0f, 0.0f));
     
-    // Render previous frame up
-    gl::draw(mFrames[prev].getTexture(0), Rectf(10, 10, w, h));
-    
     // Render something new
     if (mSceneState->mKinect->mContourTexture)
     {
-      gl::enableAdditiveBlending();
-      gl::draw(mSceneState->mKinect->mContourTexture);
-      gl::disableAlphaBlending();
+      mShader.bind();
+      mShader.uniform("newContour", 0);
+      mShader.uniform("oldFeedback", 1);
+      mShader.uniform("iResolution", Vec3f(w, h, 1));
+      mShader.uniform("iGlobalTime", (float) getElapsedSeconds());
+      mSceneState->mKinect->mContourTexture.enableAndBind();
+      mFrames[prev].getTexture(0).bind(1);
+      gl::drawSolidRect(Rectf(0,0,w,h));
+      mFrames[prev].getTexture(0).unbind();
+      mSceneState->mKinect->mContourTexture.unbind();
+      mSceneState->mKinect->mContourTexture.disable();
     }
     
     mPrevFrame = 1 - mPrevFrame;

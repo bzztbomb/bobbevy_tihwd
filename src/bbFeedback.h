@@ -11,6 +11,7 @@
 
 #include "sceneLayer.h"
 #include "cinder/gl/Fbo.h"
+#include "cinder/gl/GlslProg.h"
 
 class FeedbackLayer : public SceneLayer
 {
@@ -33,6 +34,7 @@ private:
   int mPrevFrame;
   bool mFboInit;
   cinder::gl::Fbo mFrames[NUM_FRAMES];
+  cinder::gl::GlslProg mShader;
   
   void initFbo();
 };
