@@ -413,6 +413,8 @@ void KinectWrapper::draw()
 			c++;
 		}
 	}
+  
+  gl::color(Color(1,1,1));
 }
 
 Blob* KinectWrapper::getUser(UserToken which)
