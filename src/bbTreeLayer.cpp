@@ -185,6 +185,7 @@ void TreeLayer::drawScene(const cinder::Area& renderArea, cinder::gl::GlslProg& 
   gl::setMatricesWindowPersp(renderArea.x2, renderArea.y2);
   
   // Draw sun
+  gl::clear(mFogColor() * 0.5f);
   
   // Set camera up
   mTreeCam.lookAt(mTreePan, mTreePan + mTreeCam.getViewDirection(), mTreeCam.getWorldUp());
@@ -197,26 +198,21 @@ void TreeLayer::drawScene(const cinder::Area& renderArea, cinder::gl::GlslProg& 
   Vec3f bbRight, bbUp;
   mTreeCam.getBillboardVectors(&bbRight, &bbUp);
   
-  shader.bind();
-  shader.uniform("farClip", mFogDistance);
-  shader.uniform("fogColor", ColorA(mFogColor));
-  shader.uniform("tex", 0);
-  shader.uniform("texBlurred", 1);
-  
-  texClip.bind();
-  gl::drawBillboard(mTreePan + Vec3f(0.0f, 0.0f, -(mTreeCam.getFarClip()-1.0f)), Vec2f( mTreeCam.getFarClip()*10, mTreeCam.getFarClip()*10), 0, bbRight, bbUp);
-  texClip.unbind();
-  
   // Draw sun
-  shader.unbind();
   gl::enableAlphaBlending();
   texSun.enableAndBind();
   gl::color(mSunColor);
   gl::drawBillboard(mTreePan + Vec3f(0.0f, 0.0f, -(mTreeCam.getFarClip()-1.0f)), Vec2f( mTreeCam.getFarClip(), mTreeCam.getFarClip()), 0, bbRight, bbUp);
   gl::disableAlphaBlending();
   texSun.unbind();
+
   shader.bind();
-  
+  shader.bind();
+  shader.uniform("farClip", mFogDistance);
+  shader.uniform("fogColor", ColorA(mFogColor));
+  shader.uniform("tex", 0);
+  shader.uniform("texBlurred", 1);
+ 
   gl::enableDepthWrite();
   gl::enableDepthRead();
   
