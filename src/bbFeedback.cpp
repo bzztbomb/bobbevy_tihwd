@@ -75,6 +75,7 @@ void FeedbackLayer::tick()
       mFrames[prev].getTexture(0).unbind();
       mSceneState->mKinect->mContourTexture.unbind();
       mSceneState->mKinect->mContourTexture.disable();
+      mShader.unbind();
     }
     
     mPrevFrame = 1 - mPrevFrame;
