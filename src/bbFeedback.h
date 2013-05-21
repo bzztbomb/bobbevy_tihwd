@@ -36,6 +36,7 @@ private:
   cinder::gl::Fbo mFrames[NUM_FRAMES];
   cinder::gl::GlslProg mShader;
   float mInOut;
+  float mNoiseAmp;
   
   void initFbo();
 };

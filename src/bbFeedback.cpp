@@ -20,6 +20,7 @@ FeedbackLayer::FeedbackLayer()
 : SceneLayer("FeedbackLayer")
 , mPrevFrame(0)
 , mFboInit(false)
+, mNoiseAmp(0.0)
 {
 }
 
@@ -70,6 +71,8 @@ void FeedbackLayer::tick()
       mShader.uniform("iResolution", Vec3f(w, h, 1));
       mShader.uniform("iGlobalTime", (float) getElapsedSeconds());
       mShader.uniform("iInOut", mInOut > 0.5f ? -1.0f : 1.0f);
+      mShader.uniform("iNoiseAmp", mNoiseAmp);
+      
       mSceneState->mKinect->mContourTexture.enableAndBind();
       mFrames[prev].getTexture(0).bind(1);
       gl::drawSolidRect(Rectf(0,0,w,h));
@@ -101,6 +104,7 @@ void FeedbackLayer::init()
 {
   SceneLayer::init();
   registerParam("inOut", &mInOut);
+  registerParam("NoiseAmp", &mNoiseAmp);  
 }
 
 // helpers

@@ -1,6 +1,7 @@
 uniform vec3 iResolution;
 uniform float iGlobalTime;
 uniform float iInOut;
+uniform float iNoiseAmp;
 uniform sampler2D newContour;
 uniform sampler2D oldFeedback;
 
@@ -33,9 +34,12 @@ void main()
   vec4 oldVal = vec4(0.0);
   vec2 tc = gl_TexCoord[0].xy;
   vec3 tc3 = vec3(tc+iGlobalTime*0.2, 1.0);
-  vec2 noise_dir = vec2(noise(tc3 * 12.3), noise(tc3 * 14.3));
-  vec2 dir = iInOut * p; // * normalize(noise_dir) * 1.0;
-  dir *= -vec2(1.0, 1.0) / iResolution.xy;
+  vec2 noise_dir = normalize(vec2(noise(tc3 * 12.3), noise(tc3 * 14.3)));
+  noise_dir = (-1.0+2.0*noise_dir) * iNoiseAmp;
+  
+  vec2 dir = iInOut * p + noise_dir;
+  dir = normalize(dir);
+  dir *= vec2(1.0, 1.0) / iResolution.xy;
   for (int i = 0; i < 150; i++)
   {
     oldVal += texture2D(oldFeedback, tc);
