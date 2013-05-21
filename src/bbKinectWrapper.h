@@ -64,6 +64,7 @@ public:
   bool mEnabled;
 	bool mKinectEnabled;
 	cinder::Kinect	mKinect;
+  int32_t mTilt;
 	cinder::gl::Texture		mColorTexture, mDepthTexture;
   
   // Lack of Kinect interface

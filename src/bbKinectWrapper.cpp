@@ -55,6 +55,7 @@ void KinectWrapper::setup(params::InterfaceGl& params)
   if (mKinectEnabled)
   {
     mKinect = Kinect( Kinect::Device() ); // the default Device implies the first Kinect
+    mTilt = mKinect.getTilt();
   }
 	mEnabled = true;
   mBlobsEnabled = true;
@@ -78,6 +79,7 @@ void KinectWrapper::setup(params::InterfaceGl& params)
   params.addParam( "KinectEnabled", &mEnabled);
   params.addParam( "BlobsEnabled", &mBlobsEnabled);
   params.addParam( "Record Kinect Data", &mRecordRequested);
+  params.addParam( "Tilt", &mTilt, "min=-31 max=32");
 }
 
 void KinectWrapper::enableRecordIfNeeded()
@@ -142,6 +144,12 @@ void KinectWrapper::update()
 {
 	if (!mEnabled)
 		return;
+  
+  if (mKinectEnabled)
+  {
+    if (mKinect.getTilt() != mTilt)
+      mKinect.setTilt(mTilt);
+  }
   
   enableRecordIfNeeded();
   
@@ -327,7 +335,9 @@ void KinectWrapper::findBlobs()
 		{
       if (mContourMat.at<uint8_t>(cv::Point(sample.x, sample.y)) > 0)
       {
-        i->mZDist = max(i->mZDist, (float) *to8.getDataRed(Vec2f(sample.x, sample.y)));
+        float val = *to8.getDataRed(Vec2f(sample.x, sample.y));
+        if (val < mDepthLowPass)
+          i->mZDist = max(i->mZDist, val);
       }
       sample += step;
 		}
@@ -337,7 +347,9 @@ void KinectWrapper::findBlobs()
 		{
       if (mContourMat.at<uint8_t>(cv::Point(sample.x, sample.y)) > 0)
       {
-        i->mZDist = max(i->mZDist, (float) *to8.getDataRed(Vec2f(sample.x, sample.y)));
+        float val = *to8.getDataRed(Vec2f(sample.x, sample.y));
+        if (val < mDepthLowPass)
+          i->mZDist = max(i->mZDist, val);
       }
       sample += step;
 		}
