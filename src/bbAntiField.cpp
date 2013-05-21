@@ -23,12 +23,15 @@ mGlobalDecay(0.90f),
 mDropping(false),
 mDropAccel(0.0f, 1.5f, 0.0f),
 mCoordSpace(640.0f, 480.0f),
-mBaseAccelX(-1.0f),
-mRandomAccelX(-2.0f),
+mBaseAccelX(-0.2f),
+mRandomAccelX(-0.4f),
 mBaseAccelY(0.0f),
-mRandomAccelY(1.0f),
+mRandomAccelY(0.2f),
 mSlowDownAmt(0.5),
-mSlowDownY(0.5)
+mSlowDownY(0.5),
+mTimeMult(0.8),
+mLfoAmp(0.1),
+mVelMult(1.0)
 {
 }
 
@@ -117,6 +120,10 @@ void AntiParticleField::tick()
     // Acceleration
     mParticleVel[i] *= mGlobalDecay;
     mParticleVel[i] += mParticleAccel[i];
+    
+    float lfo = cosf(((2 * M_PI)/640.0f)*mParticlePos[i].x+(getElapsedSeconds()*mTimeMult));
+    mParticleVel[i].y += mLfoAmp * lfo;
+    
     // Blob interaction
     {
       if (contour->data != NULL)
@@ -136,16 +143,17 @@ void AntiParticleField::tick()
         }
       }
     }
+    mParticleVel[i] *= mVelMult;
   }
   // Update pos
   for (int i = 0; i < mParticlePos.size(); i++)
 	{
     mParticlePos[i] += mParticleVel[i];
     if ((mParticlePos[i].x > mCoordSpace.x || mParticlePos[i].x < 0) ||
-        mParticlePos[i].y > mCoordSpace.y || mParticlePos[i].y < 0)
+        mParticlePos[i].y > mCoordSpace.y)
     {
       mParticlePos[i] = Vec3f(mCoordSpace.x-1.0f,
-                                   mRand.nextFloat() * mCoordSpace.y, 0.0f);
+                              (mRand.nextFloat() * mCoordSpace.y * 2.0) - mCoordSpace.y, 0.0f);
       mParticleAccel[i] = Vec3f((mRand.nextFloat() * mRandomAccelX) + mBaseAccelX,
                                      (mRand.nextFloat() * mRandomAccelY) + mBaseAccelY, 0);
       mParticleVel[i] = Vec3f(0,0,0);
@@ -217,6 +225,9 @@ void AntiParticleField::init()
   registerParam("RandomAccelY", &mRandomAccelY, 0.0f, 2.0f);
   registerParam("SlowDownAmt", &mSlowDownAmt, 0.0f, 1.0f);
   registerParam("SlowDownY", &mSlowDownAmt, 0.0f, 2.0f);
+  registerParam("TimeMult", &mTimeMult);
+  registerParam("LfoAmp", &mLfoAmp);
+  registerParam("VelMult", &mVelMult);
 }
 
 void AntiParticleField::update()

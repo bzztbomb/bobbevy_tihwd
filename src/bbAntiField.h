@@ -52,6 +52,9 @@ private:
   float mRandomAccelY;
   float mSlowDownAmt;
   float mSlowDownY;
+  float mTimeMult;
+  float mLfoAmp;
+  float mVelMult;
   
   bool mDropping;
   cinder::Vec3f mDropAccel;
