@@ -69,6 +69,7 @@ void FeedbackLayer::tick()
       mShader.uniform("oldFeedback", 1);
       mShader.uniform("iResolution", Vec3f(w, h, 1));
       mShader.uniform("iGlobalTime", (float) getElapsedSeconds());
+      mShader.uniform("iInOut", mInOut > 0.5f ? -1.0f : 1.0f);
       mSceneState->mKinect->mContourTexture.enableAndBind();
       mFrames[prev].getTexture(0).bind(1);
       gl::drawSolidRect(Rectf(0,0,w,h));
@@ -98,7 +99,8 @@ void FeedbackLayer::draw()
 // QTimelineModule
 void FeedbackLayer::init()
 {
-  
+  SceneLayer::init();
+  registerParam("inOut", &mInOut);
 }
 
 // helpers

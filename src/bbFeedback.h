@@ -35,6 +35,7 @@ private:
   bool mFboInit;
   cinder::gl::Fbo mFrames[NUM_FRAMES];
   cinder::gl::GlslProg mShader;
+  float mInOut;
   
   void initFbo();
 };
