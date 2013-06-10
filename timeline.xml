@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <QTimeline>
 	<tracks>
-		<track name="track untitled"/>
+		<track name="track untitled">
+			<item type="QTimelineModuleItem" name="untitled" startTime="170" duration="58.75" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="AntiField">
+				<param name="enabled" value="0.800000012" min="0" max="1">
+					<kf value="0.800000012" time="171" fn="EaseNone"/>
+				</param>
+				<param name="drop" value="0.111111104" min="0" max="1">
+					<kf value="0.111111104" time="171" fn="EaseNone"/>
+					<kf value="0.0666666627" time="215.75" fn="EaseNone"/>
+					<kf value="0.888888896" time="217.25" fn="EaseNone"/>
+				</param>
+				<param name="BaseAccelX" value="-0.200000003" min="-2" max="0"/>
+				<param name="RandomAccelX" value="-0.400000006" min="-2" max="0"/>
+				<param name="BaseAccelY" value="0" min="0" max="2"/>
+				<param name="RandomAccelY" value="0.200000003" min="0" max="2"/>
+				<param name="SlowDownAmt" value="0.5" min="0" max="1"/>
+				<param name="SlowDownY" value="0.5" min="0" max="2"/>
+				<param name="TimeMult" value="0.800000012" min="0" max="1"/>
+				<param name="LfoAmp" value="0.100000001" min="0" max="1"/>
+				<param name="VelMult" value="1" min="0" max="1"/>
+			</item>
+		</track>
 		<track name="track untitled">
 			<item type="QTimelineModuleItem" name="close swarm" startTime="74.25" duration="154.75" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="CloseSwarm">
 				<param name="enabled" value="0" min="0" max="1">
@@ -14,6 +34,8 @@
 				</param>
 				<param name="drop" value="0.0222222209" min="0" max="1">
 					<kf value="0.0222222209" time="74.5" fn="EaseStep"/>
+					<kf value="0.0666666627" time="169.5" fn="EaseNone"/>
+					<kf value="0.911111116" time="170.25" fn="EaseNone"/>
 					<kf value="1" time="216.75" fn="EaseStep"/>
 				</param>
 			</item>
@@ -30,13 +52,15 @@
 				</param>
 				<param name="drop" value="0" min="0" max="1">
 					<kf value="0" time="73.75" fn="EaseStep"/>
+					<kf value="0" time="170" fn="EaseNone"/>
+					<kf value="0.911111116" time="171" fn="EaseNone"/>
 					<kf value="0.977777779" time="217" fn="EaseStep"/>
 				</param>
 			</item>
 		</track>
 		<track name="track untitled">
 			<item type="QTimelineModuleItem" name="untitled" startTime="0" duration="18.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="BlackoutLayer">
-				<param name="amount" value="0.955555558" min="0" max="1">
+				<param name="amount" value="0.680221558" min="0" max="1">
 					<kf value="0.955555558" time="0" fn="EaseNone"/>
 					<kf value="0" time="16.25" fn="EaseNone"/>
 					<kf value="0.0222222209" time="18.5" fn="EaseNone"/>
@@ -75,8 +99,9 @@
 		</track>
 		<track name="track 0">
 			<item type="QTimelineModuleItem" name="Trees" startTime="0" duration="321.5" color_r="0.25" color_g="0.25" color_b="0.25" color_a="1" targetModuleType="TreeLayer">
-				<param name="enabled" value="0.822222233" min="0" max="1">
-					<kf value="0.822222233" time="0" fn="EaseNone"/>
+				<param name="enabled" value="0.888888896" min="0" max="1">
+					<kf value="0.0444444418" time="0" fn="EaseNone"/>
+					<kf value="0.888888896" time="0.25" fn="EaseNone"/>
 					<kf value="0.800000012" time="189" fn="EaseStep"/>
 					<kf value="0" time="189.75" fn="EaseStep"/>
 					<kf value="0.888888896" time="202.25" fn="EaseStep"/>
