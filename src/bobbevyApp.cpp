@@ -30,23 +30,6 @@ using namespace std;
 static const int WIDTH = 800;
 static const int HEIGHT = 600;
 
-QTimelineWidget::QTimelineWidget( std::string name)
-{
-  mFont           = QTimeline::getPtr()->getFontSmall();
-  mMenu           = new QTimelineMenu();
-  
-  setName( name );
-}
-
-void QTimelineMenuItem::init()
-{
-  mHeight = 0.0f;
-  
-  mFont   = QTimeline::getPtr()->getFontSmall();
-}
-
-
-
 struct WindowData
 {
   WindowData()

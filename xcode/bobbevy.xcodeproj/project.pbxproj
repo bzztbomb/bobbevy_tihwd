@@ -29,6 +29,8 @@
 		C805969B15A52A8F00A6D7EC /* trees.png in Resources */ = {isa = PBXBuildFile; fileRef = C805969215A52A8F00A6D7EC /* trees.png */; };
 		C805969C15A52A8F00A6D7EC /* zoomToBlack.png in Resources */ = {isa = PBXBuildFile; fileRef = C805969315A52A8F00A6D7EC /* zoomToBlack.png */; };
 		C805969E15A52E6900A6D7EC /* FadeFrag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = C805969D15A52E6900A6D7EC /* FadeFrag.glsl */; };
+		C811556B17659A5D00429570 /* QTimelineMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C811556A17659A5D00429570 /* QTimelineMenu.cpp */; };
+		C811556D17659BD400429570 /* QTimelineWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C811556C17659BD400429570 /* QTimelineWidget.cpp */; };
 		C811FBCC15A4F41700D036A6 /* bbParticleField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C811FBCB15A4F41700D036A6 /* bbParticleField.cpp */; };
 		C82C9424159F882500AAEDE0 /* Kinect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C82C9423159F882500AAEDE0 /* Kinect.cpp */; };
 		C82C9436159F888100AAEDE0 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C82C9435159F888100AAEDE0 /* IOKit.framework */; };
@@ -138,6 +140,8 @@
 		C805969215A52A8F00A6D7EC /* trees.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = trees.png; path = ../resources/trees.png; sourceTree = "<group>"; };
 		C805969315A52A8F00A6D7EC /* zoomToBlack.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = zoomToBlack.png; path = ../resources/zoomToBlack.png; sourceTree = "<group>"; };
 		C805969D15A52E6900A6D7EC /* FadeFrag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = FadeFrag.glsl; path = ../resources/FadeFrag.glsl; sourceTree = "<group>"; };
+		C811556A17659A5D00429570 /* QTimelineMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTimelineMenu.cpp; sourceTree = "<group>"; };
+		C811556C17659BD400429570 /* QTimelineWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTimelineWidget.cpp; sourceTree = "<group>"; };
 		C811FAFE15A4E62900D036A6 /* AccelEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccelEvent.h; sourceTree = "<group>"; };
 		C811FAFF15A4E62900D036A6 /* App.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = App.h; sourceTree = "<group>"; };
 		C811FB0015A4E62900D036A6 /* AppBasic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppBasic.h; sourceTree = "<group>"; };
@@ -1054,6 +1058,8 @@
 				C85BFC9D16A686F200EFB14F /* QTimelineTrack.h */,
 				C85BFC9E16A686F200EFB14F /* QTimelineWidget.h */,
 				C85BFC9F16A686F200EFB14F /* QTimelineWidgetWithHandles.h */,
+				C811556A17659A5D00429570 /* QTimelineMenu.cpp */,
+				C811556C17659BD400429570 /* QTimelineWidget.cpp */,
 			);
 			name = src;
 			path = ../../external/Cinder/blocks/QTimeline/src;
@@ -1229,6 +1235,8 @@
 				C8D5B9841731F2D600E8439B /* midiMapper.cpp in Sources */,
 				C864ED4717371BF6002C5EE7 /* bbAntiField.cpp in Sources */,
 				C8CCB48D173C7E6100D5D9B4 /* bbFeedback.cpp in Sources */,
+				C811556B17659A5D00429570 /* QTimelineMenu.cpp in Sources */,
+				C811556D17659BD400429570 /* QTimelineWidget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
