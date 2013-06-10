@@ -223,8 +223,8 @@ void TreeLayer::drawScene(const cinder::Area& renderArea, cinder::gl::GlslProg& 
   gl::draw(mGroundMesh);
   texGround.unbind();
   
-  gl::enableAlphaTest(0.0f);
-  gl::enableAlphaBlending();
+  gl::enableAlphaTest(0.2f);
+  gl::enableAlphaBlending(false);
   
   gl::color(Color::white());
   // Enable our tree texture
