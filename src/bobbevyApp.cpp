@@ -141,7 +141,7 @@ void bobbevyApp::setup()
                             &bobbevyApp::createModuleCallback,
                             &bobbevyApp::deleteModuleCallback);
   
-	mSceneState.mParams = params::InterfaceGl("bobbevy", Vec2i(225, 200));
+	mSceneState.mParams = params::InterfaceGl(getWindow(), "bobbevy", Vec2i(225, 200));
 	mSceneState.mParams.addParam("DebugDraw", &mDebugDraw, "keyIncr=d");
 	mSceneState.mParams.addParam("ShowParams", &mShowParams, "keyIncr=p");
 	mSceneState.mParams.addParam("ShowFPS", &mShowFPS);
