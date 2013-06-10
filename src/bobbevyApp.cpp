@@ -1,5 +1,3 @@
-// TODO:
-// Get OSC working again
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -70,6 +68,10 @@ public:
 	void draw();
 private:
 	KinectWrapper mKinect;
+
+  // Performance mode
+  bool mPerformanceMode;
+  cinder::app::WindowRef mPerformanceWindow;
   
 	// Debugging
 	bool mDebugDraw;
@@ -98,6 +100,8 @@ private:
   void deleteModuleCallback( QTimeline::DeleteModuleCallbackArgs args );
   
   void createNewWindow();
+  
+  void checkPerformanceWindow();
 };
 
 void bobbevyApp::prepareSettings( Settings* settings )
@@ -111,6 +115,13 @@ extern void publish_via_bonjour();
 
 void bobbevyApp::setup()
 {
+  mPerformanceMode = false;
+
+  Display::getSignalDisplaysChanged().connect(
+                                              [this] {
+                                                this->checkPerformanceWindow();
+                                              });
+  
   getWindow()->setUserData( new WindowData );
   
   mTimeline = QTimelineRef( new QTimeline() );
@@ -142,6 +153,7 @@ void bobbevyApp::setup()
                             &bobbevyApp::deleteModuleCallback);
   
 	mSceneState.mParams = params::InterfaceGl(getWindow(), "bobbevy", Vec2i(225, 200));
+  mSceneState.mParams.addParam("Performance Mode", &mPerformanceMode);
 	mSceneState.mParams.addParam("DebugDraw", &mDebugDraw, "keyIncr=d");
 	mSceneState.mParams.addParam("ShowParams", &mShowParams, "keyIncr=p");
 	mSceneState.mParams.addParam("ShowFPS", &mShowFPS);
@@ -220,6 +232,10 @@ void bobbevyApp::keyDown( KeyEvent event )
           mKinect.updateFakeBlob(3, Vec2f(0.8, 1.0));
         }
         break;
+      case KeyEvent::KEY_m :
+        mPerformanceMode = !mPerformanceMode;
+        checkPerformanceWindow();
+        break;
     }
   }
 	switch( event.getCode() )
@@ -248,7 +264,7 @@ void bobbevyApp::keyDown( KeyEvent event )
 }
 
 void bobbevyApp::update()
-{
+{  
   handleOSC();
   mMidi.update();
 
@@ -469,6 +485,44 @@ void bobbevyApp::createNewWindow()
   newWindow->getSignalClose().connect(
                                       [uniqueId,this] { this->console() << "You closed window #" << uniqueId << std::endl; }
                                       );
+}
+
+void bobbevyApp::checkPerformanceWindow()
+{
+  if (!mPerformanceMode)
+    return;
+
+  auto& displays = Display::getDisplays();
+  if (displays.size() < 2)
+    return;
+  
+  // Otherwise, create one if needed!
+  DisplayRef target;
+  for (auto i : displays)
+  {
+    if (i != Display::getMainDisplay())
+    {
+      target = i;
+      break;
+    }
+  }
+  
+  if (!mPerformanceWindow)
+  {
+    printf("Creating one\n");
+    FullScreenOptions fo;
+    fo.secondaryDisplayBlanking(false);
+     
+    Window::Format format;
+    format.setFullScreen(true, fo);
+    format.setDisplay(target);
+    
+    mPerformanceWindow = createWindow(format);
+    WindowData* wd = new WindowData;
+    wd->mDisplayTimeline = false;
+    mPerformanceWindow->setUserData( wd );
+  } else {
+  }
 }
 
 CINDER_APP_BASIC( bobbevyApp, RendererGl )
