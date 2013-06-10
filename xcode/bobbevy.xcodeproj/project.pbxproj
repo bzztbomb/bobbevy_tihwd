@@ -1266,11 +1266,24 @@
 				OTHER_LDFLAGS = (
 					"\"$(CINDER_PATH)/blocks/Cinder-Kinect/lib/macosx/libfreenect.a\"",
 					"\"$(CINDER_PATH)/blocks/Cinder-Kinect/lib/macosx/libusb-1.0.a\"",
-					"\"$(CINDER_PATH)/blocks/OpenCV/lib/macosx/libopencv_core.a\"",
-					"\"$(CINDER_PATH)/blocks/OpenCV/lib/macosx/libopencv_imgproc.a\"",
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_calib3d.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_contrib.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_core.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_features2d.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_flann.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_gpu.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_imgproc.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_legacy.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_ml.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_nonfree.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_objdetect.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_photo.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_stitching.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_ts.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_video.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_videostab.a,
 					"\"$(CINDER_PATH)/lib/libcinder_d.a\"",
 					"-lcurl",
-					"\"$(CINDER_PATH)/blocks/OpenCV/lib/macosx/libopencv_video.a\"",
 				);
 				PRODUCT_NAME = bobbevy;
 				WRAPPER_EXTENSION = app;
@@ -1282,7 +1295,8 @@
 			buildSettings = {
 				CLANG_CXX_LIBRARY = "libc++";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_FAST_MATH = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
@@ -1302,14 +1316,27 @@
 				OTHER_LDFLAGS = (
 					"\"$(CINDER_PATH)/blocks/Cinder-Kinect/lib/macosx/libusb-1.0.a\"",
 					"\"$(CINDER_PATH)/blocks/Cinder-Kinect/lib/macosx/libfreenect.a\"",
-					"\"$(CINDER_PATH)/blocks/Cinder-OpenCV/lib/macosx/libopencv_imgproc.a\"",
-					"\"$(CINDER_PATH)/blocks/Cinder-OpenCV/lib/macosx/libopencv_core.a\"",
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_calib3d.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_contrib.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_core.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_features2d.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_flann.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_gpu.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_imgproc.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_legacy.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_ml.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_nonfree.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_objdetect.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_photo.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_stitching.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_ts.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_video.a,
+					../../external/Cinder/blocks/OpenCV/lib/macosx/libopencv_videostab.a,
 					"\"$(CINDER_PATH)/lib/libcinder.a\"",
 					"-lcurl",
-					"\"$(CINDER_PATH)/blocks/Cinder-OpenCV/lib/macosx/libopencv_video.a\"",
 				);
 				PRODUCT_NAME = bobbevy;
-				STRIP_INSTALLED_PRODUCT = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
