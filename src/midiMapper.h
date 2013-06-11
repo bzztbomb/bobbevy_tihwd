@@ -22,6 +22,8 @@
 
 #include "QTimeline.h"
 
+#include "bbKinectWrapper.h"
+
 typedef std::function<void (float)> ValueUpdateFn;
 
 class MidiMapper
@@ -30,7 +32,7 @@ public:
   MidiMapper();
   ~MidiMapper();
 
-  void init(QTimelineRef timeline);
+  void init(QTimelineRef timeline, KinectWrapper* kinect);
   void update();
   
   // This will associate fn with the next midi event.  Returns a handle
@@ -60,6 +62,9 @@ private:
   
   // Timeline (bit of a hack right now)
   QTimelineRef mTimeline;
+  
+  // KinectWrapper
+  KinectWrapper* mKinect;
 
   bool getNextCommand(Lab::MidiCommand* dest);
   

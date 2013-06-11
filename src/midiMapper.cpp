@@ -43,9 +43,10 @@ MidiMapper::~MidiMapper()
   delete midiOut;
 }
 
-void MidiMapper::init(QTimelineRef timeline)
+void MidiMapper::init(QTimelineRef timeline, KinectWrapper* kinect)
 {
   mTimeline = timeline;
+  mKinect = kinect;
   
   // MIDI init
   int inPort = 0;
@@ -120,6 +121,9 @@ void MidiMapper::update()
         // Stop
         case 24 :
           stop();
+          break;
+        case 25 :
+          mKinect->resetBackground();
           break;
         // Play cue case
         case 36:

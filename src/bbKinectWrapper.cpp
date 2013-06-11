@@ -61,7 +61,7 @@ void KinectWrapper::setup(params::InterfaceGl& params)
   mBlobsEnabled = true;
   
 	mStepFrom = 1;
-	mAreaThreshold = 1000.0f;
+	mAreaThreshold = 2000.0f;
   mDrawTex = dtDepth;
   mEnableIR = false;
 
@@ -119,6 +119,11 @@ void KinectWrapper::enableRecordIfNeeded()
   mRecord = mRecordRequested;
 }
 
+void KinectWrapper::resetBackground()
+{
+  mInitInitial = 0;
+}
+
 void KinectWrapper::keyDown( KeyEvent event )
 {
 	if (!mEnabled)
@@ -126,7 +131,7 @@ void KinectWrapper::keyDown( KeyEvent event )
   
 	switch( event.getCode() ){
 		case KeyEvent::KEY_a:
-      mInitInitial = 0;
+      resetBackground();
 			break;
     case KeyEvent::KEY_7:
       mKinectEnabled = false;
@@ -325,7 +330,7 @@ void KinectWrapper::findBlobs()
 		{
 			i->mCentroid.x /= sz;
 			i->mCentroid.y /= sz;
-		}
+		}     
 		i->mZDist = *to8.getDataRed(i->mCentroid);
 		// Loop through and do z calc
 		float steps = 10.0f;
@@ -336,10 +341,10 @@ void KinectWrapper::findBlobs()
       if (mContourMat.at<uint8_t>(cv::Point(sample.x, sample.y)) > 0)
       {
         float val = *to8.getDataRed(Vec2f(sample.x, sample.y));
-        if (val < mDepthLowPass)
+        if (val < mDepthLowPass) 
           i->mZDist = max(i->mZDist, val);
       }
-      sample += step;
+      sample += step; 
 		}
 		step = (i->mRightMost - i->mLeftMost) / steps;
 		sample = i->mLeftMost;

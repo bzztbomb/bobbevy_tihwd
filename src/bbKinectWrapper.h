@@ -53,6 +53,8 @@ public:
 	void keyDown( cinder::app::KeyEvent event );
 	void draw();
   
+  void resetBackground();
+  
   Blob* getUser(UserToken which);
   std::vector<Blob> getUsers();
   
