@@ -54,7 +54,7 @@ private:
 
   // Performance mode
   bool mPerformanceMode;
-  cinder::app::WindowRef mPerformanceWindow;
+  std::weak_ptr<cinder::app::Window> mPerformanceWindow;
   
 	// Debugging
 	bool mDebugDraw;
@@ -102,7 +102,7 @@ void bobbevyApp::setup()
 
   Display::getSignalDisplaysChanged().connect(
                                               [this] {
-                                                this->checkPerformanceWindow();
+                                                checkPerformanceWindow();
                                               });
   
   getWindow()->setUserData( new WindowData );
@@ -148,9 +148,9 @@ void bobbevyApp::setup()
   // OSC init
   mListener.setup(23232);
   publish_via_bonjour();
-  mMidi.init(mTimeline);
   
 	mKinect.setup(mSceneState.mParams);
+  mMidi.init(mTimeline, &mKinect);
 	
 	mSceneState.mKinect = &mKinect;
 	
@@ -474,10 +474,23 @@ void bobbevyApp::checkPerformanceWindow()
 {
   if (!mPerformanceMode)
     return;
-
+  
   auto& displays = Display::getDisplays();
+  
+//  printf("displayCount: %d\n", displays.size());
+
+  auto pw = mPerformanceWindow.lock();
+  
   if (displays.size() < 2)
+  {
+    if (pw)
+    {
+      pw->setFullScreen(false);
+      pw->close();
+      pw = NULL;
+    }
     return;
+  }
   
   // Otherwise, create one if needed!
   DisplayRef target;
@@ -490,9 +503,9 @@ void bobbevyApp::checkPerformanceWindow()
     }
   }
   
-  if (!mPerformanceWindow)
+  if (!pw)
   {
-    printf("Creating one\n");
+  //  printf("Creating one\n");
     FullScreenOptions fo;
     fo.secondaryDisplayBlanking(false);
      
@@ -501,9 +514,10 @@ void bobbevyApp::checkPerformanceWindow()
     format.setDisplay(target);
     
     mPerformanceWindow = createWindow(format);
+    auto new_pw = mPerformanceWindow.lock();
     WindowData* wd = new WindowData;
     wd->mDisplayTimeline = false;
-    mPerformanceWindow->setUserData( wd );
+    new_pw->setUserData( wd );
   } else {
   }
 }
