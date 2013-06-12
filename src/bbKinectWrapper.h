@@ -57,11 +57,11 @@ public:
   
   Blob* getUser(UserToken which);
   std::vector<Blob> getUsers();
+  void updateFakeBlob(int index, const cinder::Vec2f& pos);
   
   cv::Mat* getContourMat() { return &mContourMat; }
-  
-  void updateFakeBlob(int index, const cinder::Vec2f& pos);
-public:
+  cinder::gl::Texture getContourTexture() { return mContourTexture; }
+protected:
 	// Kinect interface
   bool mEnabled;
 	bool mKinectEnabled;

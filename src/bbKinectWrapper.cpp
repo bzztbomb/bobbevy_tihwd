@@ -183,12 +183,16 @@ bool KinectWrapper::getDepthData()
         mDepthWriter.addFrame(d);
     }
     
-    if( mKinect.checkNewVideoFrame() )
+//    if( mKinect.checkNewVideoFrame() )
     {
-      ImageSourceRef c = mKinect.getVideoImage();
-      mColorTexture = c;
-      if (mRecord)
-        mColorWriter.addFrame(c);
+      bool showingColor = mDrawTex == dtColor;
+      if (showingColor || mRecord)
+      {
+        ImageSourceRef c = mKinect.getVideoImage();
+        mColorTexture = c;
+        if (mRecord)
+          mColorWriter.addFrame(c);
+      }
     }
     
     return newDepth;

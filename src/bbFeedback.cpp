@@ -63,7 +63,8 @@ void FeedbackLayer::tick()
     gl::clear(Color(0.0f, 0.0f, 0.0f));
     
     // Render something new
-    if (mSceneState->mKinect->mContourTexture)
+    Texture c = mSceneState->mKinect->getContourTexture();
+    if (c)
     {
       mShader.bind();
       mShader.uniform("newContour", 0);
@@ -73,12 +74,12 @@ void FeedbackLayer::tick()
       mShader.uniform("iInOut", mInOut > 0.5f ? -1.0f : 1.0f);
       mShader.uniform("iNoiseAmp", mNoiseAmp);
       
-      mSceneState->mKinect->mContourTexture.enableAndBind();
+      c.enableAndBind();
       mFrames[prev].getTexture(0).bind(1);
       gl::drawSolidRect(Rectf(0,0,w,h));
       mFrames[prev].getTexture(0).unbind();
-      mSceneState->mKinect->mContourTexture.unbind();
-      mSceneState->mKinect->mContourTexture.disable();
+      c.unbind();
+      c.disable();
       mShader.unbind();
     }
     
