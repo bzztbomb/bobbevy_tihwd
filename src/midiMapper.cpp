@@ -126,7 +126,7 @@ void MidiMapper::update()
           mKinect->resetBackground();
           break;
         case 26 :
-          mKinect->setEnabled(!mKinect->getEnabled());
+//          mKinect->setEnabled(!mKinect->getEnabled());
           break;
           
         // Play cue case
@@ -185,7 +185,6 @@ void MidiMapper::stop()
   mTimeline->update();
   for (int i = 0; i < 32; i++)
     midiOut->sendNoteOn(0, i, 0);
-  mKinect->setEnabled(true);
 }
 
 void MidiMapper::playCue(Lab::MidiCommand* c)

@@ -71,8 +71,6 @@ public:
 	void draw();
   
   void resetBackground();
-  void setEnabled(bool val) { mEnabled = val; }
-  bool getEnabled() const { return mEnabled; }
   
   Blob* getUser(UserToken which);
   std::vector<Blob> getUsers();
@@ -94,8 +92,6 @@ protected:
   DepthSourceRef mKinectDepthSource;
   std::shared_ptr<FakeDepthSource> mFakeDepthSource;
   
-	// Kinect interface
-  bool mEnabled;
 	cinder::gl::Texture		mColorTexture, mDepthTexture;
     
 	cv::Mat mInitial;
@@ -106,9 +102,6 @@ protected:
 	// Image processing
 	int mStepFrom;
   int mDepthLowPass;
-
-  //
-  bool mBlobsEnabled;
   
 	// Debug
 	cinder::gl::Texture	mContourTexture;

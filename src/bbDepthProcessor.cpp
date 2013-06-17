@@ -1,5 +1,3 @@
-// TODO: SORT OUT mEnabled vs. mKinectEnable bidness
-
 /*
  *  bbDepthProcessor.cpp
  *  bobbevy
@@ -183,9 +181,6 @@ DepthProcessor::DepthProcessor() :
 
 void DepthProcessor::setup(params::InterfaceGl& params)
 {
-	mEnabled = true;
-  mBlobsEnabled = true;
-  
 	mStepFrom = 1;
 	mAreaThreshold = 2000.0f;
   mDrawTex = dtDepth;
@@ -196,7 +191,7 @@ void DepthProcessor::setup(params::InterfaceGl& params)
   enumSource.push_back("Fake");
   enumSource.push_back("Recorded");
   params.addParam( "Depth Source", enumSource, (int*) &mDepthType);
-	params.addParam( "Init frame amount", &mInitFrames, "min=1 max=300" );
+	params.addParam( "Init frame amount", &mInitFrames, "min=0 max=300" );
 	params.addParam( "Step from", &mStepFrom, "min=1 max=255" );
   params.addParam( "Depth LowPass filter", &mDepthLowPass, "min=0 max=255");
 	params.addParam( "CV area threshold", &mAreaThreshold, "min=1");
@@ -206,7 +201,6 @@ void DepthProcessor::setup(params::InterfaceGl& params)
   enumDraw.push_back("Contour");
   enumDraw.push_back("Background");
   params.addParam( "Texture", enumDraw, &mDrawTex);
-  params.addParam( "BlobsEnabled", &mBlobsEnabled);
   params.addParam( "Record Depth Data", &mRecordRequested);
   
   mKinectDepthSource = std::make_shared<KinectDepthSource>(params);
@@ -258,9 +252,6 @@ void DepthProcessor::resetBackground()
 
 void DepthProcessor::keyDown( KeyEvent event )
 {
-	if (!mEnabled)
-		return;
-  
 	switch( event.getCode() ){
 		case KeyEvent::KEY_a:
       resetBackground();
@@ -272,9 +263,6 @@ void DepthProcessor::keyDown( KeyEvent event )
 
 void DepthProcessor::update()
 {
-	if (!mEnabled)
-		return;
-  
   if (mDepthType != mCurrentDepthType)
   {
     switch (mDepthType)
@@ -294,11 +282,13 @@ void DepthProcessor::update()
     mCurrentDepthType = mDepthType;
     resetBackground();
   }
+
+  if (!mDepthSource)
+    return;
   
   enableRecordIfNeeded();
   
-  if (mDepthSource)
-    mDepthSource->update();
+  mDepthSource->update();
   
   findBlobs();
 }
@@ -327,7 +317,7 @@ bool DepthProcessor::getDepthData()
 
 void DepthProcessor::findBlobs()
 {
-  if ((!getDepthData()) || (!mBlobsEnabled))
+  if (!getDepthData())
     return;
 	
 	Surface8u to8(mDepthSource->getDepthImage());
@@ -459,10 +449,7 @@ void DepthProcessor::findBlobs()
 }
 
 void DepthProcessor::draw()
-{
-	if (!mEnabled)
-		return;
-  
+{  
   glDisable(GL_TEXTURE_2D);
 	gl::color(Color(1.0f, 1.0f, 1.0f));
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
