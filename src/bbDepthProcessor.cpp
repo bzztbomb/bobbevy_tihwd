@@ -89,6 +89,7 @@ public:
   
   void updateFakeBlob(int index, const Vec2f& pos)
   {
+    BlobLock b(mBlobMutex);
     if (index < NUM_FAKE_BLOB_PTS)
       mFakeBlobs[index] = pos;
     mFakeBlobs[index].x *= 640.0f;
@@ -98,6 +99,7 @@ public:
   
   virtual void init()
   {
+    BlobLock b(mBlobMutex);
     mInitialFrames = 0;
     for (int i = 0; i < NUM_FAKE_BLOB_PTS; i++)
       mFakeBlobs[i] = Vec2f();
@@ -107,11 +109,13 @@ public:
   {
     if (mInitialFrames++ > 60)
       return;
+    BlobLock b(mBlobMutex);
     mFakeDataAvail = true;
   }
 
   virtual bool newData()
   {
+    BlobLock b(mBlobMutex);
     bool ret = mFakeDataAvail;
     mFakeDataAvail = false;
     return ret;
@@ -119,6 +123,7 @@ public:
 
   virtual cinder::ImageSourceRef getDepthImage()
   {
+    BlobLock b(mBlobMutex);
     memset(mFakeSurface.getData(), 0, mFakeSurface.getRowBytes() * mFakeSurface.getHeight());
     
     cinder::Vec2f fakeBlobs[NUM_FAKE_BLOB_PTS];
@@ -153,6 +158,8 @@ private:
   bool mFakeDataAvail;
   cinder::Surface8u mFakeSurface;
   int mInitialFrames;
+  std::recursive_mutex mBlobMutex;
+  typedef std::lock_guard<std::recursive_mutex> BlobLock;
 };
 
 struct SortDescendingArea
