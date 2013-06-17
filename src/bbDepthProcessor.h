@@ -17,6 +17,7 @@
 #include "cinder/gl/Fbo.h"
 #include "cinder/qtime/MovieWriter.h"
 #include "cinder/Vector.h"
+#include "cinder/ConcurrentCircularBuffer.h"
 
 struct Blob {
 	float mContourArea;
@@ -59,6 +60,7 @@ public:
   static cinder::Vec2i smSize;
 public:
   DepthProcessor();
+  virtual ~DepthProcessor();
   
   enum UserToken
   {
@@ -80,6 +82,15 @@ public:
   cv::Mat* getContourMat() { return &mContourMat; }
   cinder::gl::Texture getContourTexture() { return mContourTexture; }
 protected:
+  std::thread mProcessingThread;
+  std::recursive_mutex mBlobMutex;
+  typedef std::lock_guard<std::recursive_mutex> BlobLock;
+  bool mStopProcessing;
+  
+  cinder::ConcurrentCircularBuffer<cinder::Surface> mDepthSurfaces;
+  cinder::ConcurrentCircularBuffer<cinder::Surface> mColorSurfaces;
+  cinder::ConcurrentCircularBuffer<cv::Mat> mContourSurfaces;
+  
   enum DepthSourceType
   {
     dsNone = 0,
@@ -125,14 +136,17 @@ protected:
 	// Blob detection and "user tracking"
 	static int smMAX_BLOBS;
   typedef std::vector<Blob> BlobVector;
-  BlobVector mBlobs;
+  BlobVector mBlobs[2];
+  int mIndexFG;
   float mAreaThreshold;
   typedef std::vector< std::vector<cv::Point> > ContourVector;
   
   void findBlobs();
   bool getDepthData();
-private:
+
   void enableRecordIfNeeded();
+  
+  void threadFunc();
 };
       
 #endif

@@ -34,14 +34,18 @@ public:
   : mTilt(0)
   , mEnableIR(false)
   {
+    params.addParam( "Tilt", &mTilt, "min=-31 max=32");
+    params.addParam( "Toggle IR", &mEnableIR);
+  }
+  
+  virtual void init()
+  {
     console() << "There are " << Kinect::getNumDevices() << " Kinects connected." << std::endl;
     if (Kinect::getNumDevices() > 0)
     {
       mKinect = Kinect( Kinect::Device() ); // the default Device implies the first Kinect
       mTilt = mKinect.getTilt();
     }
-    params.addParam( "Tilt", &mTilt, "min=-31 max=32");
-    params.addParam( "Toggle IR", &mEnableIR);
   }
   
   virtual bool newData()
@@ -174,10 +178,22 @@ DepthProcessor::DepthProcessor() :
   mInitFrames(30),
   mDepthLowPass(240),
   mDepthType(dsKinect),
-  mCurrentDepthType(dsKinect)
+  mCurrentDepthType(dsKinect),
+  mIndexFG(0),
+  mDepthSurfaces(3),
+  mColorSurfaces(3),
+  mContourSurfaces(3),
+  mStopProcessing(false)
 {
   
 }
+
+DepthProcessor::~DepthProcessor()
+{
+  mStopProcessing = true;
+  mProcessingThread.join();
+}
+
 
 void DepthProcessor::setup(params::InterfaceGl& params)
 {
@@ -202,10 +218,12 @@ void DepthProcessor::setup(params::InterfaceGl& params)
   enumDraw.push_back("Background");
   params.addParam( "Texture", enumDraw, &mDrawTex);
   params.addParam( "Record Depth Data", &mRecordRequested);
-  
+
   mKinectDepthSource = std::make_shared<KinectDepthSource>(params);
   mDepthSource = mKinectDepthSource;
   mFakeDepthSource = std::make_shared<FakeDepthSource>();
+  
+  mProcessingThread = std::thread(std::bind(&DepthProcessor::threadFunc, this));
 }
 
 void DepthProcessor::enableRecordIfNeeded()
@@ -263,34 +281,61 @@ void DepthProcessor::keyDown( KeyEvent event )
 
 void DepthProcessor::update()
 {
-  if (mDepthType != mCurrentDepthType)
-  {
-    switch (mDepthType)
-    {
-      case dsKinect :
-        mDepthSource = mKinectDepthSource;
-        break;
-      case dsFake :
-        mDepthSource = mFakeDepthSource;
-        break;
-      default :
-        mDepthSource = NULL;
-        break;
-    }
-    if (mDepthSource)
-      mDepthSource->init();
-    mCurrentDepthType = mDepthType;
-    resetBackground();
-  }
+  Surface d;
+  while (mDepthSurfaces.isNotEmpty())
+    mDepthSurfaces.popBack(&d);
+  if (d)
+    mDepthTexture = d;
+  
+  while (mContourSurfaces.isNotEmpty())
+    mContourSurfaces.popBack(&mContourMat);
+  
+  Surface c;
+  while (mColorSurfaces.isNotEmpty())
+    mColorSurfaces.popBack(&c);
+  if (c)
+    mColorTexture = c;
+}
 
-  if (!mDepthSource)
-    return;
+void DepthProcessor::threadFunc()
+{
+  ci::ThreadSetup threadSetup; // instantiate this if you're talking to Cinder from a secondary thread
+
+  mDepthSource->init();
   
-  enableRecordIfNeeded();
-  
-  mDepthSource->update();
-  
-  findBlobs();
+  while (!mStopProcessing)
+  {
+    if (mDepthType != mCurrentDepthType)
+    {
+      switch (mDepthType)
+      {
+        case dsKinect :
+          mDepthSource = mKinectDepthSource;
+          break;
+        case dsFake :
+          mDepthSource = mFakeDepthSource;
+          break;
+        default :
+          mDepthSource = NULL;
+          break;
+      }
+      if (mDepthSource)
+        mDepthSource->init();
+      mCurrentDepthType = mDepthType;
+      resetBackground();
+    }
+
+    if (!mDepthSource)
+      return;
+    
+    enableRecordIfNeeded();
+    
+    mDepthSource->update();
+    
+    findBlobs();
+    
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
 }
 
 bool DepthProcessor::getDepthData()
@@ -301,7 +346,8 @@ bool DepthProcessor::getDepthData()
   ImageSourceRef d = mDepthSource->getDepthImage();
   if (mRecord)
     mDepthWriter.addFrame(d);
-  mDepthTexture = d;
+  if (mDrawTex == dtDepth)
+    mDepthSurfaces.pushFront(d);
 
   bool showingColor = mDrawTex == dtColor;
   if (showingColor || mRecord)
@@ -309,7 +355,8 @@ bool DepthProcessor::getDepthData()
     ImageSourceRef c = mDepthSource->getVideoImage();
     if (mRecord)
       mColorWriter.addFrame(c);
-    mColorTexture = c;
+    if (showingColor)
+      mColorSurfaces.pushFront(c);
   }
   
   return true;
@@ -347,11 +394,13 @@ void DepthProcessor::findBlobs()
   
   cv::threshold( gray, thresh, mStepFrom, 255, CV_THRESH_BINARY );
   
-	mBlobs.clear();
+  auto& blobs = mBlobs[1 - mIndexFG];
+  
+	blobs.clear();
 	float largest = mAreaThreshold;
   
   mContourMat = thresh.clone();
-  mContourTexture = fromOcv(mContourMat);
+  mContourSurfaces.pushFront(mContourMat.clone());
   
   ContourVector vec;
   cv::findContours( thresh, vec, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE );
@@ -365,17 +414,17 @@ void DepthProcessor::findBlobs()
       b.mContourArea = a;
       b.mContourPoints.resize(iter->size());
       copy(iter->begin(), iter->end(), b.mContourPoints.begin());
-      mBlobs.push_back(b);
-      push_heap(mBlobs.begin(), mBlobs.end(), SortDescendingArea());
-      if (mBlobs.size() > DepthProcessor::smMAX_BLOBS)
+      blobs.push_back(b);
+      push_heap(blobs.begin(), blobs.end(), SortDescendingArea());
+      if (blobs.size() > DepthProcessor::smMAX_BLOBS)
       {
-        mBlobs.erase(mBlobs.end()-1);
-        largest = mBlobs.rbegin()->mContourArea;
+        blobs.erase(blobs.end()-1);
+        largest = blobs.rbegin()->mContourArea;
       }
     }
   }
   
-	for (BlobVector::iterator i = mBlobs.begin(); i != mBlobs.end(); i++)
+	for (BlobVector::iterator i = blobs.begin(); i != blobs.end(); i++)
 	{
 		i->mCentroid.x = i->mCentroid.y = 0.0f;
     float mag = 10000.0f;
@@ -445,7 +494,11 @@ void DepthProcessor::findBlobs()
       sample += step;
 		}
 	}
-	sort(mBlobs.begin(), mBlobs.end(), SortDescendingZ());
+	sort(blobs.begin(), blobs.end(), SortDescendingZ());
+  {
+    BlobLock b(mBlobMutex);
+    mIndexFG = 1 - mIndexFG;
+  }
 }
 
 void DepthProcessor::draw()
@@ -469,6 +522,7 @@ void DepthProcessor::draw()
       break;
     case dtBackground :
       {
+        // TODO: NOT THREAD SAFE
         cinder::gl::Texture tex(fromOcv(mInitial));
         gl::draw(tex, getWindowBounds());
       }
@@ -477,11 +531,12 @@ void DepthProcessor::draw()
 	
 	if (true)
 	{
+    BlobLock b(mBlobMutex);
     Vec2f ws((float) getWindowWidth() / 640.0f, (float) getWindowHeight() / 480.0f);
     
 		// draw the contours
 		int c = 0;
-		for (BlobVector::iterator i = mBlobs.begin(); i != mBlobs.end(); i++)
+		for (BlobVector::iterator i = mBlobs[mIndexFG].begin(); i != mBlobs[mIndexFG].end(); i++)
 		{
 			glBegin(GL_LINE_LOOP);
 			for( vector<cv::Point>::iterator pt = i->mContourPoints.begin(); pt != i->mContourPoints.end(); ++pt )
@@ -519,15 +574,17 @@ void DepthProcessor::draw()
 
 BlobRef DepthProcessor::getUser(UserToken which)
 {
+  BlobLock b(mBlobMutex);
+  auto& blobs = mBlobs[mIndexFG];
   switch (which)
   {
     case utClosest:
-      if (mBlobs.size() > 0)
-        return std::make_shared<Blob>(*mBlobs.rbegin());
+      if (blobs.size() > 0)
+        return std::make_shared<Blob>(*blobs.rbegin());
       break;
     case utFurthest :
-      if (mBlobs.size() > 0)
-        return std::make_shared<Blob>(*mBlobs.begin());
+      if (blobs.size() > 0)
+        return std::make_shared<Blob>(*blobs.begin());
       break;
     default:
       return NULL;
@@ -537,7 +594,8 @@ BlobRef DepthProcessor::getUser(UserToken which)
 
 std::vector<Blob> DepthProcessor::getUsers()
 {
-  return mBlobs;
+  BlobLock b(mBlobMutex);
+  return mBlobs[mIndexFG];
 }
 
 void DepthProcessor::updateFakeBlob(int index, const Vec2f& pos)
