@@ -8,7 +8,7 @@
 
 #include "bbFeedback.h"
 #include "cinder/gl/gl.h"
-#include "bbKinectWrapper.h"
+#include "bbDepthProcessor.h"
 #include "LiveAssetManager.h"
 
 using namespace ci;
@@ -118,7 +118,7 @@ void FeedbackLayer::initFbo()
   // Kinect size
   for (int i = 0; i < NUM_FRAMES; i++)
   {
-    mFrames[i] = gl::Fbo(KinectWrapper::smSize.x, KinectWrapper::smSize.y, format);
+    mFrames[i] = gl::Fbo(DepthProcessor::smSize.x, DepthProcessor::smSize.y, format);
     gl::SaveFramebufferBinding saveBinding;
     mFrames[i].bindFramebuffer();
     gl::setViewport(mFrames[i].getBounds());

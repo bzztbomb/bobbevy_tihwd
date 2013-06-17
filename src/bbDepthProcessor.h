@@ -1,13 +1,13 @@
 /*
- *  bbKinectWrapper.h
+ *  bbDepthProcessor.h
  *  bobbevy
  *
  *  Created by Brian Richardson on 6/30/12.
  *  Copyright 2012 Knowhere Studios Inc. All rights reserved.
  *
  */
-#ifndef __BBKINECTWRAPPER_H_
-#define __BBKINECTWRAPPER_H_
+#ifndef __BBDepthProcessor_H_
+#define __BBDepthProcessor_H_
 
 #include "Kinect.h"
 #include "cinder/gl/gl.h"
@@ -35,12 +35,12 @@ struct Blob {
 
 #define NUM_FAKE_BLOB_PTS 4
 
-class KinectWrapper
+class DepthProcessor
 {
 public:
   static cinder::Vec2i smSize;
 public:
-  KinectWrapper();
+  DepthProcessor();
   
   enum UserToken
   {

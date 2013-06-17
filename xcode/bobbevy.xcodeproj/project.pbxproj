@@ -34,7 +34,7 @@
 		C811FBCC15A4F41700D036A6 /* bbParticleField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C811FBCB15A4F41700D036A6 /* bbParticleField.cpp */; };
 		C82C9424159F882500AAEDE0 /* Kinect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C82C9423159F882500AAEDE0 /* Kinect.cpp */; };
 		C82C9436159F888100AAEDE0 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C82C9435159F888100AAEDE0 /* IOKit.framework */; };
-		C82C97A4159FB3A900AAEDE0 /* bbKinectWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C82C97A3159FB3A900AAEDE0 /* bbKinectWrapper.cpp */; };
+		C82C97A4159FB3A900AAEDE0 /* bbDepthProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C82C97A3159FB3A900AAEDE0 /* bbDepthProcessor.cpp */; };
 		C82C98C6159FD14400AAEDE0 /* bbTreeLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C82C98C5159FD14400AAEDE0 /* bbTreeLayer.cpp */; };
 		C82C9A41159FE14B00AAEDE0 /* bbParticles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C82C9A40159FE14B00AAEDE0 /* bbParticles.cpp */; };
 		C82E6B041689598E000BF266 /* IpEndpointName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C82E6AE21689598E000BF266 /* IpEndpointName.cpp */; };
@@ -334,7 +334,7 @@
 		C82C9423159F882500AAEDE0 /* Kinect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Kinect.cpp; path = "../../external/Cinder/blocks/Cinder-Kinect/src/Kinect.cpp"; sourceTree = SOURCE_ROOT; };
 		C82C9435159F888100AAEDE0 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		C82C97A2159FB3A900AAEDE0 /* bbKinectWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bbKinectWrapper.h; path = ../src/bbKinectWrapper.h; sourceTree = SOURCE_ROOT; };
-		C82C97A3159FB3A900AAEDE0 /* bbKinectWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bbKinectWrapper.cpp; path = ../src/bbKinectWrapper.cpp; sourceTree = SOURCE_ROOT; };
+		C82C97A3159FB3A900AAEDE0 /* bbDepthProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bbDepthProcessor.cpp; path = ../src/bbDepthProcessor.cpp; sourceTree = SOURCE_ROOT; };
 		C82C98B6159FD00700AAEDE0 /* sceneLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sceneLayer.h; path = ../src/sceneLayer.h; sourceTree = SOURCE_ROOT; };
 		C82C98C4159FD14400AAEDE0 /* bbTreeLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bbTreeLayer.h; path = ../src/bbTreeLayer.h; sourceTree = SOURCE_ROOT; };
 		C82C98C5159FD14400AAEDE0 /* bbTreeLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bbTreeLayer.cpp; path = ../src/bbTreeLayer.cpp; sourceTree = SOURCE_ROOT; };
@@ -456,7 +456,7 @@
 				C8D16280170A7B1300D13B14 /* LiveAssetManager.cpp */,
 				C8D16281170A7B1300D13B14 /* LiveAssetManager.h */,
 				00BAE6590E7ED9C10018A608 /* bobbevyApp.cpp */,
-				C82C97A3159FB3A900AAEDE0 /* bbKinectWrapper.cpp */,
+				C82C97A3159FB3A900AAEDE0 /* bbDepthProcessor.cpp */,
 				C82C98C5159FD14400AAEDE0 /* bbTreeLayer.cpp */,
 				C82C9A3F159FE14B00AAEDE0 /* bbParticles.h */,
 				C82C9A40159FE14B00AAEDE0 /* bbParticles.cpp */,
@@ -1205,7 +1205,7 @@
 			files = (
 				00BAE65A0E7ED9C10018A608 /* bobbevyApp.cpp in Sources */,
 				C82C9424159F882500AAEDE0 /* Kinect.cpp in Sources */,
-				C82C97A4159FB3A900AAEDE0 /* bbKinectWrapper.cpp in Sources */,
+				C82C97A4159FB3A900AAEDE0 /* bbDepthProcessor.cpp in Sources */,
 				C82C98C6159FD14400AAEDE0 /* bbTreeLayer.cpp in Sources */,
 				C82C9A41159FE14B00AAEDE0 /* bbParticles.cpp in Sources */,
 				C811FBCC15A4F41700D036A6 /* bbParticleField.cpp in Sources */,

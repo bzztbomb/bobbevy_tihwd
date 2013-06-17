@@ -1,5 +1,5 @@
 /*
- *  bbKinectWrapper.cpp
+ *  bbDepthProcessor.cpp
  *  bobbevy
  *
  *  Created by Brian Richardson on 6/30/12.
@@ -7,7 +7,7 @@
  *
  */
 
-#include "bbKinectWrapper.h"
+#include "bbDepthProcessor.h"
 #include <memory.h>
 #include <algorithm>
 #include <boost/filesystem.hpp>
@@ -18,8 +18,8 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-int KinectWrapper::smMAX_BLOBS = 3;
-Vec2i KinectWrapper::smSize(640, 480);
+int DepthProcessor::smMAX_BLOBS = 3;
+Vec2i DepthProcessor::smSize(640, 480);
 
 struct SortDescendingArea
 {
@@ -36,7 +36,7 @@ struct SortDescendingZ
   }
 };
 
-KinectWrapper::KinectWrapper() :
+DepthProcessor::DepthProcessor() :
   mFakeSurface(640, 480, false, SurfaceChannelOrder::RGB),
   mRecordRequested(false),
   mRecord(false),
@@ -48,7 +48,7 @@ KinectWrapper::KinectWrapper() :
   
 }
 
-void KinectWrapper::setup(params::InterfaceGl& params)
+void DepthProcessor::setup(params::InterfaceGl& params)
 {
 	console() << "There are " << Kinect::getNumDevices() << " Kinects connected." << std::endl;
 	mKinectEnabled = (Kinect::getNumDevices() > 0);
@@ -82,7 +82,7 @@ void KinectWrapper::setup(params::InterfaceGl& params)
   params.addParam( "Tilt", &mTilt, "min=-31 max=32");
 }
 
-void KinectWrapper::enableRecordIfNeeded()
+void DepthProcessor::enableRecordIfNeeded()
 {
   if (mRecord == mRecordRequested)
     return;
@@ -119,12 +119,12 @@ void KinectWrapper::enableRecordIfNeeded()
   mRecord = mRecordRequested;
 }
 
-void KinectWrapper::resetBackground()
+void DepthProcessor::resetBackground()
 {
   mInitInitial = 0;
 }
 
-void KinectWrapper::keyDown( KeyEvent event )
+void DepthProcessor::keyDown( KeyEvent event )
 {
 	if (!mEnabled)
 		return;
@@ -145,7 +145,7 @@ void KinectWrapper::keyDown( KeyEvent event )
 	}
 }
 
-void KinectWrapper::update()
+void DepthProcessor::update()
 {
 	if (!mEnabled)
 		return;
@@ -169,7 +169,7 @@ bool cmpX(const cinder::Vec2f& a, const cinder::Vec2f& b)
   return a.x < b.x;
 }
 
-bool KinectWrapper::getDepthData()
+bool DepthProcessor::getDepthData()
 {
   if (mKinectEnabled)
   {
@@ -227,7 +227,7 @@ bool KinectWrapper::getDepthData()
   }
 }
 
-void KinectWrapper::findBlobs()
+void DepthProcessor::findBlobs()
 {
   bool newDepth = getDepthData();
 	
@@ -285,7 +285,7 @@ void KinectWrapper::findBlobs()
       copy(iter->begin(), iter->end(), b.mContourPoints.begin());
       mBlobs.push_back(b);
       push_heap(mBlobs.begin(), mBlobs.end(), SortDescendingArea());
-      if (mBlobs.size() > KinectWrapper::smMAX_BLOBS)
+      if (mBlobs.size() > DepthProcessor::smMAX_BLOBS)
       {
         mBlobs.erase(mBlobs.end()-1);
         largest = mBlobs.rbegin()->mContourArea;
@@ -366,7 +366,7 @@ void KinectWrapper::findBlobs()
 	sort(mBlobs.begin(), mBlobs.end(), SortDescendingZ());
 }
 
-void KinectWrapper::draw()
+void DepthProcessor::draw()
 {
 	if (!mEnabled)
 		return;
@@ -438,7 +438,7 @@ void KinectWrapper::draw()
   gl::color(Color(1,1,1));
 }
 
-Blob* KinectWrapper::getUser(UserToken which)
+Blob* DepthProcessor::getUser(UserToken which)
 {
   switch (which)
   {
@@ -456,12 +456,12 @@ Blob* KinectWrapper::getUser(UserToken which)
   return NULL;
 }
 
-std::vector<Blob> KinectWrapper::getUsers()
+std::vector<Blob> DepthProcessor::getUsers()
 {
   return mBlobs;
 }
 
-void KinectWrapper::updateFakeBlob(int index, const Vec2f& pos)
+void DepthProcessor::updateFakeBlob(int index, const Vec2f& pos)
 {
   if (index < 4)
     mFakeBlobs[index] = pos;

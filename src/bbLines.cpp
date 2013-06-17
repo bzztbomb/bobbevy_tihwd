@@ -8,7 +8,7 @@
 
 #include "bbLines.h"
 #include "LiveAssetManager.h"
-#include "bbKinectWrapper.h"
+#include "bbDepthProcessor.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -62,10 +62,10 @@ void LineLayer::setup(SceneState* sceneState)
 
 void LineLayer::tick()
 {
-  Blob* closest = mSceneState->mKinect->getUser(KinectWrapper::utClosest);
+  Blob* closest = mSceneState->mKinect->getUser(DepthProcessor::utClosest);
   if (!closest)
     return;
-  Blob* far = mSceneState->mKinect->getUser(KinectWrapper::utFurthest);
+  Blob* far = mSceneState->mKinect->getUser(DepthProcessor::utFurthest);
 
   Vec2f pos[2];
   pos[0] = closest->mBounds.getCenter();

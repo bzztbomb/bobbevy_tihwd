@@ -43,7 +43,7 @@ MidiMapper::~MidiMapper()
   delete midiOut;
 }
 
-void MidiMapper::init(QTimelineRef timeline, KinectWrapper* kinect)
+void MidiMapper::init(QTimelineRef timeline, DepthProcessor* kinect)
 {
   mTimeline = timeline;
   mKinect = kinect;

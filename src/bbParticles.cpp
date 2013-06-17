@@ -34,7 +34,7 @@ SkeletonParticles::SkeletonParticles(const std::string& moduleName) :
   mMaxVel(1.6f),
   mAfterTargetAccel(2.0f),
   mSwarm(true),
-  mUserToken(KinectWrapper::utClosest),
+  mUserToken(DepthProcessor::utClosest),
   mColor(1,1,1),
   mDrag(0.9f),
   mTargetDrag(1.0f),
@@ -72,7 +72,7 @@ SkeletonParticles::~SkeletonParticles()
   smCurrentSwarms.erase(this);
 }
 
-void SkeletonParticles::followUser(KinectWrapper::UserToken ut)
+void SkeletonParticles::followUser(DepthProcessor::UserToken ut)
 {
   mUserToken = ut;
 }
@@ -475,7 +475,7 @@ void SkeletonParticles::moveSwarm(bool move)
   mMoveSwarm = move;
   if (!mMoveSwarm)
   {
-    float offset = (mUserToken == KinectWrapper::utClosest) ? (mCoordSpace.x / 7.5f) : -(mCoordSpace.x / 6.0f);
+    float offset = (mUserToken == DepthProcessor::utClosest) ? (mCoordSpace.x / 7.5f) : -(mCoordSpace.x / 6.0f);
     Vec3f center((mCoordSpace.x / 2.0f) + offset, mCoordSpace.y / 2.0f, 0.0f);
     for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)
     {
@@ -515,7 +515,7 @@ void SkeletonParticles::mouseDown(cinder::app::MouseEvent event)
 
 void SkeletonParticles::updateWaiting()
 {
-  float offset = (mUserToken == KinectWrapper::utClosest) ? (mCoordSpace.x / 7.5f) : -(mCoordSpace.x / 6.0f);
+  float offset = (mUserToken == DepthProcessor::utClosest) ? (mCoordSpace.x / 7.5f) : -(mCoordSpace.x / 6.0f);
   Vec3f center((mCoordSpace.x / 2.0f) + offset, mCoordSpace.y / 2.0f, 0.0f);
   
  	for (int i = 0; i < NUM_SKELETON_PARTICLES; i++)

@@ -15,7 +15,7 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/GlslProg.h"
-#include "bbKinectWrapper.h"
+#include "bbDepthProcessor.h"
 
 #define NUM_SKELETON_PARTICLES 200
 
@@ -28,7 +28,7 @@ public:
   ~SkeletonParticles();
   
   void setName(const std::string& name);
-  void followUser(KinectWrapper::UserToken ut);
+  void followUser(DepthProcessor::UserToken ut);
   void drop();
   void moveSwarm(bool move);
   void setZValue(float z);
@@ -50,7 +50,7 @@ private:
   std::string mName;
 	SceneState* mManager;
   // User
-  KinectWrapper::UserToken mUserToken;
+  DepthProcessor::UserToken mUserToken;
   
   cinder::gl::Texture texBrown;
   cinder::gl::Texture texYellow;

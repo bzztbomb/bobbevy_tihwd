@@ -14,13 +14,13 @@
 #include "cinder/Timeline.h"
 #include "cinder/app/AppBasic.h"
 #include "cinder/Color.h"
-#include "bbKinectWrapper.h"
+#include "bbDepthProcessor.h"
 #include "QTimeline.h"
 
 struct SceneState
 {
 	cinder::params::InterfaceGl mParams;
-	KinectWrapper* mKinect;
+	DepthProcessor* mKinect;
 };
 
 class SceneLayer : public QTimelineModule

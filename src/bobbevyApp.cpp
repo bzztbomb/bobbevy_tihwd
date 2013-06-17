@@ -11,11 +11,10 @@
 #include "OscListener.h"
 #include "QTimeline.h"
 #include "midiMapper.h"
-#include "bbKinectWrapper.h"
+#include "bbDepthProcessor.h"
 
 #include "sceneLayer.h"
 #include "bbTreeLayer.h"
-#include "bbIntroLight.h"
 #include "bbParticles.h"
 #include "bbParticleField.h"
 #include "bbAntiField.h"
@@ -50,7 +49,7 @@ public:
 	void update();
 	void draw();
 private:
-	KinectWrapper mKinect;
+	DepthProcessor mKinect;
 
   // Performance mode
   bool mPerformanceMode;
@@ -394,7 +393,7 @@ void bobbevyApp::createModuleCallback( QTimeline::CreateModuleCallbackArgs args 
     SkeletonParticles* sp = new SkeletonParticles("CloseSwarm");
     sp->setName("CloseSwarm");
     sp->setup(&mSceneState);
-    sp->followUser(KinectWrapper::utClosest);
+    sp->followUser(DepthProcessor::utClosest);
     mod = QTimelineModuleRef(sp);
   }
   if (args.type == "FarSwarm")
@@ -402,7 +401,7 @@ void bobbevyApp::createModuleCallback( QTimeline::CreateModuleCallbackArgs args 
     SkeletonParticles* sp = new SkeletonParticles("FarSwarm");
     sp->setName("FarSwarm");
     sp->setup(&mSceneState);
-    sp->followUser(KinectWrapper::utFurthest);
+    sp->followUser(DepthProcessor::utFurthest);
     mod = QTimelineModuleRef(sp);
   }
   if (args.type == "Field")

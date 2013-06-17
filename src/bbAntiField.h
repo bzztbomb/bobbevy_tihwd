@@ -15,7 +15,7 @@
 #include "cinder/Camera.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/Rand.h"
-#include "bbKinectWrapper.h"
+#include "bbDepthProcessor.h"
 
 class AntiParticleField : public SceneLayer
 {
