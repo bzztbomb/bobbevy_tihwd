@@ -29,8 +29,9 @@ struct Blob {
 	cinder::Vec3f mRightMost;
 	cinder::Vec3f mTopMost;
 	cinder::Vec3f mBottomMost;
-  
 };
+
+typedef std::shared_ptr<Blob> BlobRef;
 
 class DepthSource
 {
@@ -72,7 +73,7 @@ public:
   
   void resetBackground();
   
-  Blob* getUser(UserToken which);
+  BlobRef getUser(UserToken which);
   std::vector<Blob> getUsers();
   void updateFakeBlob(int index, const cinder::Vec2f& pos);
   

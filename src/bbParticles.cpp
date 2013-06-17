@@ -190,8 +190,8 @@ void SkeletonParticles::tick()
   }
 	
 	// Calc target point, left and right vectors
-	Blob* user = mManager->mKinect->getUser(mUserToken);
-	if (user != NULL)
+	BlobRef user = mManager->mKinect->getUser(mUserToken);
+	if (user)
 	{
     mBounds = user->mBounds;
 	}

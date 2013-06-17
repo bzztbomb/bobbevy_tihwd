@@ -62,10 +62,10 @@ void LineLayer::setup(SceneState* sceneState)
 
 void LineLayer::tick()
 {
-  Blob* closest = mSceneState->mKinect->getUser(DepthProcessor::utClosest);
+  BlobRef closest = mSceneState->mKinect->getUser(DepthProcessor::utClosest);
   if (!closest)
     return;
-  Blob* far = mSceneState->mKinect->getUser(DepthProcessor::utFurthest);
+  BlobRef far = mSceneState->mKinect->getUser(DepthProcessor::utFurthest);
 
   Vec2f pos[2];
   pos[0] = closest->mBounds.getCenter();

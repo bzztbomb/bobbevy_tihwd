@@ -517,17 +517,17 @@ void DepthProcessor::draw()
   gl::color(Color(1,1,1));
 }
 
-Blob* DepthProcessor::getUser(UserToken which)
+BlobRef DepthProcessor::getUser(UserToken which)
 {
   switch (which)
   {
     case utClosest:
       if (mBlobs.size() > 0)
-        return &(*mBlobs.rbegin());
+        return std::make_shared<Blob>(*mBlobs.rbegin());
       break;
     case utFurthest :
       if (mBlobs.size() > 0)
-        return &(*mBlobs.begin());
+        return std::make_shared<Blob>(*mBlobs.begin());
       break;
     default:
       return NULL;
