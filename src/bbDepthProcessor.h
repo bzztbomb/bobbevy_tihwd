@@ -36,6 +36,7 @@ class DepthSource
 {
 public:
   virtual ~DepthSource() { };
+  virtual void init() { }
   // Update maybe temp?
   virtual void update() = 0;
   // Is new depth data available?
@@ -48,6 +49,8 @@ public:
 typedef std::shared_ptr<DepthSource> DepthSourceRef;
 
 #define NUM_FAKE_BLOB_PTS 4
+
+class FakeDepthSource;
 
 class DepthProcessor
 {
@@ -78,19 +81,23 @@ public:
   cv::Mat* getContourMat() { return &mContourMat; }
   cinder::gl::Texture getContourTexture() { return mContourTexture; }
 protected:
+  enum DepthSourceType
+  {
+    dsNone = 0,
+    dsKinect = 1,
+    dsFake = 2,
+    dsRecorded = 3
+  };
+  DepthSourceType mDepthType;
+  DepthSourceType mCurrentDepthType;
   DepthSourceRef mDepthSource;
   DepthSourceRef mKinectDepthSource;
+  std::shared_ptr<FakeDepthSource> mFakeDepthSource;
   
 	// Kinect interface
   bool mEnabled;
 	cinder::gl::Texture		mColorTexture, mDepthTexture;
-  
-  // Lack of Kinect interface
-  cinder::Vec2f mFakeBlobs[NUM_FAKE_BLOB_PTS];
-  bool mFakeDataAvail;
-  cinder::Surface8u mFakeSurface;
-  
-  
+    
 	cv::Mat mInitial;
   cv::Mat mLastGray; // Accumlated grayscal image
 	int mInitInitial;

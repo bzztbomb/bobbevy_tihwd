@@ -24,6 +24,11 @@ using namespace std;
 int DepthProcessor::smMAX_BLOBS = 3;
 Vec2i DepthProcessor::smSize(640, 480);
 
+bool cmpX(const cinder::Vec2f& a, const cinder::Vec2f& b)
+{
+  return a.x < b.x;
+}
+
 class KinectDepthSource : public DepthSource
 {
 public:
@@ -71,6 +76,83 @@ private:
   bool mEnableIR;
 };
 
+class FakeDepthSource : public DepthSource
+{
+public:
+  FakeDepthSource()
+  : mFakeSurface(640, 480, false, SurfaceChannelOrder::RGB)
+  , mInitialFrames(0)
+  {
+  }
+  
+  void updateFakeBlob(int index, const Vec2f& pos)
+  {
+    if (index < NUM_FAKE_BLOB_PTS)
+      mFakeBlobs[index] = pos;
+    mFakeBlobs[index].x *= 640.0f;
+    mFakeBlobs[index].y *= 480.0f;
+    mFakeDataAvail = true;
+  }
+  
+  virtual void init()
+  {
+    mInitialFrames = 0;
+    for (int i = 0; i < NUM_FAKE_BLOB_PTS; i++)
+      mFakeBlobs[i] = Vec2f();
+  }
+  
+  virtual void update()
+  {
+    if (mInitialFrames++ > 60)
+      return;
+    mFakeDataAvail = true;
+  }
+
+  virtual bool newData()
+  {
+    bool ret = mFakeDataAvail;
+    mFakeDataAvail = false;
+    return ret;
+  }
+
+  virtual cinder::ImageSourceRef getDepthImage()
+  {
+    memset(mFakeSurface.getData(), 0, mFakeSurface.getRowBytes() * mFakeSurface.getHeight());
+    
+    cinder::Vec2f fakeBlobs[NUM_FAKE_BLOB_PTS];
+    memcpy(&fakeBlobs[0], &mFakeBlobs[0], sizeof(fakeBlobs));
+    
+    sort(fakeBlobs, fakeBlobs+NUM_FAKE_BLOB_PTS, cmpX);
+    
+    for (int index = 0; index < NUM_FAKE_BLOB_PTS; index+=2)
+    {
+      Vec2f minV(min(fakeBlobs[index].x, fakeBlobs[index+1].x),
+                 min(fakeBlobs[index].y, fakeBlobs[index+1].y));
+      Vec2f maxV(max(fakeBlobs[index].x, fakeBlobs[index+1].x),
+                 max(fakeBlobs[index].y, fakeBlobs[index+1].y));
+      uint8_t* d = mFakeSurface.getData(minV);
+      int value = index==0 ? 192 : 128;
+      for (int i = minV.y; i < maxV.y; i++)
+      {
+        memset(d, value, (maxV.x-minV.x)*mFakeSurface.getPixelInc());
+        d += mFakeSurface.getRowBytes();
+      }
+    }
+    return mFakeSurface;
+  }
+  
+  virtual cinder::ImageSourceRef getVideoImage()
+  {
+    return mFakeSurface;
+  }
+private:
+  // Lack of Kinect interface
+  cinder::Vec2f mFakeBlobs[NUM_FAKE_BLOB_PTS];
+  bool mFakeDataAvail;
+  cinder::Surface8u mFakeSurface;
+  int mInitialFrames;
+};
+
 struct SortDescendingArea
 {
   bool operator()(const Blob& t1, const Blob& t2) const
@@ -87,13 +169,14 @@ struct SortDescendingZ
 };
 
 DepthProcessor::DepthProcessor() :
-  mFakeSurface(640, 480, false, SurfaceChannelOrder::RGB),
   mRecordRequested(false),
   mRecord(false),
   mLastGray(480, 640, CV_32F),
   mInitInitial(0),
   mInitFrames(30),
-  mDepthLowPass(240)
+  mDepthLowPass(240),
+  mDepthType(dsKinect),
+  mCurrentDepthType(dsKinect)
 {
   
 }
@@ -107,6 +190,12 @@ void DepthProcessor::setup(params::InterfaceGl& params)
 	mAreaThreshold = 2000.0f;
   mDrawTex = dtDepth;
 
+  std::vector<std::string> enumSource;
+  enumSource.push_back("None");
+  enumSource.push_back("Kinect");
+  enumSource.push_back("Fake");
+  enumSource.push_back("Recorded");
+  params.addParam( "Depth Source", enumSource, (int*) &mDepthType);
 	params.addParam( "Init frame amount", &mInitFrames, "min=1 max=300" );
 	params.addParam( "Step from", &mStepFrom, "min=1 max=255" );
   params.addParam( "Depth LowPass filter", &mDepthLowPass, "min=0 max=255");
@@ -117,12 +206,12 @@ void DepthProcessor::setup(params::InterfaceGl& params)
   enumDraw.push_back("Contour");
   enumDraw.push_back("Background");
   params.addParam( "Texture", enumDraw, &mDrawTex);
-  params.addParam( "KinectEnabled", &mEnabled);
   params.addParam( "BlobsEnabled", &mBlobsEnabled);
   params.addParam( "Record Depth Data", &mRecordRequested);
   
   mKinectDepthSource = std::make_shared<KinectDepthSource>(params);
   mDepthSource = mKinectDepthSource;
+  mFakeDepthSource = std::make_shared<FakeDepthSource>();
 }
 
 void DepthProcessor::enableRecordIfNeeded()
@@ -186,81 +275,62 @@ void DepthProcessor::update()
 	if (!mEnabled)
 		return;
   
+  if (mDepthType != mCurrentDepthType)
+  {
+    switch (mDepthType)
+    {
+      case dsKinect :
+        mDepthSource = mKinectDepthSource;
+        break;
+      case dsFake :
+        mDepthSource = mFakeDepthSource;
+        break;
+      default :
+        mDepthSource = NULL;
+        break;
+    }
+    if (mDepthSource)
+      mDepthSource->init();
+    mCurrentDepthType = mDepthType;
+    resetBackground();
+  }
+  
   enableRecordIfNeeded();
+  
+  if (mDepthSource)
+    mDepthSource->update();
   
   findBlobs();
 }
 
-bool cmpX(const cinder::Vec2f& a, const cinder::Vec2f& b)
-{
-  return a.x < b.x;
-}
-
 bool DepthProcessor::getDepthData()
 {
-  if (mDepthSource)
+  if ((!mDepthSource) || (!mDepthSource->newData()))
+    return false;
+  
+  ImageSourceRef d = mDepthSource->getDepthImage();
+  if (mRecord)
+    mDepthWriter.addFrame(d);
+  mDepthTexture = d;
+
+  bool showingColor = mDrawTex == dtColor;
+  if (showingColor || mRecord)
   {
-    bool newDepth = mDepthSource->newData();
-    if (newDepth)
-    {
-      ImageSourceRef d = mDepthSource->getDepthImage();
-      if (mRecord)
-        mDepthWriter.addFrame(d);
-      mDepthTexture = d;
-    
-      bool showingColor = mDrawTex == dtColor;
-      if (showingColor || mRecord)
-      {
-        ImageSourceRef c = mDepthSource->getVideoImage();
-        if (mRecord)
-          mColorWriter.addFrame(c);
-        mColorTexture = c;
-      }
-    }
-    return newDepth;
-  } else {
-    if (!mFakeDataAvail)
-      return false;
-    mFakeDataAvail = false;
-    
-    memset(mFakeSurface.getData(), 0, mFakeSurface.getRowBytes() * mFakeSurface.getHeight());
-    
-    cinder::Vec2f fakeBlobs[NUM_FAKE_BLOB_PTS];
-    memcpy(&fakeBlobs[0], &mFakeBlobs[0], sizeof(fakeBlobs));
-    
-    sort(fakeBlobs, fakeBlobs+NUM_FAKE_BLOB_PTS, cmpX);
-    
-    for (int index = 0; index < NUM_FAKE_BLOB_PTS; index+=2)
-    {
-      Vec2f minV(min(fakeBlobs[index].x, fakeBlobs[index+1].x),
-                 min(fakeBlobs[index].y, fakeBlobs[index+1].y));
-      Vec2f maxV(max(fakeBlobs[index].x, fakeBlobs[index+1].x),
-                 max(fakeBlobs[index].y, fakeBlobs[index+1].y));
-      uint8_t* d = mFakeSurface.getData(minV);
-      int value = index==0 ? 192 : 128;
-      for (int i = minV.y; i < maxV.y; i++)
-      {
-        memset(d, value, (maxV.x-minV.x)*mFakeSurface.getPixelInc());
-        d += mFakeSurface.getRowBytes();
-      }
-    }
-    mDepthTexture = mFakeSurface;
-    return true;
+    ImageSourceRef c = mDepthSource->getVideoImage();
+    if (mRecord)
+      mColorWriter.addFrame(c);
+    mColorTexture = c;
   }
+  
+  return true;
 }
 
 void DepthProcessor::findBlobs()
 {
-  bool newDepth = getDepthData();
+  if ((!getDepthData()) || (!mBlobsEnabled))
+    return;
 	
-	if ((!mDepthTexture) || (!newDepth) || (!mBlobsEnabled))
-		return;
-	
-	Surface8u to8;
-  if (mDepthSource)
-    to8 = mDepthSource->getDepthImage();
-  else
-    to8 = mFakeSurface;
+	Surface8u to8(mDepthSource->getDepthImage());
 	cv::Mat input( toOcv( to8));
 	
 	cv::Mat gray;
@@ -485,9 +555,6 @@ std::vector<Blob> DepthProcessor::getUsers()
 
 void DepthProcessor::updateFakeBlob(int index, const Vec2f& pos)
 {
-  if (index < 4)
-    mFakeBlobs[index] = pos;
-  mFakeBlobs[index].x *= 640.0f;
-  mFakeBlobs[index].y *= 480.0f;
-  mFakeDataAvail = true;
+  if (mFakeDepthSource)
+    mFakeDepthSource->updateFakeBlob(index, pos);
 }
