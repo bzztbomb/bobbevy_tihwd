@@ -1,3 +1,5 @@
+// TODO: SORT OUT mEnabled vs. mKinectEnable bidness
+
 /*
  *  bbDepthProcessor.cpp
  *  bobbevy
@@ -13,6 +15,7 @@
 #include <boost/filesystem.hpp>
 #include "cinder/qtime/MovieWriter.h"
 #include "cinder/ImageIo.h"
+#include "Kinect.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -20,6 +23,53 @@ using namespace std;
 
 int DepthProcessor::smMAX_BLOBS = 3;
 Vec2i DepthProcessor::smSize(640, 480);
+
+class KinectDepthSource : public DepthSource
+{
+public:
+  KinectDepthSource(params::InterfaceGl& params)
+  : mTilt(0)
+  , mEnableIR(false)
+  {
+    console() << "There are " << Kinect::getNumDevices() << " Kinects connected." << std::endl;
+    if (Kinect::getNumDevices() > 0)
+    {
+      mKinect = Kinect( Kinect::Device() ); // the default Device implies the first Kinect
+      mTilt = mKinect.getTilt();
+    }
+    params.addParam( "Tilt", &mTilt, "min=-31 max=32");
+    params.addParam( "Toggle IR", &mEnableIR);
+  }
+  
+  virtual bool newData()
+  {
+    return mKinect.mObj ? mKinect.checkNewDepthFrame() : false;
+  }
+  
+  virtual cinder::ImageSourceRef getDepthImage()
+  {
+    return mKinect.mObj ? mKinect.getDepthImage() : ImageSourceRef();
+  }
+  
+  virtual cinder::ImageSourceRef getVideoImage()
+  {
+    return mKinect.mObj ? mKinect.getVideoImage() : ImageSourceRef();
+  }
+  
+  virtual void update()
+  {
+    if (!mKinect.mObj)
+      return;
+    if (mKinect.getTilt() != mTilt)
+      mKinect.setTilt(mTilt);
+    if (mEnableIR != mKinect.isVideoInfrared())
+      mKinect.setVideoInfrared(mEnableIR);
+  }
+private:
+	cinder::Kinect	mKinect;
+  int32_t mTilt;
+  bool mEnableIR;
+};
 
 struct SortDescendingArea
 {
@@ -50,20 +100,12 @@ DepthProcessor::DepthProcessor() :
 
 void DepthProcessor::setup(params::InterfaceGl& params)
 {
-	console() << "There are " << Kinect::getNumDevices() << " Kinects connected." << std::endl;
-	mKinectEnabled = (Kinect::getNumDevices() > 0);
-  if (mKinectEnabled)
-  {
-    mKinect = Kinect( Kinect::Device() ); // the default Device implies the first Kinect
-    mTilt = mKinect.getTilt();
-  }
 	mEnabled = true;
   mBlobsEnabled = true;
   
 	mStepFrom = 1;
 	mAreaThreshold = 2000.0f;
   mDrawTex = dtDepth;
-  mEnableIR = false;
 
 	params.addParam( "Init frame amount", &mInitFrames, "min=1 max=300" );
 	params.addParam( "Step from", &mStepFrom, "min=1 max=255" );
@@ -75,11 +117,12 @@ void DepthProcessor::setup(params::InterfaceGl& params)
   enumDraw.push_back("Contour");
   enumDraw.push_back("Background");
   params.addParam( "Texture", enumDraw, &mDrawTex);
-  params.addParam( "Toggle IR", &mEnableIR);
   params.addParam( "KinectEnabled", &mEnabled);
   params.addParam( "BlobsEnabled", &mBlobsEnabled);
-  params.addParam( "Record Kinect Data", &mRecordRequested);
-  params.addParam( "Tilt", &mTilt, "min=-31 max=32");
+  params.addParam( "Record Depth Data", &mRecordRequested);
+  
+  mKinectDepthSource = std::make_shared<KinectDepthSource>(params);
+  mDepthSource = mKinectDepthSource;
 }
 
 void DepthProcessor::enableRecordIfNeeded()
@@ -133,13 +176,6 @@ void DepthProcessor::keyDown( KeyEvent event )
 		case KeyEvent::KEY_a:
       resetBackground();
 			break;
-    case KeyEvent::KEY_7:
-      mKinectEnabled = false;
-      break;
-    case KeyEvent::KEY_l:
-      if (Kinect::getNumDevices() > 0)
-        mKinectEnabled = true;
-      break;
 		default:
 			break;
 	}
@@ -150,16 +186,7 @@ void DepthProcessor::update()
 	if (!mEnabled)
 		return;
   
-  if (mKinectEnabled)
-  {
-    if (mKinect.getTilt() != mTilt)
-      mKinect.setTilt(mTilt);
-  }
-  
   enableRecordIfNeeded();
-  
-  if ((mKinectEnabled) && (mEnableIR != mKinect.isVideoInfrared()))
-    mKinect.setVideoInfrared(mEnableIR);
   
   findBlobs();
 }
@@ -171,30 +198,25 @@ bool cmpX(const cinder::Vec2f& a, const cinder::Vec2f& b)
 
 bool DepthProcessor::getDepthData()
 {
-  if (mKinectEnabled)
+  if (mDepthSource)
   {
-    bool newDepth = false;
-    if( mKinect.checkNewDepthFrame() )
+    bool newDepth = mDepthSource->newData();
+    if (newDepth)
     {
-      newDepth = true;
-      ImageSourceRef d = mKinect.getDepthImage();
-      mDepthTexture = d;
+      ImageSourceRef d = mDepthSource->getDepthImage();
       if (mRecord)
         mDepthWriter.addFrame(d);
-    }
+      mDepthTexture = d;
     
-//    if( mKinect.checkNewVideoFrame() )
-    {
       bool showingColor = mDrawTex == dtColor;
       if (showingColor || mRecord)
       {
-        ImageSourceRef c = mKinect.getVideoImage();
-        mColorTexture = c;
+        ImageSourceRef c = mDepthSource->getVideoImage();
         if (mRecord)
           mColorWriter.addFrame(c);
+        mColorTexture = c;
       }
     }
-    
     return newDepth;
   } else {
     if (!mFakeDataAvail)
@@ -235,8 +257,8 @@ void DepthProcessor::findBlobs()
 		return;
 	
 	Surface8u to8;
-  if (mKinectEnabled)
-    to8 = mKinect.getDepthImage();
+  if (mDepthSource)
+    to8 = mDepthSource->getDepthImage();
   else
     to8 = mFakeSurface;
 	cv::Mat input( toOcv( to8));

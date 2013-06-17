@@ -9,7 +9,6 @@
 #ifndef __BBDepthProcessor_H_
 #define __BBDepthProcessor_H_
 
-#include "Kinect.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "CinderOpenCV.h"
@@ -32,6 +31,21 @@ struct Blob {
 	cinder::Vec3f mBottomMost;
   
 };
+
+class DepthSource
+{
+public:
+  virtual ~DepthSource() { };
+  // Update maybe temp?
+  virtual void update() = 0;
+  // Is new depth data available?
+  virtual bool newData() = 0;
+  // These two should only get called when newData = true
+  virtual cinder::ImageSourceRef getDepthImage() = 0;
+  virtual cinder::ImageSourceRef getVideoImage() = 0;
+};
+
+typedef std::shared_ptr<DepthSource> DepthSourceRef;
 
 #define NUM_FAKE_BLOB_PTS 4
 
@@ -64,11 +78,11 @@ public:
   cv::Mat* getContourMat() { return &mContourMat; }
   cinder::gl::Texture getContourTexture() { return mContourTexture; }
 protected:
+  DepthSourceRef mDepthSource;
+  DepthSourceRef mKinectDepthSource;
+  
 	// Kinect interface
   bool mEnabled;
-	bool mKinectEnabled;
-	cinder::Kinect	mKinect;
-  int32_t mTilt;
 	cinder::gl::Texture		mColorTexture, mDepthTexture;
   
   // Lack of Kinect interface
