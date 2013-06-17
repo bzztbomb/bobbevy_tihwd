@@ -354,7 +354,7 @@ void DepthProcessor::findBlobs()
   mContourTexture = fromOcv(mContourMat);
   
   ContourVector vec;
-  cv::findContours( thresh, vec, CV_RETR_EXTERNAL, CV_LINK_RUNS);
+  cv::findContours( thresh, vec, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE );
   
   for( ContourVector::iterator iter = vec.begin(); iter != vec.end(); ++iter )
   {
