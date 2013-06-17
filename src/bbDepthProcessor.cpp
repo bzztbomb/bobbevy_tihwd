@@ -406,8 +406,7 @@ void DepthProcessor::findBlobs()
 	blobs.clear();
 	float largest = mAreaThreshold;
   
-  mContourMat = thresh.clone();
-  mContourSurfaces.pushFront(mContourMat.clone());
+  mContourSurfaces.pushFront(thresh.clone());
   
   ContourVector vec;
   cv::findContours( thresh, vec, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE );
@@ -480,7 +479,7 @@ void DepthProcessor::findBlobs()
 		Vec3f sample = i->mTopMost;
 		for (int x = 0; x < steps; x++)
 		{
-      if (mContourMat.at<uint8_t>(cv::Point(sample.x, sample.y)) > 0)
+      if (thresh.at<uint8_t>(cv::Point(sample.x, sample.y)) > 0)
       {
         float val = *to8.getDataRed(Vec2f(sample.x, sample.y));
         if (val < mDepthLowPass) 
@@ -492,7 +491,7 @@ void DepthProcessor::findBlobs()
 		sample = i->mLeftMost;
 		for (int x = 0; x < steps; x++)
 		{
-      if (mContourMat.at<uint8_t>(cv::Point(sample.x, sample.y)) > 0)
+      if (thresh.at<uint8_t>(cv::Point(sample.x, sample.y)) > 0)
       {
         float val = *to8.getDataRed(Vec2f(sample.x, sample.y));
         if (val < mDepthLowPass)
