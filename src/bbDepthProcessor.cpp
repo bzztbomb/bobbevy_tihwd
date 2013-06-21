@@ -11,6 +11,7 @@
 #include <memory.h>
 #include <algorithm>
 #include <boost/filesystem.hpp>
+#include "cinder/qtime/QuickTime.h"
 #include "cinder/qtime/MovieWriter.h"
 #include "cinder/ImageIo.h"
 #include "Kinect.h"
@@ -162,6 +163,68 @@ private:
   typedef std::lock_guard<std::recursive_mutex> BlobLock;
 };
 
+class VideoDepthSource : public DepthSource
+{
+public:
+  virtual ~VideoDepthSource() { };
+  
+  virtual void init()
+  {
+    try
+    {
+      std::string base("/Users/bzztbomb/projects/bobbevy/assets/0000000000_");
+      
+      mDepthMovie = qtime::MovieSurface::create(base + "depth.mov");
+      if (!mDepthMovie)
+        return;
+      mColorMovie = qtime::MovieSurface::create(base + "color.mov");
+      mDepthMovie->setLoop();
+      mColorMovie->setLoop();      
+      mDepthMovie->play();
+      mColorMovie->play();
+    }
+    catch (const cinder::qtime::QuickTimeExc& e)
+    {
+      mDepthMovie = NULL;
+      mColorMovie = NULL;
+    }
+  }
+  
+  virtual void stop()
+  {
+    mDepthMovie->stop();
+    mColorMovie->stop();
+    mDepthMovie = NULL;
+    mColorMovie = NULL;
+  }
+  
+  // Update maybe temp?
+  virtual void update()
+  {
+  }
+  
+  // Is new depth data available?
+  virtual bool newData()
+  {
+    return mDepthMovie ? mDepthMovie->checkNewFrame() : false;
+  }
+  
+  // These two should only get called when newData = true
+  virtual cinder::ImageSourceRef getDepthImage()
+  {
+    return mDepthMovie->getSurface();
+  }
+  
+  virtual cinder::ImageSourceRef getVideoImage()
+  {
+    return mColorMovie->getSurface();
+  }
+private:
+  qtime::MovieSurfaceRef mDepthMovie;
+  qtime::MovieSurfaceRef mColorMovie;
+};
+
+
 struct SortDescendingArea
 {
   bool operator()(const Blob& t1, const Blob& t2) const
@@ -190,7 +253,8 @@ DepthProcessor::DepthProcessor() :
   mDepthSurfaces(3),
   mColorSurfaces(3),
   mContourSurfaces(3),
-  mStopProcessing(false)
+  mStopProcessing(false),
+  mContourDirty(false)
 {
   
 }
@@ -229,6 +293,7 @@ void DepthProcessor::setup(params::InterfaceGl& params)
   mKinectDepthSource = std::make_shared<KinectDepthSource>(params);
   mDepthSource = mKinectDepthSource;
   mFakeDepthSource = std::make_shared<FakeDepthSource>();
+  mVideoDepthSource = std::make_shared<VideoDepthSource>();
   
   mProcessingThread = std::thread(std::bind(&DepthProcessor::threadFunc, this));
 }
@@ -294,6 +359,7 @@ void DepthProcessor::update()
   if (d)
     mDepthTexture = d;
   
+  mContourDirty = mContourSurfaces.isNotEmpty();
   while (mContourSurfaces.isNotEmpty())
     mContourSurfaces.popBack(&mContourMat);
   
@@ -302,6 +368,13 @@ void DepthProcessor::update()
     mColorSurfaces.popBack(&c);
   if (c)
     mColorTexture = c;
+}
+
+cinder::gl::Texture DepthProcessor::getContourTexture()
+{
+  if (mContourDirty)
+    mContourTexture = fromOcv(mContourMat);
+  return mContourTexture;
 }
 
 void DepthProcessor::threadFunc()
@@ -314,6 +387,8 @@ void DepthProcessor::threadFunc()
   {
     if (mDepthType != mCurrentDepthType)
     {
+      if (mDepthSource)
+        mDepthSource->stop();
       switch (mDepthType)
       {
         case dsKinect :
@@ -321,6 +396,9 @@ void DepthProcessor::threadFunc()
           break;
         case dsFake :
           mDepthSource = mFakeDepthSource;
+          break;
+        case dsRecorded :
+          mDepthSource = mVideoDepthSource;
           break;
         default :
           mDepthSource = NULL;
@@ -523,14 +601,17 @@ void DepthProcessor::draw()
         gl::draw(mColorTexture, getWindowBounds());
       break;
     case dtContour :
+      getContourTexture();
       if (mContourTexture)
         gl::draw(mContourTexture, getWindowBounds());
       break;
     case dtBackground :
       {
-        // TODO: NOT THREAD SAFE
-        cinder::gl::Texture tex(fromOcv(mInitial));
-        gl::draw(tex, getWindowBounds());
+        if (mInitInitial >= mInitFrames)
+        {
+          cinder::gl::Texture tex(fromOcv(mInitial));
+          gl::draw(tex, getWindowBounds());
+        }
       }
       break;
   }

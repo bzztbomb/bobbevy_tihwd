@@ -39,6 +39,7 @@ class DepthSource
 public:
   virtual ~DepthSource() { };
   virtual void init() { }
+  virtual void stop() { }
   // Update maybe temp?
   virtual void update() = 0;
   // Is new depth data available?
@@ -80,7 +81,7 @@ public:
   void updateFakeBlob(int index, const cinder::Vec2f& pos);
   
   cv::Mat* getContourMat() { return &mContourMat; }
-  cinder::gl::Texture getContourTexture() { return mContourTexture; }
+  cinder::gl::Texture getContourTexture();
 protected:
   std::thread mProcessingThread;
   std::recursive_mutex mBlobMutex;
@@ -102,6 +103,7 @@ protected:
   DepthSourceType mCurrentDepthType;
   DepthSourceRef mDepthSource;
   DepthSourceRef mKinectDepthSource;
+  DepthSourceRef mVideoDepthSource;
   std::shared_ptr<FakeDepthSource> mFakeDepthSource;
   
 	cinder::gl::Texture		mColorTexture, mDepthTexture;
@@ -118,6 +120,8 @@ protected:
 	// Debug
 	cinder::gl::Texture	mContourTexture;
 	cv::Mat mContourMat;
+  bool mContourDirty;
+  
   enum DrawTex
   {
     dtDepth = 0,
