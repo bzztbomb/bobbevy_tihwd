@@ -438,9 +438,9 @@ bool DepthProcessor::getDepthData()
   if (showingColor || mRecord)
   {
     ImageSourceRef c = mDepthSource->getVideoImage();
-    if (mRecord)
+    if (c && mRecord)
       mColorWriter.addFrame(c);
-    if (showingColor)
+    if (c && showingColor)
       mColorSurfaces.pushFront(c);
   }
   
