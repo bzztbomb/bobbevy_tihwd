@@ -14,7 +14,7 @@ Useful concepts?
 
 I've got a "performance mode" which will display a fullscreen window with the content on any secondary displays as soon as they are connected.  This is nice because you can be connected/disconnected from a projector a few times before performing and you don't have to worry about it.
 
-I'm using a (QuNeo)[http://www.keithmcmillen.com/QuNeo/] to trigger cues using Andrea's really nice QTimeline block.
+I'm using a [QuNeo](http://www.keithmcmillen.com/QuNeo/) to trigger cues using Andrea's really nice QTimeline block.
 
 I've got a very hacked up "midi learn" feature for parameters as well.  Hoping to expand on this a bit. 
 
